@@ -21,13 +21,13 @@ import static com.kyfexuwu.jsonblocks.Utils.*;
 
 public class JBItem {
 
-    private static PropertyTranslator[] itemPropertyMap = {
+    private static final PropertyTranslator[] itemPropertyMap = {
             new PropertyTranslator("maxCount","maxCount",IntTransformFunc),
             new PropertyTranslator("maxDamage","maxDamage",IntTransformFunc),
             new PropertyTranslator("recipeRemainder","recipeRemainder",(JsonElement element) ->{
                 String id = element.getAsString();
-                if(!id.contains(":")) id = "json-blocks:"+id;
-                return Registry.ITEM.get(new Identifier(element.getAsString()));
+                if(!id.contains(":")) id = "minecraft:"+id;
+                return Registry.ITEM.get(new Identifier(id));
             }),
             new PropertyTranslator("itemGroup","group",(JsonElement element) -> {
                 try {

@@ -1,0 +1,18 @@
+{
+	"blockName":"name",
+	"material":"STONE",
+
+	"hardness":0.0,
+	"resistance":0.0,
+	"slipperiness":0.6,
+	"jumpMultiplier":1.0,
+	"speedMultiplier":1.0,
+	"sounds":"STONE",
+	"isOpaque":true,
+	"drops":"EMPTY",
+	"isToolRequired":false,
+	"ticksRandomly":false,
+	"isAir":false,
+	"isCollidable":true,
+	"blockCollisionCanResize":false
+}

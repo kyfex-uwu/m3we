@@ -1,0 +1,17 @@
+{
+	"itemName":"name",
+
+	"maxCount":64,
+	"maxDamage":0,
+	"recipeRemainder":"minecraft:air",
+	"itemGroup":"MISC",
+	"rarity":"COMMON",
+	"foodComponent":{
+		"hunger":0,
+		"saturation":0.0,
+		"isMeat":false,
+		"isAlwaysEdible":false,
+		"canEatFast":false
+	},
+	"isFireproof":false
+}

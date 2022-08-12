@@ -1,0 +1,9 @@
+{
+	"blockName":"titanium_block",
+	"material":"METAL",
+
+	"hardness":"6",
+	"resistance":"6",
+	"sounds":"METAL",
+	"isToolRequired":true
+}
