@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "jsonblocks",
+  "version": "${version}",
+  "name": "JsonBlocks",
+  "description": "",
+  "authors": [
+    "kyfex_uwu"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/JsonBlocks/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "com.kyfexuwu.jsonblocks.client.JsonBlocksClient"
+    ],
+    "main": [
+      "com.kyfexuwu.jsonblocks.JsonBlocks"
+    ]
+  },
+  "mixins": [
+    "JsonBlocks.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.9",
+    "fabric": "*",
+    "minecraft": "1.19.2"
+  }
+}
