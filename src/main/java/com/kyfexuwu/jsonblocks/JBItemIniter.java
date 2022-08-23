@@ -19,7 +19,7 @@ import java.nio.file.Files;
 
 import static com.kyfexuwu.jsonblocks.Utils.*;
 
-public class JBItem {
+public class JBItemIniter {
 
     private static final PropertyTranslator[] itemPropertyMap = {
             new PropertyTranslator("maxCount","maxCount",IntTransformFunc),
@@ -81,7 +81,7 @@ public class JBItem {
 
         FabricItemSettings settings = new FabricItemSettings();
 
-        for(PropertyTranslator propToTranslate : JBItem.itemPropertyMap){
+        for(PropertyTranslator propToTranslate : JBItemIniter.itemPropertyMap){
             try {
                 settings.getClass().getField(propToTranslate.javaProp)
                         .set(settings, propToTranslate.transformFunc.apply(itemJsonData.get(propToTranslate.jsonProp)));

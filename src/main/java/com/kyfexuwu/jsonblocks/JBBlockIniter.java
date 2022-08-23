@@ -19,9 +19,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 
-public class JBBlock {
+public class JBBlockIniter {
 
-    private static PropertyTranslator[] blockPropertyMap = {
+    private static final PropertyTranslator[] blockPropertyMap = {
             new PropertyTranslator("hardness","hardness",FloatTransformFunc),
             new PropertyTranslator("resistance","resistance",FloatTransformFunc),
             new PropertyTranslator("slipperiness","slipperiness",FloatTransformFunc),
@@ -86,14 +86,17 @@ public class JBBlock {
             return SuccessRate.IDK;
         }
 
-        for(PropertyTranslator propToTranslate : JBBlock.blockPropertyMap){
+        for(PropertyTranslator propToTranslate : JBBlockIniter.blockPropertyMap){
             try {
                 settings.getClass().getField(propToTranslate.javaProp)
                         .set(settings, propToTranslate.transformFunc.apply(blockJsonData.get(propToTranslate.jsonProp)));
             }catch(Exception ignored){}//whatever goes on in there, i dont wanna know uwu
         }
 
-        Block thisBlock = new Block(settings);
+        Block thisBlock = new JBlock(settings,new JBlock.PropData[]{
+                JBlock.PropData.bool("test")
+        });
+
         Registry.register(
                 Registry.BLOCK,
                 new Identifier("json-blocks", blockName),

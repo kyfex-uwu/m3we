@@ -1,6 +1,5 @@
 package com.kyfexuwu.jsonblocks;
 
-import it.unimi.dsi.fastutil.Hash;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
@@ -24,7 +23,7 @@ public class JsonBlocks implements ModInitializer {
         blocksFolder.mkdir();
         try {
             for (File modFile : blocksFolder.listFiles()) {
-                switch(JBBlock.blockFromFile(modFile)){
+                switch(JBBlockIniter.blockFromFile(modFile)){
                     case CANT_READ -> System.out.println("Can't read the file!");
                     case BAD_JSON -> System.out.println("lol u messed up ur json");
                     case IDK -> System.out.println("Message me on discord KYFEX#3614 and tell me to fix my mod");
@@ -37,11 +36,11 @@ public class JsonBlocks implements ModInitializer {
         itemsFolder.mkdir();
         try {
             for (File modFile : itemsFolder.listFiles()) {
-                switch(JBItem.itemFromFile(modFile)){
+                switch(JBItemIniter.itemFromFile(modFile)){
                     case CANT_READ -> System.out.println("Can't read the file!");
                     case BAD_JSON -> System.out.println("lol u messed up ur json");
                     case IDK -> System.out.println("Message me on discord KYFEX#3614 and tell me to fix my mod");
-                    case YOU_DID_IT -> System.out.println("Registered block!");
+                    case YOU_DID_IT -> System.out.println("Registered item!");
                 }
             }
         }catch(NullPointerException ignored){}
