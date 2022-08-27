@@ -5,5 +5,14 @@
 	"hardness":"6",
 	"resistance":"6",
 	"sounds":"METAL",
-	"isToolRequired":true
+	"isToolRequired":true,
+
+	"blockStates": {
+		"density":{
+			"type": "int",
+			"min": 1,
+			"max": 4,
+			"default": 2
+		}
+	}
 }
