@@ -110,6 +110,7 @@ public class JBBlockIniter {
 
                 static {
                     for(String propName : blockStates.keySet()){
+                        if(!validName.matcher(propName).matches()) continue;
                         var thisState=blockStates.get(propName).getAsJsonObject();
                         switch(thisState.get("type").getAsString()){
                             case "int":
@@ -119,7 +120,7 @@ public class JBBlockIniter {
                                         thisState.get("max").getAsInt()
                                 ));
                                 break;
-                            case "bool":
+                            case "boolean":
                                 propsList.add(BooleanProperty.of(propName));
                                 break;
                             case "enum":

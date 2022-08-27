@@ -3,8 +3,10 @@ package com.kyfexuwu.jsonblocks;
 import com.google.gson.JsonElement;
 
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 public class Utils {
+    public static Pattern validName = Pattern.compile("[a-z0-9_]+");
     public enum SuccessRate {
         CANT_READ,
         BAD_JSON,

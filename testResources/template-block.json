@@ -17,11 +17,19 @@
 	"blockCollisionCanResize":false,
 
 	"blockStates": {
-		"intProp":{
+		"int_prop":{
 			"type": "int",
 			"min": 1,
 			"max": 4,
 			"default": 2
+		},
+		"bool_prop":{
+			"type": "boolean",
+			"default": true
+		},
+		"direc_prop":{
+			"type": "direction",
+			"default": "south"
 		}
 	}
 }

@@ -13,5 +13,7 @@
 		"isAlwaysEdible":false,
 		"canEatFast":false
 	},
-	"isFireproof":false
+	"isFireproof":false,
+
+	"blockToPlace":"block_name"
 }
