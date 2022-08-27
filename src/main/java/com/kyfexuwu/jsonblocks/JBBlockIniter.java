@@ -139,10 +139,10 @@ public class JBBlockIniter {
                     var defaultState = getStateManager().getDefaultState();
                     for(Property prop : props){
                         try {
-                            var jsonDefault = blockJsonData.get(prop.getName()).getAsJsonObject().get("default");
+                            var jsonDefault = blockStates.get(prop.getName()).getAsJsonObject().get("default");
                             switch (prop.getType().getName()) {
-                                case "int" -> defaultState = defaultState.with(prop, jsonDefault.getAsInt());
-                                case "boolean" -> defaultState = defaultState.with(prop, jsonDefault.getAsBoolean());
+                                case "java.lang.Integer" -> defaultState = defaultState.with(prop, jsonDefault.getAsInt());
+                                case "java.lang.Boolean" -> defaultState = defaultState.with(prop, jsonDefault.getAsBoolean());
                                 case "net.minecraft.util.math.Direction" -> defaultState = defaultState.with(prop,
                                         Direction.byName(jsonDefault.getAsString()));
                             }
@@ -150,6 +150,7 @@ public class JBBlockIniter {
                             System.out.println("Property "+prop.getName()+" has an invalid default value");
                         }
                     }
+                    setDefaultState(defaultState);
                 }
 
                 @Override

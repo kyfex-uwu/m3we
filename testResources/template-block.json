@@ -14,5 +14,14 @@
 	"ticksRandomly":false,
 	"isAir":false,
 	"isCollidable":true,
-	"blockCollisionCanResize":false
+	"blockCollisionCanResize":false,
+
+	"blockStates": {
+		"intProp":{
+			"type": "int",
+			"min": 1,
+			"max": 4,
+			"default": 2
+		}
+	}
 }
