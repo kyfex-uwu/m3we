@@ -37,7 +37,9 @@ public class CustomScript {
         LoadState.install(runEnv);
         LuaC.install(runEnv);
         try {
-            runEnv.load(Files.readString(new File(JsonBlocks.JBFolder + "\\scripts\\" + fileName + ".lua").toPath()));
+            runEnv.load(
+                    Files.readString(new File(JsonBlocks.JBFolder + "\\scripts\\" + fileName + ".lua").toPath())
+            ).call();
         }catch(IOException | LuaError ignored){}
     }
 }
