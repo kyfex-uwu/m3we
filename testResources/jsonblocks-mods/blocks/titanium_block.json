@@ -14,5 +14,7 @@
 			"max": 4,
 			"default": 2
 		}
-	}
+	},
+
+	"script": "titanium_block"
 }
