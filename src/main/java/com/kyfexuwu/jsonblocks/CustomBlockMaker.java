@@ -2,7 +2,6 @@ package com.kyfexuwu.jsonblocks;
 
 import com.google.gson.JsonObject;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
-import com.kyfexuwu.jsonblocks.lua.LuaSurfaceObj;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -15,11 +14,8 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import org.luaj.vm2.LuaFunction;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 import static com.kyfexuwu.jsonblocks.Utils.validName;
 
@@ -32,7 +28,7 @@ public class CustomBlockMaker {
 
         class customBlock extends Block {
 
-            public static ArrayList<Property> propsList = new ArrayList<>();
+            public static LinkedList<Property> propsList = new LinkedList<>();
             public static Property[] props;
 
             static {
@@ -95,11 +91,8 @@ public class CustomBlockMaker {
             public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
                 if(scriptContainer==null) return ActionResult.PASS;
 
-                System.out.println(((LuaSurfaceObj)Utils.cleanValue(state)).get(LuaValue.valueOf("HORIZONTAL_LIMIT")));
                 scriptContainer.runEnv.get("onUse").call(
-                        Utils.cleanValue(state),
-                        Utils.cleanValue(world),
-                        Utils.cleanValue(player)
+                        Utils.cleanValue(state.getBlock())
                 );
                 return ActionResult.PASS;
             }

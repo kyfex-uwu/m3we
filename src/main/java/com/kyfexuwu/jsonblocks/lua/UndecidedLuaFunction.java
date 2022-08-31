@@ -24,29 +24,32 @@ public class UndecidedLuaFunction extends VarArgFunction {
         LuaValue[] values = new LuaValue[varargs.narg()];
         for(int i=0;i<values.length;i++)
             values[i]=varargs.arg(i);
-        return figureAndCall().invoke(values);
+
+        return figureAndCall(values);
     }
 
     public LuaValue figureAndCall(LuaValue... args) {
         for(Method method: methods){
             var paramTypes = method.getParameterTypes();
-            var objAndParams=new Object[args.length+1];
+            if(paramTypes.length!=args.length)
+                continue;
+
             boolean matches=true;
             for(int i=0;i<args.length;i++){
                 if(!paramTypes[i].isAssignableFrom(Utils.cleanValue(args[0]).getClass())){
                     matches=false;
                     break;
                 }
-                objAndParams[i+1]=args[i];
             }
             if(matches){
                 try {
                     //try to understand this, i dare you
-                    objAndParams[0]=thisObj;
                     var toReturn = method.getClass()
                             .getMethod("invoke",Object.class,Object[].class)
-                            .invoke(method,objAndParams);
+                            .invoke(method, thisObj, args);
 
+                    System.out.println(toReturn);
+                    System.out.println(toReturn.getClass());
                     return Utils.cleanValue(toReturn);
                 }catch(Exception ignored){}
             }
