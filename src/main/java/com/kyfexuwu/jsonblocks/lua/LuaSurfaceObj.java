@@ -14,6 +14,8 @@ public class LuaSurfaceObj extends LuaTable {
         this.object=object;
     }
 
+    //todo: maybe include pairs() support?
+
     @Override
     public LuaValue get(LuaValue key){
         try {

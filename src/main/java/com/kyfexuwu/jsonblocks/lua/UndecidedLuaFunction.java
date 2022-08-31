@@ -43,13 +43,10 @@ public class UndecidedLuaFunction extends VarArgFunction {
             }
             if(matches){
                 try {
-                    //try to understand this, i dare you
                     var toReturn = method.getClass()
                             .getMethod("invoke",Object.class,Object[].class)
                             .invoke(method, thisObj, args);
 
-                    System.out.println(toReturn);
-                    System.out.println(toReturn.getClass());
                     return Utils.cleanValue(toReturn);
                 }catch(Exception ignored){}
             }

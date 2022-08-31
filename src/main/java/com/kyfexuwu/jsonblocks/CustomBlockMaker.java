@@ -14,6 +14,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import org.luaj.vm2.LuaValue;
 
 import java.util.LinkedList;
 
@@ -91,9 +92,18 @@ public class CustomBlockMaker {
             public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
                 if(scriptContainer==null) return ActionResult.PASS;
 
-                scriptContainer.runEnv.get("onUse").call(
-                        Utils.cleanValue(state.getBlock())
-                );
+                var onUseFunc = scriptContainer.runEnv.get("onUse");
+                if(onUseFunc.isnil())
+                    return ActionResult.PASS;
+
+                onUseFunc.invoke(new LuaValue[]{
+                        Utils.cleanValue(state),
+                        Utils.cleanValue(world),
+                        Utils.cleanValue(pos),
+                        Utils.cleanValue(player),
+                        Utils.cleanValue(hand),
+                        Utils.cleanValue(hit)
+                });
                 return ActionResult.PASS;
             }
         }
