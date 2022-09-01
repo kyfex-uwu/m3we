@@ -9,6 +9,8 @@ import java.lang.reflect.Array;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
+import static org.luaj.vm2.LuaValue.NIL;
+
 public class Utils {
     public static Pattern validName = Pattern.compile("[a-z0-9_]+");
     public enum SuccessRate {
@@ -38,6 +40,8 @@ public class Utils {
     //--
 
     public static LuaValue cleanValue(Object value){
+        if(value==null)
+            return NIL;
         if(value instanceof Boolean)
             return LuaValue.valueOf((boolean) value);
         if(value instanceof Integer)
