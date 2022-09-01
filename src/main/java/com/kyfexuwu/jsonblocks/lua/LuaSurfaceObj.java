@@ -15,23 +15,26 @@ public class LuaSurfaceObj extends LuaTable {
         Field[] fields = object.getClass().getFields();
         Method[] methods = object.getClass().getMethods();
 
-        this.valueNames = new String[fields.length+ methods.length];
-        int currIndex=0;
+        var tempFieldNames = new LinkedList<String>();
         for(Field field : fields){
-            this.valueNames[currIndex]=field.getName();
-            currIndex++;
+            var toAdd = field.getName();
+            if(tempFieldNames.contains(toAdd))
+                continue;
+            tempFieldNames.add(toAdd);
         }
+        var tempMethodNames = new LinkedList<String>();
         for(Method method : methods){
-            var tempName = method.getName();
-            for(int i = 0; i< fields.length; i++){
-                if(tempName.equals(this.valueNames[i])){
-                    tempName="func_"+tempName;//please no more than this
-                    break;
-                }
-            }
-            this.valueNames[currIndex]=tempName;
-            currIndex++;
+            var toAdd = method.getName();
+            if(tempMethodNames.contains(toAdd))
+                continue;
+
+            if(tempFieldNames.contains(toAdd))
+                toAdd="func_"+toAdd;
+            tempMethodNames.add(toAdd);
         }
+
+        tempFieldNames.addAll(tempMethodNames);
+        valueNames = tempFieldNames.toArray(new String[0]);
     }
 
     @Override

@@ -21,6 +21,7 @@ import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaValue;
 
+import java.rmi.registry.Registry;
 import java.util.LinkedList;
 
 import static com.kyfexuwu.jsonblocks.Utils.validName;
