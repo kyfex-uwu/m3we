@@ -22,15 +22,14 @@ import static com.kyfexuwu.jsonblocks.Utils.validName;
 
 public class CustomBlockMaker {
     public static JsonObject tempBlockStates;//prolly can be fixed
-    public static CustomScript tempScript;
 
     public static Block from(FabricBlockSettings settings, JsonObject blockStates, CustomScript scriptContainer) {
         tempBlockStates = blockStates;
 
         class customBlock extends Block {
 
-            public static LinkedList<Property> propsList = new LinkedList<>();
-            public static Property[] props;
+            public static final LinkedList<Property> propsList = new LinkedList<>();
+            public static final Property[] props;
 
             static {
                 for (String propName : tempBlockStates.keySet()) {

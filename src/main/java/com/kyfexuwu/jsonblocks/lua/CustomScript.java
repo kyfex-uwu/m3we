@@ -1,14 +1,11 @@
 package com.kyfexuwu.jsonblocks.lua;
 
 import com.kyfexuwu.jsonblocks.JsonBlocks;
-import org.luaj.vm2.Globals;
-import org.luaj.vm2.LoadState;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaValue;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Text;
+import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;
-import org.luaj.vm2.lib.PackageLib;
-import org.luaj.vm2.lib.StringLib;
-import org.luaj.vm2.lib.TableLib;
+import org.luaj.vm2.lib.*;
 import org.luaj.vm2.lib.jse.JseBaseLib;
 import org.luaj.vm2.lib.jse.JseMathLib;
 
