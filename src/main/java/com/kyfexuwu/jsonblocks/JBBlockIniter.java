@@ -4,16 +4,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.loot.LootTables;
 import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.*;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 
 import static com.kyfexuwu.jsonblocks.Utils.*;
@@ -21,8 +18,6 @@ import static com.kyfexuwu.jsonblocks.Utils.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class JBBlockIniter {
@@ -101,67 +96,16 @@ public class JBBlockIniter {
         }
 
         Block thisBlock;
-        if(blockJsonData.has("blockStates")) {
-            blockStates = blockJsonData.get("blockStates").getAsJsonObject();
-            class customBlock extends Block {
+        if(blockJsonData.has("blockStates")){
+            CustomScript script = null;
+            if(blockJsonData.has("script"))
+                script = new CustomScript(blockJsonData.get("script").getAsString());
 
-                public static ArrayList<Property> propsList = new ArrayList<Property>();
-                public static Property[] props;
-
-                static {
-                    for(String propName : blockStates.keySet()){
-                        if(!validName.matcher(propName).matches()) continue;
-                        var thisState=blockStates.get(propName).getAsJsonObject();
-                        switch(thisState.get("type").getAsString()){
-                            case "int":
-                                propsList.add(IntProperty.of(
-                                        propName,
-                                        thisState.get("min").getAsInt(),
-                                        thisState.get("max").getAsInt()
-                                ));
-                                break;
-                            case "boolean":
-                                propsList.add(BooleanProperty.of(propName));
-                                break;
-                            case "enum":
-                                //propsList.add(IntProperty.of("test", 0, 3));
-                                break;
-                            case "direction":
-                                propsList.add(DirectionProperty.of(propName));
-                                break;
-                        }
-                    }
-                    props = propsList.toArray(new Property[0]);
-                }
-
-                public customBlock(Settings settings) {
-                    super(settings);
-
-                    var defaultState = getStateManager().getDefaultState();
-                    for(Property prop : props){
-                        try {
-                            var jsonDefault = blockStates.get(prop.getName()).getAsJsonObject().get("default");
-                            switch (prop.getType().getName()) {
-                                case "java.lang.Integer" -> defaultState = defaultState.with(prop, jsonDefault.getAsInt());
-                                case "java.lang.Boolean" -> defaultState = defaultState.with(prop, jsonDefault.getAsBoolean());
-                                case "net.minecraft.util.math.Direction" -> defaultState = defaultState.with(prop,
-                                        Direction.byName(jsonDefault.getAsString()));
-                            }
-                        }catch(Exception e){
-                            System.out.println("Property "+prop.getName()+" has an invalid default value");
-                        }
-                    }
-                    setDefaultState(defaultState);
-                }
-
-                @Override
-                protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-                    for(Property prop : props){
-                        builder.add(prop);
-                    }
-                }
-            }
-            thisBlock = new customBlock(settings);
+            thisBlock = CustomBlockMaker.from(
+                    settings,
+                    blockJsonData.get("blockStates").getAsJsonObject(),
+                    script
+            );
         }else{
             thisBlock = new Block(settings);
         }
