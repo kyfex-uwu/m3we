@@ -34,6 +34,8 @@ public class UndecidedLuaFunction extends VarArgFunction {
     }
 
     public LuaValue figureAndCall(LuaValue... args) {
+        System.out.println("trying to call "+methods[0].getName());
+
         var paramsObj = new Object[args.length];
         for(int i=0;i<args.length;i++){
             paramsObj[i]=Utils.toObject(args[i]);
@@ -45,18 +47,18 @@ public class UndecidedLuaFunction extends VarArgFunction {
 
             boolean matches=true;
             for(int i=0;i<args.length;i++){
-                System.out.println(paramTypes[i].getName()+" vs "+paramsObj[i].getClass().getName()+": "+
-                        paramTypes[i].isAssignableFrom(paramsObj[i].getClass()));
-                System.out.println("last resort "+boolean.class.getName());
-
-                if(paramsObj[i].getClass().equals(double.class)&&(
-                        Number.class.isAssignableFrom(paramTypes[i])||
-                        paramTypes[i].equals(int.class)||
-                        paramTypes[i].equals(float.class)||
-                        paramTypes[i].equals(double.class)
-                ))
+                //special cases
+                if(paramsObj[i].getClass().equals(Double.class)){
+                    if(paramTypes[i].equals(int.class))
+                        paramsObj[i] = ((Double)paramsObj[i]).intValue();
+                    if(paramTypes[i].equals(float.class))
+                        paramsObj[i] = ((Double)paramsObj[i]).floatValue();
                     continue;
-                //todo: fix
+                }
+                if(paramsObj[i].getClass().equals(Boolean.class)&&paramTypes[i].equals(boolean.class))
+                    continue;
+
+                //regular case
                 if(!paramTypes[i].isAssignableFrom(paramsObj[i].getClass())){
                     matches=false;
                     break;
