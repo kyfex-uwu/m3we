@@ -37,10 +37,14 @@ public class LuaSurfaceObj extends LuaTable {
         valueNames = tempFieldNames.toArray(new String[0]);
     }
 
+    public String typename(){
+        return "surfaceObj";
+    }
+
     @Override
     public LuaValue get(LuaValue key){
         try {
-            return Utils.cleanValue(object.getClass().getField(key.toString()).get(object));
+            return Utils.toLuaValue(object.getClass().getField(key.toString()).get(object));
         }catch(NoSuchFieldException e){
             LinkedList<Method> methods = new LinkedList<>();
             for(Method method : object.getClass().getMethods()){

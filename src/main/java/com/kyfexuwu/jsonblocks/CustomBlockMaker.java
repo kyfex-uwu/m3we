@@ -21,7 +21,6 @@ import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaValue;
 
-import java.rmi.registry.Registry;
 import java.util.LinkedList;
 
 import static com.kyfexuwu.jsonblocks.Utils.validName;
@@ -102,12 +101,12 @@ public class CustomBlockMaker {
                     return ActionResult.PASS;
 
                 onUseFunc.invoke(new LuaValue[]{
-                        Utils.cleanValue(state),
-                        Utils.cleanValue(world),
-                        Utils.cleanValue(pos),
-                        Utils.cleanValue(player),
-                        Utils.cleanValue(hand),
-                        Utils.cleanValue(hit)
+                        Utils.toLuaValue(state),
+                        Utils.toLuaValue(world),
+                        Utils.toLuaValue(pos),
+                        Utils.toLuaValue(player),
+                        Utils.toLuaValue(hand),
+                        Utils.toLuaValue(hit)
                 });
                 return ActionResult.PASS;
             }
@@ -120,9 +119,9 @@ public class CustomBlockMaker {
                     return;
 
                 onBrokenFunc.invoke(new LuaValue[]{
-                        Utils.cleanValue(world),
-                        Utils.cleanValue(pos),
-                        Utils.cleanValue(state)
+                        Utils.toLuaValue(world),
+                        Utils.toLuaValue(pos),
+                        Utils.toLuaValue(state)
                 });
             }
 
@@ -134,10 +133,10 @@ public class CustomBlockMaker {
                     return;
 
                 onSteppedOnFunc.invoke(new LuaValue[]{
-                        Utils.cleanValue(world),
-                        Utils.cleanValue(pos),
-                        Utils.cleanValue(state),
-                        Utils.cleanValue(entity)
+                        Utils.toLuaValue(world),
+                        Utils.toLuaValue(pos),
+                        Utils.toLuaValue(state),
+                        Utils.toLuaValue(entity)
                 });
             }
 
@@ -149,11 +148,11 @@ public class CustomBlockMaker {
                     return;
 
                 onPlacedFunc.invoke(new LuaValue[]{
-                        Utils.cleanValue(world),
-                        Utils.cleanValue(pos),
-                        Utils.cleanValue(state),
-                        Utils.cleanValue(placer),
-                        Utils.cleanValue(itemStack)
+                        Utils.toLuaValue(world),
+                        Utils.toLuaValue(pos),
+                        Utils.toLuaValue(state),
+                        Utils.toLuaValue(placer),
+                        Utils.toLuaValue(itemStack)
                 });
             }
         }

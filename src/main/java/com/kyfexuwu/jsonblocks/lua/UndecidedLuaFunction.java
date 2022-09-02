@@ -5,6 +5,7 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
+import javax.lang.model.type.PrimitiveType;
 import java.lang.reflect.Method;
 
 public class UndecidedLuaFunction extends VarArgFunction {
@@ -13,6 +14,10 @@ public class UndecidedLuaFunction extends VarArgFunction {
     public UndecidedLuaFunction(Object thisObj,Method[] methods){
         this.thisObj=thisObj;
         this.methods=methods;
+    }
+
+    public String typename(){
+        return "undecidedFunc";
     }
 
     public LuaValue call(){ return figureAndCall(); }
@@ -29,6 +34,10 @@ public class UndecidedLuaFunction extends VarArgFunction {
     }
 
     public LuaValue figureAndCall(LuaValue... args) {
+        var paramsObj = new Object[args.length];
+        for(int i=0;i<args.length;i++){
+            paramsObj[i]=Utils.toObject(args[i]);
+        }
         for(Method method: methods){
             var paramTypes = method.getParameterTypes();
             if(paramTypes.length!=args.length)
@@ -36,7 +45,19 @@ public class UndecidedLuaFunction extends VarArgFunction {
 
             boolean matches=true;
             for(int i=0;i<args.length;i++){
-                if(!paramTypes[i].isAssignableFrom(Utils.cleanValue(args[0]).getClass())){
+                System.out.println(paramTypes[i].getName()+" vs "+paramsObj[i].getClass().getName()+": "+
+                        paramTypes[i].isAssignableFrom(paramsObj[i].getClass()));
+                System.out.println("last resort "+boolean.class.getName());
+
+                if(paramsObj[i].getClass().equals(double.class)&&(
+                        Number.class.isAssignableFrom(paramTypes[i])||
+                        paramTypes[i].equals(int.class)||
+                        paramTypes[i].equals(float.class)||
+                        paramTypes[i].equals(double.class)
+                ))
+                    continue;
+                //todo: fix
+                if(!paramTypes[i].isAssignableFrom(paramsObj[i].getClass())){
                     matches=false;
                     break;
                 }
@@ -45,9 +66,9 @@ public class UndecidedLuaFunction extends VarArgFunction {
                 try {
                     var toReturn = method.getClass()
                             .getMethod("invoke",Object.class,Object[].class)
-                            .invoke(method, thisObj, args);
+                            .invoke(method, thisObj, paramsObj);
 
-                    return Utils.cleanValue(toReturn);
+                    return Utils.toLuaValue(toReturn);
                 }catch(Exception ignored){}
             }
         }

@@ -1,8 +1,6 @@
 package com.kyfexuwu.jsonblocks.lua;
 
 import com.kyfexuwu.jsonblocks.JsonBlocks;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
 import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;
 import org.luaj.vm2.lib.*;

@@ -2,6 +2,8 @@ package com.kyfexuwu.jsonblocks;
 
 import com.google.gson.JsonElement;
 import com.kyfexuwu.jsonblocks.lua.LuaSurfaceObj;
+import com.kyfexuwu.jsonblocks.lua.UndecidedLuaFunction;
+import org.luaj.vm2.Lua;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
@@ -39,7 +41,7 @@ public class Utils {
 
     //--
 
-    public static LuaValue cleanValue(Object value){
+    public static LuaValue toLuaValue(Object value){
         if(value==null)
             return NIL;
         if(value instanceof Boolean)
@@ -55,12 +57,41 @@ public class Utils {
             var length = Array.getLength(value);
             var cleanedToReturn = new LuaTable();
             for(int i=0;i<length;i++){
-                cleanedToReturn.set(i, Utils.cleanValue(Array.get(value,i)));
+                cleanedToReturn.set(i, Utils.toLuaValue(Array.get(value,i)));
             }
             return cleanedToReturn;
         }
 
         //not a bool, int, double, float, string, or array
         return new LuaSurfaceObj(value);
+    }
+    public static Object toObject(LuaValue value){
+        //todo :blensive:
+        switch(value.typename()){
+            case "boolean":
+                return value.toboolean();
+            case "number":
+                return value.todouble();
+            case "string":
+                return value.toString();
+            case "table":
+                var toReturn = new Object[value.length()];
+                for(int i=0;i<toReturn.length;i++){
+                    toReturn[i]=toObject(value.get(i));
+                    //please dont crash please dont crash please dont crash please dont crash please dont crash please d
+                }
+                return toReturn;
+            //case "function":
+            //case "userdata": //no
+            //case "thread": //no: pt. 2
+            /*case "undecidedFunc":
+                return ((UndecidedLuaFunction)value).methods[0];*/
+            case "surfaceObj":
+                return ((LuaSurfaceObj)value).object;
+
+            case "nil":
+            default:
+                return null;
+        }
     }
 }
