@@ -17,3 +17,9 @@ end
 function onPlaced(world,pos,state,placer,itemStack)
 
 end
+function randomTick(state,world,pos,random)
+
+end
+function onPlaced(state,world,pos,random)
+
+end

@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.*;
 import net.minecraft.util.ActionResult;
@@ -16,6 +17,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
@@ -91,6 +93,38 @@ public class CustomBlockMaker {
             }
 
             //--
+
+            @Override
+            public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+                if(scriptContainer==null) return;
+
+                var randomTickFunc = scriptContainer.runEnv.get("randomTick");
+                if(randomTickFunc.isnil())
+                    return;
+
+                randomTickFunc.invoke(new LuaValue[]{
+                        Utils.toLuaValue(state),
+                        Utils.toLuaValue(world),
+                        Utils.toLuaValue(pos),
+                        Utils.toLuaValue(random)
+                });
+            }
+
+            @Override
+            public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+                if(scriptContainer==null) return;
+
+                var scheduledTickFunc = scriptContainer.runEnv.get("scheduledTick");
+                if(scheduledTickFunc.isnil())
+                    return;
+
+                scheduledTickFunc.invoke(new LuaValue[]{
+                        Utils.toLuaValue(state),
+                        Utils.toLuaValue(world),
+                        Utils.toLuaValue(pos),
+                        Utils.toLuaValue(random)
+                });
+            }
 
             @Override
             public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
