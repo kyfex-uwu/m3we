@@ -51,15 +51,16 @@ public class JBBlockIniter {
             new PropertyTranslator("isAir","isAir", BoolTransformFunc),
             new PropertyTranslator("isCollidable","collidable",BoolTransformFunc),
             new PropertyTranslator("blockCollisionCanResize","dynamicBounds",BoolTransformFunc),
-            //new PropertyTranslator("isSolidBlock", "solidBlockPredicate",PredTransformFunc),
+            //new PropertyTranslator("isSolidWhen", "solidBlockPredicate",PredTransformFunc),
             //new PropertyTranslator("allowsSpawningWhen","allowsSpawningPredicate", PredTransformFunc),
             //new PropertyTranslator("visionBlockedWhen","blockVisionPredicate",PredTransformFunc),
             //new PropertyTranslator("suffocatesWhen","suffocationPredicate",PredTransformFunc),
-            //new PropertyTranslator("emissiveLighting","emissiveLightingPredicate",PredTransformFunc),
-            //new PropertyTranslator("postProcess","postProcessPredicate",PredTransformFunc),
+            //new PropertyTranslator("emissiveLightingWhen","emissiveLightingPredicate",PredTransformFunc),
+            //new PropertyTranslator("postProcessWhen","postProcessPredicate",PredTransformFunc),
+
+            //todo: add block shape (stairs)
     };
 
-    private static JsonObject blockStates;
     public static SuccessRate blockFromFile(File file) {
         if(!file.canRead()) return SuccessRate.CANT_READ;
 
@@ -95,6 +96,7 @@ public class JBBlockIniter {
             }catch(Exception ignored){}//whatever goes on in there, i dont wanna know uwu
         }
 
+        //todo: add mapcolor to the json, the predicate isnt necessary i think but also still keep that
         Block thisBlock;
         if(blockJsonData.has("blockStates")){
             CustomScript script = null;

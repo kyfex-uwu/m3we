@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -54,8 +55,8 @@ public class CustomBlockMaker {
                         case "boolean":
                             propsList.add(BooleanProperty.of(propName));
                             break;
-                        case "enum":
-                            //propsList.add(IntProperty.of("test", 0, 3));
+                        case "enum"://TODO
+                            //propsList.add(EnumProperty.of("test", 0, 3));
                             break;
                         case "direction":
                             propsList.add(DirectionProperty.of(propName));
@@ -74,10 +75,14 @@ public class CustomBlockMaker {
                     try {
                         var jsonDefault = blockStates.get(prop.getName()).getAsJsonObject().get("default");
                         switch (prop.getType().getName()) {
-                            case "java.lang.Integer" -> defaultState = defaultState.with(prop, jsonDefault.getAsInt());
-                            case "java.lang.Boolean" -> defaultState = defaultState.with(prop, jsonDefault.getAsBoolean());
-                            case "net.minecraft.util.math.Direction" -> defaultState = defaultState.with(prop,
-                                    Direction.byName(jsonDefault.getAsString()));
+                            case "java.lang.Integer" ->
+                                    defaultState = defaultState.with(prop, jsonDefault.getAsInt());
+                            case "java.lang.Boolean" ->
+                                    defaultState = defaultState.with(prop, jsonDefault.getAsBoolean());
+                            case "net.minecraft.util.math.Direction" ->
+                                    defaultState = defaultState.with(prop,
+                                        Direction.byName(jsonDefault.getAsString()));
+                            //todo: add enum
                         }
                     } catch (Exception e) {
                         System.out.println("Property " + prop.getName() + " has an invalid default value");
@@ -97,6 +102,38 @@ public class CustomBlockMaker {
             // add overrides here!
 
             @Override
+            public BlockState getPlacementState(ItemPlacementContext ctx){
+                return tryAndExecute(this.getDefaultState(),scriptContainer,"onPlace",
+                        new Object[]{ctx},returnValue->{
+                    try{
+                        assert returnValue.istable();
+
+                        var length = returnValue.narg();
+                        var stateToReturn = this.getDefaultState();
+                        for(int i=0;i<length;i++){//iterate over lua table
+                            for(Property prop : props){
+                                if(prop.getName().equals(returnValue.get(i).get(1).toString())){
+                                    switch (prop.getType().getName()) {
+                                        case "java.lang.Integer" ->
+                                                stateToReturn = stateToReturn.with(prop, returnValue.get(i).get(2).checkint());
+                                        case "java.lang.Boolean" ->
+                                                stateToReturn = stateToReturn.with(prop, returnValue.get(i).get(2).checkboolean());
+                                        case "net.minecraft.util.math.Direction" ->
+                                                stateToReturn = stateToReturn.with(prop,
+                                                    Direction.byName(returnValue.get(i).get(2).toString()));
+                                        //todo: add enum
+                                    }
+                                }
+                            }
+                        }
+                        return stateToReturn;
+                    }catch(Exception e) {
+                        return this.getDefaultState();
+                    }
+                });
+            }
+
+            @Override
             public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
                 tryAndExecute(scriptContainer,"randomTick",new Object[]{state,world,pos,random});
             }
@@ -108,7 +145,8 @@ public class CustomBlockMaker {
 
             @Override
             public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-                return tryAndExecute(scriptContainer,"onUse",new Object[]{state,world,pos,player,hand,hit},returnValue->{
+                return tryAndExecute(ActionResult.PASS,scriptContainer,"onUse",
+                        new Object[]{state,world,pos,player,hand,hit},returnValue->{
                     try {
                         return ActionResult.valueOf(returnValue.toString());
                     }catch(IllegalArgumentException e) {
@@ -136,11 +174,11 @@ public class CustomBlockMaker {
         return new customBlock(settings);
     }
 
-    public static <T> T tryAndExecute(CustomScript scriptContainer, String funcString, Object[] args, Function<LuaValue,T> transformFunc){
-        if(scriptContainer==null) return null;
+    public static <T> T tryAndExecute(T dfault,CustomScript scriptContainer, String funcString, Object[] args, Function<LuaValue,T> transformFunc){
+        if(scriptContainer==null) return dfault;
         var func = scriptContainer.runEnv.get(funcString);
         if(func.isnil())
-            return null;
+            return dfault;
 
         var luaArgs=new LuaValue[args.length];
         for(int i=0;i<luaArgs.length;i++){
@@ -150,7 +188,7 @@ public class CustomBlockMaker {
         return transformFunc.apply(func.invoke(luaArgs).arg1());
     }
     public static void tryAndExecute(CustomScript scriptContainer, String funcString,Object[] args){
-        tryAndExecute(scriptContainer, funcString, args, returnValue -> null);
+        tryAndExecute(null,scriptContainer, funcString, args, returnValue -> null);
         //calls tryAndExecute, but always returns null
     }
 }

@@ -21,7 +21,7 @@ public class Utils {
         IDK,
         YOU_DID_IT
     }
-    public static class PropertyTranslator{
+    public static class PropertyTranslator {
         final String jsonProp;
         final String javaProp;
         final Function<JsonElement,Object> transformFunc;
