@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaValue;
 
 import java.util.LinkedList;
+import java.util.function.Function;
 
 import static com.kyfexuwu.jsonblocks.Utils.validName;
 
@@ -31,7 +32,7 @@ public class CustomBlockMaker {
     public static JsonObject tempBlockStates;//prolly can be fixed
 
     public static Block from(FabricBlockSettings settings, JsonObject blockStates, CustomScript scriptContainer) {
-        tempBlockStates = blockStates;
+        tempBlockStates = blockStates;//PLEASE ONLY USE ME IN THE STATIC BLOCK I DO NOT KNOW WHAT WILL HAPPEN IF U DONT
 
         class customBlock extends Block {
 
@@ -93,104 +94,63 @@ public class CustomBlockMaker {
             }
 
             //--
+            // add overrides here!
 
             @Override
             public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-                if(scriptContainer==null) return;
-
-                var randomTickFunc = scriptContainer.runEnv.get("randomTick");
-                if(randomTickFunc.isnil())
-                    return;
-
-                randomTickFunc.invoke(new LuaValue[]{
-                        Utils.toLuaValue(state),
-                        Utils.toLuaValue(world),
-                        Utils.toLuaValue(pos),
-                        Utils.toLuaValue(random)
-                });
+                tryAndExecute(scriptContainer,"randomTick",new Object[]{state,world,pos,random});
             }
 
             @Override
             public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-                if(scriptContainer==null) return;
-
-                var scheduledTickFunc = scriptContainer.runEnv.get("scheduledTick");
-                if(scheduledTickFunc.isnil())
-                    return;
-
-                scheduledTickFunc.invoke(new LuaValue[]{
-                        Utils.toLuaValue(state),
-                        Utils.toLuaValue(world),
-                        Utils.toLuaValue(pos),
-                        Utils.toLuaValue(random)
-                });
+                tryAndExecute(scriptContainer,"scheduledTick",new Object[]{state,world,pos,random});
             }
 
             @Override
             public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-                if(scriptContainer==null) return ActionResult.PASS;
-
-                var onUseFunc = scriptContainer.runEnv.get("onUse");
-                if(onUseFunc.isnil())
-                    return ActionResult.PASS;
-
-                onUseFunc.invoke(new LuaValue[]{
-                        Utils.toLuaValue(state),
-                        Utils.toLuaValue(world),
-                        Utils.toLuaValue(pos),
-                        Utils.toLuaValue(player),
-                        Utils.toLuaValue(hand),
-                        Utils.toLuaValue(hit)
+                return tryAndExecute(scriptContainer,"onUse",new Object[]{state,world,pos,player,hand,hit},returnValue->{
+                    try {
+                        return ActionResult.valueOf(returnValue.toString());
+                    }catch(IllegalArgumentException e) {
+                        return ActionResult.PASS;
+                    }
                 });
-                return ActionResult.PASS;
             }
 
             @Override
             public void onBroken(WorldAccess world, BlockPos pos, BlockState state){
-                if(scriptContainer==null) return;
-                var onBrokenFunc = scriptContainer.runEnv.get("onBroken");
-                if(onBrokenFunc.isnil())
-                    return;
-
-                onBrokenFunc.invoke(new LuaValue[]{
-                        Utils.toLuaValue(world),
-                        Utils.toLuaValue(pos),
-                        Utils.toLuaValue(state)
-                });
+                tryAndExecute(scriptContainer,"onBroken",new Object[]{world,pos,state});
             }
 
             @Override
             public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-                if(scriptContainer==null) return;
-                var onSteppedOnFunc = scriptContainer.runEnv.get("onSteppedOn");
-                if(onSteppedOnFunc.isnil())
-                    return;
-
-                onSteppedOnFunc.invoke(new LuaValue[]{
-                        Utils.toLuaValue(world),
-                        Utils.toLuaValue(pos),
-                        Utils.toLuaValue(state),
-                        Utils.toLuaValue(entity)
-                });
+                tryAndExecute(scriptContainer,"onSteppedOn",new Object[]{world,pos,state,entity});
             }
 
             @Override
             public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-                if(scriptContainer==null) return;
-                var onPlacedFunc = scriptContainer.runEnv.get("onPlaced");
-                if(onPlacedFunc.isnil())
-                    return;
-
-                onPlacedFunc.invoke(new LuaValue[]{
-                        Utils.toLuaValue(world),
-                        Utils.toLuaValue(pos),
-                        Utils.toLuaValue(state),
-                        Utils.toLuaValue(placer),
-                        Utils.toLuaValue(itemStack)
-                });
+                tryAndExecute(scriptContainer,"onPlaced",new Object[]{world,pos,state,placer,itemStack});
             }
         }
 
         return new customBlock(settings);
+    }
+
+    public static <T> T tryAndExecute(CustomScript scriptContainer, String funcString, Object[] args, Function<LuaValue,T> transformFunc){
+        if(scriptContainer==null) return null;
+        var func = scriptContainer.runEnv.get(funcString);
+        if(func.isnil())
+            return null;
+
+        var luaArgs=new LuaValue[args.length];
+        for(int i=0;i<luaArgs.length;i++){
+            luaArgs[i]=Utils.toLuaValue(args[i]);
+        }
+
+        return transformFunc.apply(func.invoke(luaArgs).arg1());
+    }
+    public static void tryAndExecute(CustomScript scriptContainer, String funcString,Object[] args){
+        tryAndExecute(scriptContainer, funcString, args, returnValue -> null);
+        //calls tryAndExecute, but always returns null
     }
 }
