@@ -35,6 +35,8 @@ public class CustomScript {
             runEnv.load(
                     Files.readString(new File(JsonBlocks.JBFolder + "\\scripts\\" + fileName + ".lua").toPath())
             ).call();
-        }catch(IOException | LuaError ignored){}
+        }catch(IOException | LuaError e){
+            System.out.println("script "+fileName+" not loaded... it was a "+e.getClass().getName()+" exception");
+        }
     }
 }

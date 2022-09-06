@@ -1,6 +1,7 @@
 package com.kyfexuwu.jsonblocks;
 
 import com.google.gson.JsonObject;
+import com.kyfexuwu.jsonblocks.lua.CustomBlock;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
@@ -25,22 +26,25 @@ import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaValue;
 
 import java.util.LinkedList;
-import java.util.function.Function;
 
 import static com.kyfexuwu.jsonblocks.Utils.validName;
 
 public class CustomBlockMaker {
     public static JsonObject tempBlockStates;//prolly can be fixed
+    public static CustomScript tempScriptContainer;//prolly can be fixed
 
-    public static Block from(FabricBlockSettings settings, JsonObject blockStates, CustomScript scriptContainer) {
+    public static Block from(FabricBlockSettings settings, JsonObject blockStates, CustomScript scriptContainerParam) {
         tempBlockStates = blockStates;//PLEASE ONLY USE ME IN THE STATIC BLOCK I DO NOT KNOW WHAT WILL HAPPEN IF U DONT
+        tempScriptContainer = scriptContainerParam;
 
-        class customBlock extends Block {
+        class thisCustomBlock extends CustomBlock {
 
             public static final LinkedList<Property> propsList = new LinkedList<>();
             public static final Property[] props;
 
             static {
+                scriptContainer=tempScriptContainer;
+
                 for (String propName : tempBlockStates.keySet()) {
                     if (!validName.matcher(propName).matches()) continue;
                     var thisState = tempBlockStates.get(propName).getAsJsonObject();
@@ -67,7 +71,7 @@ public class CustomBlockMaker {
                 propsList.clear();
             }
 
-            public customBlock(Settings settings) {
+            public thisCustomBlock(Settings settings) {
                 super(settings);
 
                 var defaultState = getStateManager().getDefaultState();
@@ -103,7 +107,7 @@ public class CustomBlockMaker {
 
             @Override
             public BlockState getPlacementState(ItemPlacementContext ctx){
-                return tryAndExecute(this.getDefaultState(),scriptContainer,"onPlace",
+                return Utils.tryAndExecute(this.getDefaultState(),scriptContainer,"onPlace",
                         new Object[]{ctx},returnValue->{
                     try{
                         assert returnValue.istable();
@@ -135,17 +139,17 @@ public class CustomBlockMaker {
 
             @Override
             public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-                tryAndExecute(scriptContainer,"randomTick",new Object[]{state,world,pos,random});
+                Utils.tryAndExecute(scriptContainer,"randomTick",new Object[]{state,world,pos,random});
             }
 
             @Override
             public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-                tryAndExecute(scriptContainer,"scheduledTick",new Object[]{state,world,pos,random});
+                Utils.tryAndExecute(scriptContainer,"scheduledTick",new Object[]{state,world,pos,random});
             }
 
             @Override
             public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-                return tryAndExecute(ActionResult.PASS,scriptContainer,"onUse",
+                return Utils.tryAndExecute(ActionResult.PASS,scriptContainer,"onUse",
                         new Object[]{state,world,pos,player,hand,hit},returnValue->{
                     try {
                         return ActionResult.valueOf(returnValue.toString());
@@ -157,38 +161,20 @@ public class CustomBlockMaker {
 
             @Override
             public void onBroken(WorldAccess world, BlockPos pos, BlockState state){
-                tryAndExecute(scriptContainer,"onBroken",new Object[]{world,pos,state});
+                Utils.tryAndExecute(scriptContainer,"onBroken",new Object[]{world,pos,state});
             }
 
             @Override
             public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-                tryAndExecute(scriptContainer,"onSteppedOn",new Object[]{world,pos,state,entity});
+                Utils.tryAndExecute(scriptContainer,"onSteppedOn",new Object[]{world,pos,state,entity});
             }
 
             @Override
             public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-                tryAndExecute(scriptContainer,"onPlaced",new Object[]{world,pos,state,placer,itemStack});
+                Utils.tryAndExecute(scriptContainer,"onPlaced",new Object[]{world,pos,state,placer,itemStack});
             }
         }
 
-        return new customBlock(settings);
-    }
-
-    public static <T> T tryAndExecute(T dfault,CustomScript scriptContainer, String funcString, Object[] args, Function<LuaValue,T> transformFunc){
-        if(scriptContainer==null) return dfault;
-        var func = scriptContainer.runEnv.get(funcString);
-        if(func.isnil())
-            return dfault;
-
-        var luaArgs=new LuaValue[args.length];
-        for(int i=0;i<luaArgs.length;i++){
-            luaArgs[i]=Utils.toLuaValue(args[i]);
-        }
-
-        return transformFunc.apply(func.invoke(luaArgs).arg1());
-    }
-    public static void tryAndExecute(CustomScript scriptContainer, String funcString,Object[] args){
-        tryAndExecute(null,scriptContainer, funcString, args, returnValue -> null);
-        //calls tryAndExecute, but always returns null
+        return new thisCustomBlock(settings);
     }
 }

@@ -6,14 +6,34 @@
 	"recipeRemainder":"minecraft:air",
 	"itemGroup":"MISC",
 	"rarity":"COMMON",
+	"isFireproof":false,
+
 	"foodComponent":{
 		"hunger":0,
 		"saturation":0.0,
 		"isMeat":false,
 		"isAlwaysEdible":false,
-		"canEatFast":false
+		"canEatFast":false,
+
+		"statusEffects": [
+			{
+				"effect": "EFFECT",
+				"duration": 0,
+				"amplifier": 0,
+				"visible": true,
+
+				"chance": 0.0
+			},
+			{
+				"effect": "EFFECT_2",
+				"duration": 0,
+				"amplifier": 0,
+				"visible": true,
+
+				"chance": 0.0
+			}
+		]
 	},
-	"isFireproof":false,
 
 	"blockToPlace":"block_name"
 }

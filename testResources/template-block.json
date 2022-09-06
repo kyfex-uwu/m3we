@@ -9,6 +9,7 @@
 	"speedMultiplier":1.0,
 	"sounds":"STONE",
 	"isOpaque":true,
+	"mapColor": "CLEAR",
 	"drops":"EMPTY",
 	"isToolRequired":false,
 	"ticksRandomly":false,
@@ -31,5 +32,7 @@
 			"type": "direction",
 			"default": "south"
 		}
-	}
+	},
+
+	"script": "template-script"
 }

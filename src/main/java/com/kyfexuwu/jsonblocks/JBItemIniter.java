@@ -4,11 +4,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
@@ -24,27 +29,27 @@ public class JBItemIniter {
     private static final PropertyTranslator[] itemPropertyMap = {
             new PropertyTranslator("maxCount","maxCount",IntTransformFunc),
             new PropertyTranslator("maxDamage","maxDamage",IntTransformFunc),
-            new PropertyTranslator("recipeRemainder","recipeRemainder",(JsonElement element) ->{
-                String id = element.getAsString();
+            new PropertyTranslator("recipeRemainder","recipeRemainder",(ScriptAndValue SAV) ->{
+                String id = SAV.value.getAsString();
                 if(!id.contains(":")) id = "minecraft:"+id;
                 return Registry.ITEM.get(new Identifier(id));
             }),
-            new PropertyTranslator("itemGroup","group",(JsonElement element) -> {
+            new PropertyTranslator("itemGroup","group",(ScriptAndValue SAV) -> {
                 try {
-                    return ItemGroup.class.getField(element.getAsString());
+                    return ItemGroup.class.getField(SAV.value.getAsString());
                 } catch (NoSuchFieldException e) {
                     return ItemGroup.MISC;
                 }
             }),
-            new PropertyTranslator("rarity","rarity",(JsonElement element) -> {
+            new PropertyTranslator("rarity","rarity",(ScriptAndValue SAV) -> {
                 try {
-                    return Rarity.valueOf(element.getAsString());
+                    return Rarity.valueOf(SAV.value.getAsString());
                 }catch(IllegalArgumentException e){
                     return Rarity.COMMON;
                 }
             }),
-            new PropertyTranslator("foodComponent","foodComponent",(JsonElement element) -> {
-                var thisObj = element.getAsJsonObject();
+            new PropertyTranslator("foodComponent","foodComponent",(ScriptAndValue SAV) -> {
+                var thisObj = SAV.value.getAsJsonObject();
 
                 var toReturn = new FoodComponent.Builder()
                         .hunger(thisObj.get("hunger").getAsInt())
@@ -55,7 +60,33 @@ public class JBItemIniter {
                     toReturn = toReturn.alwaysEdible();
                 if(thisObj.get("canEatFast").getAsBoolean())
                     toReturn = toReturn.snack();
-                //todo: add status effects
+                if(thisObj.get("statusEffects").isJsonArray()){
+                    var effects = thisObj.get("statusEffects").getAsJsonArray();
+                    int length = effects.size();
+                    for(int i=0;i<length;i++){
+                        var thisEffect = effects.get(i).getAsJsonObject();
+                        if(!thisEffect.has("effect"))
+                            continue;
+
+                        try {
+                            var type = (StatusEffect) StatusEffects.class.getField(thisEffect.get("effect")
+                                    .getAsString()).get(null);
+                            int duration = thisEffect.has("duration")?thisEffect.get("duration").getAsInt():0;
+                            int amplifier = thisEffect.has("amplifier")?thisEffect.get("amplifier").getAsInt():0;
+                            boolean visible = thisEffect.has("visible")?thisEffect.get("visible").getAsBoolean():true;
+                            var effectToAdd = new StatusEffectInstance(
+                                    type,
+                                    duration,
+                                    amplifier,
+                                    false,
+                                    visible
+                            );
+
+                            float chance = thisEffect.has("chance")?thisEffect.get("chance").getAsFloat():1;
+                            toReturn = toReturn.statusEffect(effectToAdd,chance);
+                        }catch(NoSuchFieldException | IllegalAccessException ignored){}
+                    }
+                }
 
                 return toReturn.build();
             }),
@@ -84,7 +115,9 @@ public class JBItemIniter {
         for(PropertyTranslator propToTranslate : JBItemIniter.itemPropertyMap){
             try {
                 settings.getClass().getField(propToTranslate.javaProp)
-                        .set(settings, propToTranslate.transformFunc.apply(itemJsonData.get(propToTranslate.jsonProp)));
+                        .set(settings, propToTranslate.transformFunc.apply(
+                                new ScriptAndValue((CustomScript) null,itemJsonData.get(propToTranslate.jsonProp))
+                        ));
             }catch(Exception ignored){}//whatever goes on in there, i dont wanna know uwu
         }
 

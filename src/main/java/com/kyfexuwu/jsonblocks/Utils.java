@@ -1,14 +1,18 @@
 package com.kyfexuwu.jsonblocks;
 
 import com.google.gson.JsonElement;
+import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import com.kyfexuwu.jsonblocks.lua.LuaSurfaceObj;
 import com.kyfexuwu.jsonblocks.lua.UndecidedLuaFunction;
+import net.fabricmc.fabric.api.entity.event.v1.EntityElytraEvents;
 import org.luaj.vm2.Lua;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
 import java.lang.reflect.Array;
+import java.util.concurrent.Callable;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 
 import static org.luaj.vm2.LuaValue.NIL;
@@ -21,23 +25,39 @@ public class Utils {
         IDK,
         YOU_DID_IT
     }
-    public static class PropertyTranslator {
-        final String jsonProp;
-        final String javaProp;
-        final Function<JsonElement,Object> transformFunc;
-        PropertyTranslator(String jsonProp,String javaProp, Function<JsonElement,Object> transformFunc){
-            this.jsonProp=jsonProp;
-            this.javaProp=javaProp;
-            this.transformFunc=transformFunc;
+
+    public static class ScriptAndValue{
+        final CustomScript script;
+        final JsonElement value;
+
+        public ScriptAndValue(CustomScript script, JsonElement value){
+            this.script=script;
+            this.value=value;
         }
     }
 
-    static final Function<JsonElement, Object> BoolTransformFunc = JsonElement::getAsBoolean;
-    static final Function<JsonElement, Object> FloatTransformFunc = JsonElement::getAsFloat;
-    static final Function<JsonElement, Object> IntTransformFunc = JsonElement::getAsInt;
-    static final Function<JsonElement, Object> PredTransformFunc = (JsonElement element) -> {
-        return false;
-    };
+    public static class PropertyTranslator {
+        final String jsonProp;
+        final String javaProp;
+        final Function<ScriptAndValue, Object> transformFunc;
+        final CustomScript scriptContainer;
+        public PropertyTranslator(String jsonProp,String javaProp, Function<ScriptAndValue,Object> transformFunc){
+            this.jsonProp=jsonProp;
+            this.javaProp=javaProp;
+            this.transformFunc=transformFunc;
+            this.scriptContainer=null;
+        }
+        public PropertyTranslator(String jsonProp,String javaProp, CustomScript scriptContainer, Function<ScriptAndValue,Object> transformFunc){
+            this.jsonProp=jsonProp;
+            this.javaProp=javaProp;
+            this.transformFunc=transformFunc;
+            this.scriptContainer=scriptContainer;
+        }
+    }
+
+    static final Function<ScriptAndValue, Object> BoolTransformFunc = scriptAndValue -> scriptAndValue.value.getAsBoolean();
+    static final Function<ScriptAndValue, Object> FloatTransformFunc = scriptAndValue -> scriptAndValue.value.getAsFloat();
+    static final Function<ScriptAndValue, Object> IntTransformFunc = scriptAndValue -> scriptAndValue.value.getAsInt();
 
     //--
 
@@ -93,5 +113,23 @@ public class Utils {
             default:
                 return null;
         }
+    }
+
+    public static <T> T tryAndExecute(T dfault, CustomScript scriptContainer, String funcString, Object[] args, Function<LuaValue,T> transformFunc){
+        if(scriptContainer==null) return dfault;
+        var func = scriptContainer.runEnv.get(funcString);
+        if(func.isnil())
+            return dfault;
+
+        var luaArgs=new LuaValue[args.length];
+        for(int i=0;i<luaArgs.length;i++){
+            luaArgs[i]=Utils.toLuaValue(args[i]);
+        }
+
+        return transformFunc.apply(func.invoke(luaArgs).arg1());
+    }
+    public static void tryAndExecute(CustomScript scriptContainer, String funcString,Object[] args){
+        tryAndExecute(null,scriptContainer, funcString, args, returnValue -> null);
+        //calls tryAndExecute, but always returns null
     }
 }
