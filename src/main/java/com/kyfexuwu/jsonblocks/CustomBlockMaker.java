@@ -107,7 +107,7 @@ public class CustomBlockMaker {
 
             @Override
             public BlockState getPlacementState(ItemPlacementContext ctx){
-                return Utils.tryAndExecute(this.getDefaultState(),scriptContainer,"onPlace",
+                return Utils.tryAndExecute(this.getDefaultState(),scriptContainer,"getStateOnPlace",
                         new Object[]{ctx},returnValue->{
                     try{
                         assert returnValue.istable();
@@ -119,9 +119,11 @@ public class CustomBlockMaker {
                                 if(prop.getName().equals(returnValue.get(i).get(1).toString())){
                                     switch (prop.getType().getName()) {
                                         case "java.lang.Integer" ->
-                                                stateToReturn = stateToReturn.with(prop, returnValue.get(i).get(2).checkint());
+                                                stateToReturn = stateToReturn.with(prop,
+                                                    returnValue.get(i).get(2).checkint());
                                         case "java.lang.Boolean" ->
-                                                stateToReturn = stateToReturn.with(prop, returnValue.get(i).get(2).checkboolean());
+                                                stateToReturn = stateToReturn.with(prop,
+                                                    returnValue.get(i).get(2).checkboolean());
                                         case "net.minecraft.util.math.Direction" ->
                                                 stateToReturn = stateToReturn.with(prop,
                                                     Direction.byName(returnValue.get(i).get(2).toString()));

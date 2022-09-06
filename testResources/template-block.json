@@ -1,4 +1,8 @@
 {
+		"_comment": "everything here is optional, and it is the default. for example:",
+		"_comment": "if you leave out hardness, it will be automatically set to 0.0 :3",
+		"_comment": "the fields marked with or mean you can give it either data type",
+
 	"blockName":"name",
 	"material":"STONE",
 
@@ -9,6 +13,8 @@
 	"speedMultiplier":1.0,
 	"sounds":"STONE",
 	"isOpaque":true,
+		"_comment": "script:anyFunction has to return a number, this is the light level",
+	"luminance": 0.0 OR "script:anyFunction",
 	"mapColor": "CLEAR",
 	"drops":"EMPTY",
 	"isToolRequired":false,

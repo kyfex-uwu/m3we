@@ -1,5 +1,12 @@
 --declare variables above all the functions i think
 
+function getStateOnPlace(context)
+    return {--needs to return a table!
+        int_prop=2,
+        direc_prop="north"
+    }
+end
+
 function onUse(state,world,pos,player,hand,hit)
     for key in pairs(state) do
         print(key)
@@ -20,6 +27,6 @@ end
 function randomTick(state,world,pos,random)
 
 end
-function onPlaced(state,world,pos,random)
+function scheduledTick(state,world,pos,random)
 
 end
