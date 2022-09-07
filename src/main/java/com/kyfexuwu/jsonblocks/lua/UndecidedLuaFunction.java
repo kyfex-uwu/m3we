@@ -6,6 +6,7 @@ import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 public class UndecidedLuaFunction extends VarArgFunction {
     public Object thisObj;
@@ -43,15 +44,20 @@ public class UndecidedLuaFunction extends VarArgFunction {
                 continue;
 
             int numParamsAmt=0;//for later, so we can brute force number types
+            int[] numParamsIndexes=new int[args.length];
             boolean matches=true;
             for(int i=0;i<args.length;i++){
                 //null case
-                if(translatedArgs[i]==null) {
+                if(translatedArgs[i]==null)
                     continue;
-                }
                 //boolean case
                 if(translatedArgs[i].getClass().equals(Boolean.class)&&paramTypes[i].equals(boolean.class))
                     continue;
+                //number case
+                if(translatedArgs[i].getClass().equals(Double.class)){
+                    numParamsIndexes[numParamsAmt]=i;
+                    numParamsAmt++;
+                }
 
                 //regular case
                 if(!paramTypes[i].isAssignableFrom(translatedArgs[i].getClass())){
@@ -60,28 +66,24 @@ public class UndecidedLuaFunction extends VarArgFunction {
                 }
             }
             if(matches){
-                int amtOfTries = (int)Math.pow(2,numParamsAmt);
+                int amtOfTries = (int)Math.pow(3,numParamsAmt);
                 for(int i=0;i<amtOfTries;i++) {
-                    /*
-                    //number cases
-                    if(translatedArgs[i].getClass().equals(Double.class)){
-                        if(paramTypes[i].equals(int.class))
-                            translatedArgs[i] = ((Double)translatedArgs[i]).intValue();
-                        if(paramTypes[i].equals(float.class))
-                            translatedArgs[i] = ((Double)translatedArgs[i]).floatValue();
-                        continue;
+                    var changeableArgs = Arrays.copyOf(translatedArgs,translatedArgs.length);
+                    //number type brute forcing
+                    for(int j=0;j<numParamsAmt;j++){
+                        switch (i / (int) Math.pow(3, j) % 3) {
+                            case 0 -> changeableArgs[numParamsIndexes[j]] = ((Double) changeableArgs[numParamsIndexes[j]]).doubleValue();
+                            case 1 -> changeableArgs[numParamsIndexes[j]] = ((Double) changeableArgs[numParamsIndexes[j]]).floatValue();
+                            case 2 -> changeableArgs[numParamsIndexes[j]] = ((Double) changeableArgs[numParamsIndexes[j]]).intValue();
+                        }
                     }
-
-                     */
 
                     try {
                         return Utils.toLuaValue(
                                 method.getClass().getMethod("invoke", Object.class, Object[].class)
-                                        .invoke(method, thisObj, translatedArgs)
+                                        .invoke(method, thisObj, changeableArgs)
                         );
-                    } catch (Exception e) {
-                        System.out.println("incorrect number type, trying again... (or something went horribly wrong)");
-                    }
+                    } catch (Exception ignored) {}
                 }
             }
         }
