@@ -62,6 +62,8 @@ public class Utils {
     //--
 
     public static LuaValue toLuaValue(Object value){
+        System.out.println("it equals null? "+(value==null));
+
         if(value==null)
             return NIL;
         if(value instanceof Boolean)
@@ -82,6 +84,7 @@ public class Utils {
             return cleanedToReturn;
         }
 
+        System.out.println("its a surfaceobj");
         //not a bool, int, double, float, string, or array
         return new LuaSurfaceObj(value);
     }

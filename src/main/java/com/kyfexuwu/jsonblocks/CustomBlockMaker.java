@@ -25,13 +25,14 @@ import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaValue;
 
+import java.util.Collection;
 import java.util.LinkedList;
 
 import static com.kyfexuwu.jsonblocks.Utils.validName;
 
 public class CustomBlockMaker {
     public static JsonObject tempBlockStates;//prolly can be fixed
-    public static CustomScript tempScriptContainer;//prolly can be fixed
+    public static CustomScript tempScriptContainer;
 
     public static Block from(FabricBlockSettings settings, JsonObject blockStates, CustomScript scriptContainerParam) {
         tempBlockStates = blockStates;//PLEASE ONLY USE ME IN THE STATIC BLOCK I DO NOT KNOW WHAT WILL HAPPEN IF U DONT

@@ -1,10 +1,8 @@
 package com.kyfexuwu.jsonblocks;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
-import com.kyfexuwu.jsonblocks.lua.CustomBlock;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
@@ -22,8 +20,6 @@ import static com.kyfexuwu.jsonblocks.Utils.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.concurrent.Callable;
-import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
 
@@ -118,29 +114,24 @@ public class JBBlockIniter {
             settings = FabricBlockSettings.of(Material.STONE);
         }
 
-        //initing block. if i coded good this would be useful here, but
-        //i think i have a memory leak atm
-        Block thisBlock=null;
-        CustomScript script = null;
-        boolean isCustom = blockJsonData.has("blockStates")||blockJsonData.has("script");
-        if(isCustom) {
-            script = new CustomScript(blockJsonData.get("script").getAsString());
-        }
+        //i think this is bad lol
+        CustomScript script = new CustomScript(blockJsonData.get("script").getAsString());
+
         //setting the properties of the blocksettings
         for(PropertyTranslator propToTranslate : JBBlockIniter.blockPropertyMap){
             try {
                 //setting the specified java field to
                 //the json value put through the transform func
-                CustomBlock finalThisBlock = (CustomBlock)thisBlock;
                 settings.getClass().getField(propToTranslate.javaProp)
                         .set(settings, propToTranslate.transformFunc.apply(new ScriptAndValue(
-                                script,
+                                script,//NO LIKEY SDRJHTGEJKD fix me pls
                                 blockJsonData.get(propToTranslate.jsonProp)
                         )));
             }catch(Exception ignored){}//whatever goes on in there, i dont wanna know uwu
         }
 
-        if(isCustom){
+        Block thisBlock;
+        if(blockJsonData.has("blockStates")||blockJsonData.has("script")){
             thisBlock = CustomBlockMaker.from(
                     settings,
                     blockJsonData.get("blockStates").getAsJsonObject(),
