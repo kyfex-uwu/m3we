@@ -5,14 +5,14 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.MapColor;
-import net.minecraft.block.Material;
+import net.minecraft.block.*;
+import net.minecraft.entity.EntityType;
 import net.minecraft.loot.LootTables;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.BlockView;
 import org.luaj.vm2.LuaValue;
 
 import static com.kyfexuwu.jsonblocks.Utils.*;
@@ -20,6 +20,7 @@ import static com.kyfexuwu.jsonblocks.Utils.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
 
@@ -53,13 +54,14 @@ public class JBBlockIniter {
                     return (ToIntFunction<BlockState>) state -> SAV.value.getAsInt();
                 }
             }),
-            new PropertyTranslator("mapColor","mapColorProvider",(ScriptAndValue SAV) ->{
-                try {
-                    return MapColor.class.getField(SAV.value.getAsString()).get(null);
-                    //todo: custom colors?
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    return MapColor.CLEAR;
-                }
+            new PropertyTranslator("mapColor","mapColorProvider",(ScriptAndValue SAV) ->
+                (Function<BlockState, MapColor>) blockState -> {
+                    try {
+                        return (MapColor) MapColor.class.getField(SAV.value.getAsString()).get(null);
+                        //todo: custom colors?
+                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                        return MapColor.CLEAR;
+                    }
             }),
             new PropertyTranslator("drops","lootTableID",(ScriptAndValue SAV) -> {
                 try{
@@ -75,12 +77,30 @@ public class JBBlockIniter {
             new PropertyTranslator("isAir","isAir", BoolTransformFunc),
             new PropertyTranslator("isCollidable","collidable",BoolTransformFunc),
             new PropertyTranslator("blockCollisionCanResize","dynamicBounds",BoolTransformFunc),
-            //new PropertyTranslator("isSolidWhen", "solidBlock",PredTransformFunc),
-            //new PropertyTranslator("allowsSpawningWhen","allowsSpawning", PredTransformFunc),
-            //new PropertyTranslator("visionBlockedWhen","blockVision",PredTransformFunc),
-            //new PropertyTranslator("suffocatesWhen","suffocates",PredTransformFunc),
-            //new PropertyTranslator("emissiveLightingWhen","emissiveLighting",PredTransformFunc),
-            //new PropertyTranslator("postProcessWhen","postProcess",PredTransformFunc),
+            new PropertyTranslator("isSolidWhen", "solidBlockPredicate",
+                    //kyfex remember these are the variable name not the setter name, dont freak out
+                    (ScriptAndValue SAV) -> PredTransformFunc(SAV,true)),
+            new PropertyTranslator("allowsSpawningWhen","allowsSpawningPredicate",(ScriptAndValue SAV) ->{
+                if(SAV.value.getAsString().startsWith("script:")){
+                    return (AbstractBlock.TypedContextPredicate<EntityType<?>>) (state, world, pos, type) -> tryAndExecute(
+                            true,
+                            SAV.script,
+                            SAV.value.getAsString().substring(7),
+                            new Object[]{state,world,pos,type},
+                            LuaValue::checkboolean
+                    );
+                }else{
+                    return (AbstractBlock.TypedContextPredicate<EntityType<?>>) (state, world, pos, type) -> true;
+                }
+            }),
+            new PropertyTranslator("visionBlockedWhen","blockVisionPredicate",
+                    (ScriptAndValue SAV) -> PredTransformFunc(SAV,false)),
+            new PropertyTranslator("suffocatesWhen","suffocationPredicate",
+                    (ScriptAndValue SAV) -> PredTransformFunc(SAV,false)),
+            new PropertyTranslator("emissiveLightingWhen","emissiveLightingPredicate",
+                    (ScriptAndValue SAV) -> PredTransformFunc(SAV,false)),
+            new PropertyTranslator("postProcessWhen","postProcessPredicate",
+                    (ScriptAndValue SAV) -> PredTransformFunc(SAV,false)),
 
             //todo: add block shape (stairs)
     };

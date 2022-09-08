@@ -1,7 +1,7 @@
 {
 		"_comment": "everything here is optional, and it is the default. for example:",
-		"_comment": "if you leave out hardness, it will be automatically set to 0.0 :3",
-		"_comment": "the fields marked with or mean you can give it either data type",
+		"_comment": "if you leave out slipperiness, it will be automatically set to 0.6",
+		"_comment": "the fields marked with OR mean you can give it either data type",
 
 	"blockName":"name",
 	"material":"STONE",
@@ -13,8 +13,7 @@
 	"speedMultiplier":1.0,
 	"sounds":"STONE",
 	"isOpaque":true,
-		"_comment": "script:anyFunction has to return a number, this is the light level",
-	"luminance": 0.0 OR "script:anyFunction",
+	"luminance": 0.0 OR "script:returnsNumber",
 	"mapColor": "CLEAR",
 	"drops":"EMPTY",
 	"isToolRequired":false,
@@ -22,6 +21,12 @@
 	"isAir":false,
 	"isCollidable":true,
 	"blockCollisionCanResize":false,
+	"isSolidWhen": true OR "script:returnsBoolean",
+	"allowsSpawningWhen": false OR "script:returnsBoolean",
+	"visionBlockedWhen": false OR "script:returnsBoolean",
+	"suffocatesWhen": false OR "script:returnsBoolean",
+	"emissiveLightingWhen": false OR "script:returnsBoolean",
+	"postProcessWhen": false OR "script:returnsBoolean",
 
 	"blockStates": {
 		"int_prop":{
@@ -39,6 +44,8 @@
 			"default": "south"
 		}
 	},
+
+	"blockShape": [] OR "script:returnsTable", (but actually not yet, bc it doesnt work)
 
 	"script": "template-script"
 }

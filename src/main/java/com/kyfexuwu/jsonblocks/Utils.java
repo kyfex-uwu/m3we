@@ -5,6 +5,7 @@ import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import com.kyfexuwu.jsonblocks.lua.LuaSurfaceObj;
 import com.kyfexuwu.jsonblocks.lua.UndecidedLuaFunction;
 import net.fabricmc.fabric.api.entity.event.v1.EntityElytraEvents;
+import net.minecraft.block.AbstractBlock;
 import org.luaj.vm2.Lua;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -58,6 +59,19 @@ public class Utils {
     static final Function<ScriptAndValue, Object> BoolTransformFunc = scriptAndValue -> scriptAndValue.value.getAsBoolean();
     static final Function<ScriptAndValue, Object> FloatTransformFunc = scriptAndValue -> scriptAndValue.value.getAsFloat();
     static final Function<ScriptAndValue, Object> IntTransformFunc = scriptAndValue -> scriptAndValue.value.getAsInt();
+    static Function<ScriptAndValue, Object> PredTransformFunc(ScriptAndValue SAV, boolean dfault){
+        if(SAV.value.getAsString().startsWith("script:")) {
+            return scriptAndValue -> (AbstractBlock.ContextPredicate) (state, world, pos) -> tryAndExecute(
+                    dfault,
+                    SAV.script,
+                    SAV.value.getAsString().substring(7),
+                    new Object[]{state, world, pos},
+                    LuaValue::checkboolean
+            );
+        }else{
+            return scriptAndValue -> (AbstractBlock.ContextPredicate) (state, world, pos) -> SAV.value.getAsBoolean();
+        }
+    }
 
     //--
 
