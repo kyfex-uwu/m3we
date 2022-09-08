@@ -87,7 +87,6 @@ public class Utils {
         return new LuaSurfaceObj(value);
     }
     public static Object toObject(LuaValue value){
-        //todo :blensive:
         switch(value.typename()){
             case "boolean":
                 return value.toboolean();
@@ -102,7 +101,7 @@ public class Utils {
                     //please dont crash please dont crash please dont crash please dont crash please dont crash please d
                 }
                 return toReturn;
-            //case "function":
+            //case "function": //todo :blensive:
             //case "userdata": //no
             //case "thread": //no: pt. 2
             /*case "undecidedFunc":
