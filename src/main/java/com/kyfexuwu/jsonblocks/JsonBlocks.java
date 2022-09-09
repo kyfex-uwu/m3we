@@ -1,6 +1,5 @@
 package com.kyfexuwu.jsonblocks;
 
-import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
@@ -40,11 +39,13 @@ public class JsonBlocks implements ModInitializer {
             }
         }
         for (File modFile : itemsFolder.listFiles()) {
-            switch(JBItemIniter.itemFromFile(modFile)){
-                case CANT_READ -> System.out.println("Can't read the file!");
-                case BAD_JSON -> System.out.println("lol u messed up ur json");
-                case IDK -> System.out.println("Message me on discord KYFEX#3614 and tell me to fix my mod");
-                case YOU_DID_IT -> System.out.println("Registered item!");
+            if(FilenameUtils.isExtension("json")) {
+                switch(JBItemIniter.itemFromFile(modFile)){
+                    case CANT_READ -> System.out.println("Can't read the file!");
+                    case BAD_JSON -> System.out.println("lol u messed up ur json");
+                    case IDK -> System.out.println("Message me on discord KYFEX#3614 and tell me to fix my mod");
+                    case YOU_DID_IT -> System.out.println("Registered item!");
+                }
             }
         }
     }

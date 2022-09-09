@@ -1,4 +1,8 @@
 {
+		"_comment": "everything here is optional, and it is the default. for example:",
+		"_comment": "if you leave out slipperiness, it will be automatically set to 0.6",
+		"_comment": "the fields marked with OR mean you can give it either data type",
+
 	"blockName":"name",
 	"material":"STONE",
 
@@ -9,12 +13,20 @@
 	"speedMultiplier":1.0,
 	"sounds":"STONE",
 	"isOpaque":true,
+	"luminance": 0 OR "script:(state) returnsNumber",
+	"mapColor": "CLEAR",
 	"drops":"EMPTY",
 	"isToolRequired":false,
 	"ticksRandomly":false,
 	"isAir":false,
 	"isCollidable":true,
 	"blockCollisionCanResize":false,
+	"isSolidWhen": true OR "script:(state, world, pos) returnsBoolean",
+	"allowsSpawningWhen": false OR "script:(state, world, pos) returnsBoolean",
+	"visionBlockedWhen": false OR "script:(state, world, pos) returnsBoolean",
+	"suffocatesWhen": false OR "script:(state, world, pos) returnsBoolean",
+	"emissiveLightingWhen": false OR "script:(state, world, pos) returnsBoolean",
+	"postProcessWhen": false OR "script:(state, world, pos) returnsBoolean",
 
 	"blockStates": {
 		"int_prop":{
@@ -31,5 +43,13 @@
 			"type": "direction",
 			"default": "south"
 		}
-	}
+	},
+
+	"blockShape": [
+		[0,0,0,1,0.5,1],
+		[0.375,0.5,0.375,0.625,0.75,0.625],
+		...
+	], OR "script:(state, world, pos, context) returnsTable",
+
+	"script": "template-script"
 }

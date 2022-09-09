@@ -1,6 +1,7 @@
 package com.kyfexuwu.jsonblocks.lua;
 
 import com.kyfexuwu.jsonblocks.JsonBlocks;
+import com.kyfexuwu.jsonblocks.lua.api.*;
 import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;
 import org.luaj.vm2.lib.*;
@@ -13,9 +14,9 @@ import java.nio.file.Files;
 
 public class CustomScript {
 
-    public Globals runEnv = createNewGlobal();
+    public Globals runEnv;
 
-    public static Globals createNewGlobal(){
+    private static Globals createNewGlobal(){
         var toReturn = new Globals();
         toReturn.load(new JseBaseLib());
         toReturn.load(new PackageLib());//needed, trust me
@@ -23,18 +24,22 @@ public class CustomScript {
         toReturn.load(new StringLib());
         toReturn.load(new JseMathLib());
 
-        toReturn.load(new BlockApi());
+        toReturn.load(new PropertyAPI());
 
         return toReturn;
     }
 
     public CustomScript(String fileName){
+        this.runEnv = createNewGlobal();
+
         LoadState.install(runEnv);
         LuaC.install(runEnv);
         try {
             runEnv.load(
                     Files.readString(new File(JsonBlocks.JBFolder + "\\scripts\\" + fileName + ".lua").toPath())
             ).call();
-        }catch(IOException | LuaError ignored){}
+        }catch(IOException | LuaError e){
+            System.out.println("script "+fileName+" not loaded... it was a "+e.getClass().getName()+" exception");
+        }
     }
 }
