@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "json-blocks:block/titanium_block"
+    "all": "json-blocks:block/radioactive_block"
   }
 }

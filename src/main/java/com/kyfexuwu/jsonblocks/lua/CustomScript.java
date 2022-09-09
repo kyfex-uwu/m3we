@@ -30,7 +30,7 @@ public class CustomScript {
     }
 
     public CustomScript(String fileName){
-        runEnv = createNewGlobal();
+        this.runEnv = createNewGlobal();
 
         LoadState.install(runEnv);
         LuaC.install(runEnv);

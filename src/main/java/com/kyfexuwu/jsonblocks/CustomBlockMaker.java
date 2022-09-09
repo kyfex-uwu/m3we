@@ -1,5 +1,7 @@
 package com.kyfexuwu.jsonblocks;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.kyfexuwu.jsonblocks.lua.CustomBlock;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
@@ -7,7 +9,6 @@ import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,29 +29,35 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
-import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.LuaTable;
 
-import java.util.Collection;
 import java.util.LinkedList;
 
+import static com.kyfexuwu.jsonblocks.Utils.tryAndExecute;
 import static com.kyfexuwu.jsonblocks.Utils.validName;
 
 public class CustomBlockMaker {
     public static JsonObject tempBlockStates;//prolly can be fixed
-    public static CustomScript tempScriptContainer;
+    public static String tempScriptName;
+    public static JsonElement tempBlockShape;
 
-    public static Block from(FabricBlockSettings settings, JsonObject blockStates, CustomScript scriptContainerParam) {
+    public static Block from(FabricBlockSettings settings, JsonObject blockStates, JsonElement blockShape, String scriptName) {
         tempBlockStates = blockStates;//PLEASE ONLY USE ME IN THE STATIC BLOCK I DO NOT KNOW WHAT WILL HAPPEN IF U DONT
-        tempScriptContainer = scriptContainerParam;
+        tempScriptName = scriptName;
+        tempBlockShape = blockShape;
 
         class thisCustomBlock extends CustomBlock {
 
             public static final LinkedList<Property> propsList = new LinkedList<>();
             public static final Property[] props;
+            public static final VoxelShape blockShape;
+            public static final boolean shapeIsScript;
+            public static final String shapeScriptString;
 
             static {
-                scriptContainer=tempScriptContainer;
+                scriptContainer=new CustomScript(tempScriptName);
 
+                //props
                 for (String propName : tempBlockStates.keySet()) {
                     if (!validName.matcher(propName).matches()) continue;
                     var thisState = tempBlockStates.get(propName).getAsJsonObject();
@@ -75,6 +82,33 @@ public class CustomBlockMaker {
                 }
                 props = propsList.toArray(new Property[0]);
                 propsList.clear();
+
+                //shape
+                if(tempBlockShape.isJsonArray()) {
+                    var blockShapeToGive = VoxelShapes.empty();
+                    for (JsonElement element : (JsonArray) tempBlockShape) {
+                        if (!element.isJsonArray())
+                            continue;
+                        JsonArray elementArray = element.getAsJsonArray();
+                        if (elementArray.size() != 6)
+                            continue;
+                        blockShapeToGive = VoxelShapes.union(blockShapeToGive, VoxelShapes.cuboid(
+                                elementArray.get(0).getAsDouble(),
+                                elementArray.get(1).getAsDouble(),
+                                elementArray.get(2).getAsDouble(),
+                                elementArray.get(3).getAsDouble(),
+                                elementArray.get(4).getAsDouble(),
+                                elementArray.get(5).getAsDouble()
+                        ));
+                    }
+                    blockShape = blockShapeToGive;
+                    shapeIsScript=false;
+                    shapeScriptString=null;
+                }else{
+                    blockShape = VoxelShapes.empty();
+                    shapeIsScript=tempBlockShape.getAsString().startsWith("script:");
+                    shapeScriptString=shapeIsScript?null:tempBlockShape.getAsString().substring(7);
+                }
             }
 
             public thisCustomBlock(Settings settings) {
@@ -116,8 +150,6 @@ public class CustomBlockMaker {
                 return Utils.tryAndExecute(this.getDefaultState(),scriptContainer,"getStateOnPlace",
                         new Object[]{ctx},returnValue->{
                     try{
-                        assert returnValue.istable();
-
                         var length = returnValue.narg();
                         var stateToReturn = this.getDefaultState();
                         for(int i=0;i<length;i++){//iterate over lua table
@@ -147,7 +179,39 @@ public class CustomBlockMaker {
 
             @Override//yes dont worry i already checked this is the one you need to override
             public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-                return VoxelShapes.fullCube();
+                if(shapeIsScript){
+                    return tryAndExecute(
+                        VoxelShapes.empty(),
+                        scriptContainer,
+                        shapeScriptString,
+                        new Object[]{state, world, pos, context},
+                        value -> {
+                            var toReturn = VoxelShapes.empty();
+
+                            var size = value.length();
+                            for(int i=0;i<size;i++) {
+                                var currValue = value.get(i+1);
+                                if (!currValue.istable() || currValue.length() == 6)
+                                    continue;
+
+                                for (int count = 1; count <= 6; count++) {//lua Poopy
+                                    toReturn = VoxelShapes.union(toReturn,
+                                            VoxelShapes.cuboid(
+                                                    currValue.get(1).checkdouble(),
+                                                    currValue.get(2).checkdouble(),
+                                                    currValue.get(3).checkdouble(),
+                                                    currValue.get(4).checkdouble(),
+                                                    currValue.get(5).checkdouble(),
+                                                    currValue.get(6).checkdouble()
+                                            ));
+                                }
+                            }
+                            return toReturn;
+                        }
+                    );
+                }else{
+                    return blockShape;
+                }
             }
 
             @Override

@@ -3,17 +3,12 @@ package com.kyfexuwu.jsonblocks;
 import com.google.gson.JsonElement;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import com.kyfexuwu.jsonblocks.lua.LuaSurfaceObj;
-import com.kyfexuwu.jsonblocks.lua.UndecidedLuaFunction;
-import net.fabricmc.fabric.api.entity.event.v1.EntityElytraEvents;
 import net.minecraft.block.AbstractBlock;
-import org.luaj.vm2.Lua;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
 import java.lang.reflect.Array;
-import java.util.concurrent.Callable;
 import java.util.function.Function;
-import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 
 import static org.luaj.vm2.LuaValue.NIL;

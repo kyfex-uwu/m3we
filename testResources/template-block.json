@@ -13,7 +13,7 @@
 	"speedMultiplier":1.0,
 	"sounds":"STONE",
 	"isOpaque":true,
-	"luminance": 0.0 OR "script:returnsNumber",
+	"luminance": 0 OR "script:(state) returnsNumber",
 	"mapColor": "CLEAR",
 	"drops":"EMPTY",
 	"isToolRequired":false,
@@ -21,12 +21,12 @@
 	"isAir":false,
 	"isCollidable":true,
 	"blockCollisionCanResize":false,
-	"isSolidWhen": true OR "script:returnsBoolean",
-	"allowsSpawningWhen": false OR "script:returnsBoolean",
-	"visionBlockedWhen": false OR "script:returnsBoolean",
-	"suffocatesWhen": false OR "script:returnsBoolean",
-	"emissiveLightingWhen": false OR "script:returnsBoolean",
-	"postProcessWhen": false OR "script:returnsBoolean",
+	"isSolidWhen": true OR "script:(state, world, pos) returnsBoolean",
+	"allowsSpawningWhen": false OR "script:(state, world, pos) returnsBoolean",
+	"visionBlockedWhen": false OR "script:(state, world, pos) returnsBoolean",
+	"suffocatesWhen": false OR "script:(state, world, pos) returnsBoolean",
+	"emissiveLightingWhen": false OR "script:(state, world, pos) returnsBoolean",
+	"postProcessWhen": false OR "script:(state, world, pos) returnsBoolean",
 
 	"blockStates": {
 		"int_prop":{
@@ -45,7 +45,11 @@
 		}
 	},
 
-	"blockShape": [] OR "script:returnsTable", (but actually not yet, bc it doesnt work)
+	"blockShape": [
+		[0,0,0,1,0.5,1],
+		[0.375,0.5,0.375,0.625,0.75,0.625],
+		...
+	], OR "script:(state, world, pos, context) returnsTable",
 
 	"script": "template-script"
 }

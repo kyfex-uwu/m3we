@@ -10,9 +10,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.loot.LootTables;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.BlockView;
 import org.luaj.vm2.LuaValue;
 
 import static com.kyfexuwu.jsonblocks.Utils.*;
@@ -101,8 +99,6 @@ public class JBBlockIniter {
                     (ScriptAndValue SAV) -> PredTransformFunc(SAV,false)),
             new PropertyTranslator("postProcessWhen","postProcessPredicate",
                     (ScriptAndValue SAV) -> PredTransformFunc(SAV,false)),
-
-            //todo: add block shape (stairs)
     };
 
     public static SuccessRate blockFromFile(File file) {
@@ -134,10 +130,8 @@ public class JBBlockIniter {
             settings = FabricBlockSettings.of(Material.STONE);
         }
 
-        //i think this is bad lol
-        CustomScript script = new CustomScript(blockJsonData.get("script").getAsString());
-
         //setting the properties of the blocksettings
+        CustomScript script = new CustomScript(blockJsonData.get("script").getAsString());
         for(PropertyTranslator propToTranslate : JBBlockIniter.blockPropertyMap){
             try {
                 //setting the specified java field to
@@ -155,7 +149,8 @@ public class JBBlockIniter {
             thisBlock = CustomBlockMaker.from(
                     settings,
                     blockJsonData.get("blockStates").getAsJsonObject(),
-                    script
+                    blockJsonData.get("blockShape"),
+                    blockJsonData.get("script").getAsString()
             );
         }else{
             thisBlock = new Block(settings);

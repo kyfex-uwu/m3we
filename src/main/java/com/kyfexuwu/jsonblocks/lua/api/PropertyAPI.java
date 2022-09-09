@@ -1,15 +1,12 @@
 package com.kyfexuwu.jsonblocks.lua.api;
 
 import com.kyfexuwu.jsonblocks.Utils;
-import com.kyfexuwu.jsonblocks.lua.CustomBlock;
 import com.kyfexuwu.jsonblocks.lua.LuaSurfaceObj;
 import net.minecraft.block.BlockState;
 import net.minecraft.state.property.Property;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.TwoArgFunction;
-
-import java.util.Collection;
 
 public class PropertyAPI extends TwoArgFunction {
     @Override

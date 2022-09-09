@@ -1,6 +1,5 @@
 package com.kyfexuwu.jsonblocks;
 
-import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
