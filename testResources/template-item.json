@@ -1,4 +1,5 @@
 {
+	"namespace": "json-blocks",
 	"itemName":"name",
 
 	"maxCount":64,

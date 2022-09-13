@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.kyfexuwu.jsonblocks.lua.CustomBlock;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -22,6 +23,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -29,19 +31,18 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
-import org.luaj.vm2.LuaTable;
 
 import java.util.LinkedList;
 
 import static com.kyfexuwu.jsonblocks.Utils.tryAndExecute;
-import static com.kyfexuwu.jsonblocks.Utils.validName;
+import static com.kyfexuwu.jsonblocks.Utils.validPropertyName;
 
 public class CustomBlockMaker {
     public static JsonObject tempBlockStates;//prolly can be fixed
     public static String tempScriptName;
     public static JsonElement tempBlockShape;
 
-    public static Block from(FabricBlockSettings settings, JsonObject blockStates, JsonElement blockShape, String scriptName) {
+    public static Block from(AbstractBlock.Settings settings, JsonObject blockStates, JsonElement blockShape, String scriptName) {
         tempBlockStates = blockStates;//PLEASE ONLY USE ME IN THE STATIC BLOCK I DO NOT KNOW WHAT WILL HAPPEN IF U DONT
         tempScriptName = scriptName;
         tempBlockShape = blockShape;
@@ -59,7 +60,7 @@ public class CustomBlockMaker {
 
                 //props
                 for (String propName : tempBlockStates.keySet()) {
-                    if (!validName.matcher(propName).matches()) continue;
+                    if (!validPropertyName.matcher(propName).matches()) continue;
                     var thisState = tempBlockStates.get(propName).getAsJsonObject();
                     switch (thisState.get("type").getAsString()) {
                         case "int":
@@ -213,10 +214,19 @@ public class CustomBlockMaker {
                     return blockShape;
                 }
             }
+            @Override
+            public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+                return getOutlineShape(state,world,pos,context);
+            }
 
             @Override
             public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
                 Utils.tryAndExecute(scriptContainer,"randomTick",new Object[]{state,world,pos,random});
+            }
+
+            @Override
+            public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+                Utils.tryAndExecute(scriptContainer,"neighborUpdate",new Object[]{state,world,pos,sourceBlock,sourcePos,notify});
             }
 
             @Override

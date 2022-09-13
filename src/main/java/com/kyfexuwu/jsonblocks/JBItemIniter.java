@@ -122,18 +122,23 @@ public class JBItemIniter {
         Item thisItem;
         if(itemJsonData.has("blockToPlace")) {
             var blockToPlaceName = itemJsonData.get("blockToPlace").getAsString();
-            if (!blockToPlaceName.contains(":")) blockToPlaceName = "json-blocks:" + blockToPlaceName;
+            if (!blockToPlaceName.contains(":")) blockToPlaceName = "minecraft:" + blockToPlaceName;
             thisItem = new BlockItem(Registry.BLOCK.get(new Identifier(blockToPlaceName)),settings);
         }else{
             thisItem= new Item(settings);
         }
 
+        var namespace="json-blocks";
+        if(itemJsonData.has("namespace")&&
+                validNamespaceName.matcher(itemJsonData.get("namespace").getAsString()).matches()){
+            namespace=itemJsonData.get("namespace").getAsString();
+        }
         Registry.register(
                 Registry.ITEM,
-                new Identifier("json-blocks", itemName),
+                new Identifier(namespace, itemName),
                 thisItem
         );
-        JsonBlocks.jsonItems.put("json-blocks:"+itemName,thisItem);
+        JsonBlocks.jsonItems.put(namespace+":"+itemName,thisItem);
 
         return SuccessRate.YOU_DID_IT;
     }

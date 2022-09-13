@@ -1,20 +1,29 @@
 package com.kyfexuwu.jsonblocks;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonPrimitive;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import com.kyfexuwu.jsonblocks.lua.LuaSurfaceObj;
 import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockView;
+import org.jetbrains.annotations.NotNull;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
 import java.lang.reflect.Array;
+import java.util.HashMap;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import static org.luaj.vm2.LuaValue.NIL;
 
 public class Utils {
-    public static Pattern validName = Pattern.compile("[a-z0-9_]+");
+    public static Pattern validPropertyName = Pattern.compile("[a-z0-9_]+");
+    public static Pattern validNamespaceName = Pattern.compile("[a-z0-9_.-]+");
+    public static Pattern validPathName = Pattern.compile("[a-z0-9/._-]+");
     public enum SuccessRate {
         CANT_READ,
         BAD_JSON,
@@ -36,18 +45,10 @@ public class Utils {
         final String jsonProp;
         final String javaProp;
         final Function<ScriptAndValue, Object> transformFunc;
-        final CustomScript scriptContainer;
         public PropertyTranslator(String jsonProp,String javaProp, Function<ScriptAndValue,Object> transformFunc){
             this.jsonProp=jsonProp;
             this.javaProp=javaProp;
             this.transformFunc=transformFunc;
-            this.scriptContainer=null;
-        }
-        public PropertyTranslator(String jsonProp,String javaProp, CustomScript scriptContainer, Function<ScriptAndValue,Object> transformFunc){
-            this.jsonProp=jsonProp;
-            this.javaProp=javaProp;
-            this.transformFunc=transformFunc;
-            this.scriptContainer=scriptContainer;
         }
     }
 
@@ -56,7 +57,7 @@ public class Utils {
     static final Function<ScriptAndValue, Object> IntTransformFunc = scriptAndValue -> scriptAndValue.value.getAsInt();
     static Function<ScriptAndValue, Object> PredTransformFunc(ScriptAndValue SAV, boolean dfault){
         if(SAV.value.getAsString().startsWith("script:")) {
-            return scriptAndValue -> (AbstractBlock.ContextPredicate) (state, world, pos) -> tryAndExecute(
+            return scriptAndValue ->(AbstractBlock.ContextPredicate) (state, world, pos) -> tryAndExecute(
                     dfault,
                     SAV.script,
                     SAV.value.getAsString().substring(7),
@@ -64,7 +65,7 @@ public class Utils {
                     LuaValue::checkboolean
             );
         }else{
-            return scriptAndValue -> (AbstractBlock.ContextPredicate) (state, world, pos) -> SAV.value.getAsBoolean();
+            return scriptAndValue ->(AbstractBlock.ContextPredicate) (state, world, pos) -> SAV.value.getAsBoolean();
         }
     }
 

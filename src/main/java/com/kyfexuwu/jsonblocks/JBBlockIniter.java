@@ -24,6 +24,7 @@ import java.util.function.ToIntFunction;
 
 public class JBBlockIniter {
 
+    //need to just overhaul this entire thingy
     private static final PropertyTranslator[] blockPropertyMap = {
             new PropertyTranslator("hardness","hardness",FloatTransformFunc),
             new PropertyTranslator("resistance","resistance",FloatTransformFunc),
@@ -32,9 +33,9 @@ public class JBBlockIniter {
             new PropertyTranslator("speedMultiplier","velocityMultiplier",FloatTransformFunc),
             new PropertyTranslator("sounds","soundGroup",(ScriptAndValue SAV) -> {
                 try {
-                    return BlockSoundGroup.class.getField(SAV.value.getAsString());
+                    return BlockSoundGroup.class.getField(SAV.value.getAsString()).get(null);
                     //todo: custom sounds?
-                }catch(NoSuchFieldException e){
+                }catch(NoSuchFieldException | IllegalAccessException e){
                     return BlockSoundGroup.STONE;
                 }
             }),
@@ -49,7 +50,7 @@ public class JBBlockIniter {
                             LuaValue::checkint
                     );
                 }else{
-                    return (ToIntFunction<BlockState>) state -> SAV.value.getAsInt();
+                    return (ToIntFunction<BlockState>) value -> SAV.value.getAsInt();
                 }
             }),
             new PropertyTranslator("mapColor","mapColorProvider",(ScriptAndValue SAV) ->
@@ -61,7 +62,7 @@ public class JBBlockIniter {
                         return MapColor.CLEAR;
                     }
             }),
-            new PropertyTranslator("drops","lootTableID",(ScriptAndValue SAV) -> {
+            new PropertyTranslator("drops","lootTableId",(ScriptAndValue SAV) -> {
                 try{
                     return LootTables.class.getField(SAV.value.getAsString());
                     //todo: custom drops
@@ -88,7 +89,8 @@ public class JBBlockIniter {
                             LuaValue::checkboolean
                     );
                 }else{
-                    return (AbstractBlock.TypedContextPredicate<EntityType<?>>) (state, world, pos, type) -> true;
+                    return (AbstractBlock.TypedContextPredicate<EntityType<?>>)
+                            (state, world, pos, type) -> SAV.value.getAsBoolean();
                 }
             }),
             new PropertyTranslator("visionBlockedWhen","blockVisionPredicate",
@@ -115,13 +117,15 @@ public class JBBlockIniter {
         }
 
         //setting block name
-        String blockName = "Invalid Name";
+        String blockName = "invalid";
         try {
             blockName = blockJsonData.get("blockName").getAsString();
         }catch(Exception ignored){}//i have no clue what this can throw lol
+        if(!validPathName.matcher(blockName).matches())
+            return SuccessRate.BAD_JSON;
 
         //setting material
-        FabricBlockSettings settings;
+        AbstractBlock.Settings settings;
         try{
             Object material = Material.class.getField(blockJsonData.get("material").getAsString()).get(null);
             if(!(material instanceof Material)) material=Material.STONE;
@@ -133,15 +137,21 @@ public class JBBlockIniter {
         //setting the properties of the blocksettings
         CustomScript script = new CustomScript(blockJsonData.get("script").getAsString());
         for(PropertyTranslator propToTranslate : JBBlockIniter.blockPropertyMap){
+            if(!blockJsonData.has(propToTranslate.jsonProp))
+                continue;
+
+
             try {
                 //setting the specified java field to
                 //the json value put through the transform func
                 settings.getClass().getField(propToTranslate.javaProp)
                         .set(settings, propToTranslate.transformFunc.apply(new ScriptAndValue(
-                                script,//NO LIKEY SDRJHTGEJKD fix me pls
+                                script,
                                 blockJsonData.get(propToTranslate.jsonProp)
                         )));
-            }catch(Exception ignored){}//whatever goes on in there, i dont wanna know uwu
+            }catch(Exception e){
+                System.out.println(propToTranslate.jsonProp+" failt");
+            }
         }
 
         Block thisBlock;
@@ -156,12 +166,17 @@ public class JBBlockIniter {
             thisBlock = new Block(settings);
         }
 
+        var namespace="json-blocks";
+        if(blockJsonData.has("namespace")&&
+                validNamespaceName.matcher(blockJsonData.get("namespace").getAsString()).matches()){
+            namespace=blockJsonData.get("namespace").getAsString();
+        }
         Registry.register(
                 Registry.BLOCK,
-                new Identifier("json-blocks", blockName),
+                new Identifier(namespace, blockName),
                 thisBlock
         );
-        JsonBlocks.jsonBlocks.put("json-blocks:"+blockName,thisBlock);
+        JsonBlocks.jsonBlocks.put(namespace+":"+blockName,thisBlock);
 
         return SuccessRate.YOU_DID_IT;
     }

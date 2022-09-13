@@ -42,6 +42,9 @@ end
 function randomTick(state,world,pos,random)
 
 end
+function neighborUpdate(state,world,pos,sourceBlock,sourcePos,notify)
+
+end
 function scheduledTick(state,world,pos,random)
 
 end
