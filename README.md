@@ -1,4 +1,4 @@
-# jsonblocks
+# m3we
 plug in json, get out blocks! (and items)
 
 hi
