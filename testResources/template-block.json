@@ -1,55 +1,240 @@
-{
-		"_comment": "everything here is optional, and it is the default. for example:",
-		"_comment": "if you leave out slipperiness, it will be automatically set to 0.6",
-		"_comment": "the fields marked with OR mean you can give it either data type",
+(function() {
+    var button;
+    var propsPanel;
+    
+    Plugin.register("m3we-plugin", {
+        title: "M3WE Plugin",
+        author: "KYFEX",
+        description: "Tool for making M3WE asset creation even easier",
+        icon: "build_circle",
+        version: "0.0.0",
+        variant: "both",
+        onload() {
+            document.head.innerHTML+=`<style>
+            .m3we-box{
+                background-color: var(--color-dark);
+                border: 1px solid var(--color-button);
+            }
+            ul[isInt="false"] li[integer]{
+                display:none;
+            }
+            </style>`;
 
-	"blockName":"name",
-	"material":"STONE",
+            propsPanel=new Panel("properties",{
+                icon:"build_circle",
+                condition: {modes: ["properties"]},
+                default_position: {
+                    slot: 'left_bar',
+                    float_position: [0, 0],
+                    float_size: [300, 400],
+                    height: 400
+                },
+                growable:true,
+                component: {
+                    name: 'panel-display',
+                    data() {return {
+                        properties:[
+                            ["namespace","text","namespace","m3we"],
+                            ["blockName","text","blockName","name"],
+                            ["material","text","material","STONE"],//enum
+                            ["hardness","number","float",0.0],
+                            ["resistance","number","float",0.0],
+                            ["slipperiness","number","float",0.6],
+                            ["jumpMultiplier","number","float",1.0],
+                            ["speedMultiplier","number","float",1.0],
+                            ["sounds","text","sound","STONE"],//enum
+                            ["isOpaque","checkbox","bool",true],
+                            ["luminance","number","integer", 0],//or script
+                            ["mapColor","text","mapColor","CLEAR"],//enum
+                            ["drops","text","dropTable","EMPTY"],//enum
+                            ["isToolRequired","checkbox","bool",false],
+                            ["ticksRandomly","checkbox","bool",false],
+                            ["isAir","checkbox","bool",false],
+                            ["isCollidable","checkbox","bool",true],
+                            ["blockCollisionCanResize","checkbox","bool",false],
+                            ["isSolidWhen","checkbox","boolOrScript", true],//or script
+                            ["allowsSpawningWhen","checkbox","boolOrScript", true],//or script
+                            ["visionBlockedWhen","checkbox","boolOrScript", false],//or script
+                            ["suffocatesWhen","checkbox","boolOrScript", false],//or script
+                            ["emissiveLightingWhen","checkbox","boolOrScript", false],//or script
+                            ["postProcessWhen","checkbox","boolOrScript", false],//or script*/
+                        ],
+                        blockStates:0,
 
-	"hardness":0.0,
-	"resistance":0.0,
-	"slipperiness":0.6,
-	"jumpMultiplier":1.0,
-	"speedMultiplier":1.0,
-	"sounds":"STONE",
-	"isOpaque":true,
-	"luminance": 0 OR "script:(state) returnsNumber",
-	"mapColor": "CLEAR",
-	"drops":"EMPTY",
-	"isToolRequired":false,
-	"ticksRandomly":false,
-	"isAir":false,
-	"isCollidable":true,
-	"blockCollisionCanResize":false,
-	"isSolidWhen": true OR "script:(state, world, pos) returnsBoolean",
-	"allowsSpawningWhen": false OR "script:(state, world, pos) returnsBoolean",
-	"visionBlockedWhen": false OR "script:(state, world, pos) returnsBoolean",
-	"suffocatesWhen": false OR "script:(state, world, pos) returnsBoolean",
-	"emissiveLightingWhen": false OR "script:(state, world, pos) returnsBoolean",
-	"postProcessWhen": false OR "script:(state, world, pos) returnsBoolean",
+                        namespaceValidator:/[a-z0-9_.-]+/,
+                        blockNameValidator:/[a-z0-9/._-]+/,
+                    }},
+                    methods: {
+                        propToReadable(text){
+                            let toReturn=text[0].toUpperCase();
+                            for(let i=1;i<text.length;i++){
+                                if(text[i]!=text[i].toUpperCase()&&text[i]==text[i].toLowerCase()){//is lowercase
+                                    toReturn+=text[i];
+                                }else{//is uppercase
+                                    toReturn+=" "+text[i];
+                                }
+                            }
+                            return toReturn;
+                        },
+                        addBlockState(parent){
+                            let blockStateId=this.blockStates;
+                            let newBlockState = document.createElement("li");
+                            newBlockState.id="blockState"+blockStateId;
+                            newBlockState.style="margin-left:12px;";
+                            newBlockState.innerHTML=`
+                                Blockstate <input class="m3we-box dark_bordered"
+                                value="blockstate"
+                                style="margin-right:5px;">
+                            <ul style="margin-left:12px;">
+                                <li>Type:<select name="defaultvalue" class="m3we-box dark_bordered" onchange="`+
+                                    `this.parentNode.parentNode.setAttribute('isInt',this.value=='int')">
+                                    <option value="int">Integer</option>
+                                    <option value="bool">Boolean</option>
+                                    <option value="direction">Direction</option>
+                                    <!--<option value="enum">Enum</option>-->
+                                </select></li>
+                                <li>Default Value:<input
+                                    class="m3we-box dark_bordered" value="0"
+                                ></li>
+                                <li integer>Max Value:<input
+                                    class="m3we-box dark_bordered" value="0"
+                                ></li>
+                                <li integer>Min Value:<input
+                                    class="m3we-box dark_bordered" value="0"
+                                ></li>
+                            </ul>
+                            `;
 
-	"blockStates": {
-		"int_prop":{
-			"type": "int",
-			"min": 1,
-			"max": 4,
-			"default": 2
-		},
-		"bool_prop":{
-			"type": "boolean",
-			"default": true
-		},
-		"direc_prop":{
-			"type": "direction",
-			"default": "south"
-		}
-	},
+                            this.blockStates++;
+                            parent.insertBefore(newBlockState, parent.children[this.properties.length]);
+                        },
+                    },
+                    //tl("translation.path") translates text
+                    template: `
+                        <ul class="list mobile_scrollbar"
+                            @contextmenu.stop.prevent="openMenu($event)">
+                            <li v-for="(property,index) of properties">
+                                <p v-if="property[1]!='checkbox'" style="display:flex;">
+                                    {{propToReadable(property[0])}}:
+                                    <input :id="'property'+index" class="m3we-box dark_bordered"
+                                    :value="property[3]" :type="property[1]"
+                                    style="margin-left:5px; margin-right:5px; flex-grow: 1; flex-shrink: 1;">
+                                </p>
+                                <p v-else style="display:flex;">
+                                    {{propToReadable(property[0])}}:
+                                    <input :id="'property'+index" 
+                                    :checked="property[3]?true:null" :type="property[1]"
+                                    style="margin-left:5px; margin-right:5px;">
+                                    <span v-if="property[2]=='boolOrScript'">{{property[3]?"ALWAYS":"NEVER"}}</span>
+                                </p>
+                            </li>
+                            <br>
+                            <li>
+                            <button @click="addBlockState(_self.$el)">Add Blockstate</button>
+                            </li>
+                        </ul>
+                    `
+                },
+            });
 
-	"blockShape": [
-		[0,0,0,1,0.5,1],
-		[0.375,0.5,0.375,0.625,0.75,0.625],
-		...
-	], OR "script:(state, world, pos, context) returnsTable",
+            button = new Action('m3we_export', {
+                name: 'Export M3WE Block',
+                description: 'Export an M3WE block',
+                icon: 'settings_input_component',
+                click: function() {
+                    let objToReturn={};
+                    propsPanel.vue.properties.forEach((propData, index)=>{
+                        let currInput = document.getElementById("property"+index);
+                        objToReturn[propData[0]]=currInput.value;
+                        if(propData[1]=="checkbox") objToReturn[propData[0]]=currInput.checked;
+                    });
 
-	"script": "template-script"
-}
+                    let currBlockState=0;
+                    let currBSElement;
+                    while(currBSElement=document.getElementById("blockState"+currBlockState)){
+                        if(currBlockState==0)
+                            objToReturn.blockStates={};
+
+                        let BSData=currBSElement.children[1].children;
+                        let currBlockStateObj={
+                            type:BSData[0].children[0].value,
+                            default:BSData[1].children[0].value
+                        };
+                        if(currBlockStateObj.type=="int"){
+                            currBlockStateObj.min=BSData[2].children[0].value;
+                            currBlockStateObj.max=BSData[3].children[0].value;
+                        }
+
+                        objToReturn.blockStates[currBSElement.children[0].value]=currBlockStateObj;
+                        currBlockState++;
+                    }
+
+                    let collisionGroup = Group.all.find((group)=>group.name=="collision");
+                    if(collisionGroup){
+                        objToReturn.blockShape=[];
+                        for(let i=0;i<collisionGroup.children.length;i++){
+                            let thisChild=collisionGroup.children[i];
+                            let toPush=[
+                                thisChild.from[0]/16,thisChild.from[1]/16,thisChild.from[2]/16,
+                                thisChild.to[0]/16,thisChild.to[1]/16,thisChild.to[2]/16
+                            ];
+                            objToReturn.blockShape.push(toPush);
+                        }
+                    }
+
+                    objToReturn.createdBy="m3we_plugin";
+
+                    //Blockbench.export( options, callback ) maybe would be better
+                    let a = document.createElement("a");
+                    a.href = window.URL.createObjectURL(
+                        new Blob([JSON.stringify(objToReturn,null,2)], {type: "text/plain"}));
+                    a.download = objToReturn.blockName+".json";
+                    a.click();
+                }
+            });
+            MenuBar.addAction(button, 'file.export.0');
+
+            
+            new Mode("properties",{
+                name:"Properties",
+                category: "navigate",
+                default_tool: "move_tool",
+                center_windows: ["properties"],
+                selectCubes: false,
+                component: {
+                    data() {
+                        return {
+
+                        }
+                    },
+                    template: ``
+                },
+                condition: () => true,//need to change this so it only appears when working on designated m3we files
+                onSelect: ()=>{},
+                onUnselect: ()=>{}
+            });
+            Modes.vue.$forceUpdate();
+        },
+        onunload() {
+            //uninstall
+        }
+  });
+})();
+
+
+new Panel('outliner', {
+    growable: true,
+    component: {
+        name: 'panel-outliner',
+        template: `
+            <ul id="cubes_list"
+                class="list mobile_scrollbar"
+                @contextmenu.stop.prevent="openMenu($event)"
+                @mousedown="dragNode($event)"
+                @touchstart="dragNode($event)"
+            >
+                <vue-tree-item v-for="item in root" :node="item" :options="options" :key="item.uuid"></vue-tree-item>
+            </ul>
+        `
+    },
+})
