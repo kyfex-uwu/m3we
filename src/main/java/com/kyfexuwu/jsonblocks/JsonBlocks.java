@@ -13,11 +13,8 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.file.*;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.function.Consumer;
 
 public class JsonBlocks implements ModInitializer {
 
@@ -90,24 +87,15 @@ public class JsonBlocks implements ModInitializer {
         }
         //--
 
+        /*
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
                 dispatcher.register(CommandManager.literal("m3wereload")
                 .executes(context -> {
-                    context.getSource().sendMessage(Text.literal("Reloading all M3WE blocks..."));
-                    jsonBlocks.forEach((s, block) -> {
-                        if(!(block instanceof CustomBlock))
-                            return;
+                    context.getSource().sendMessage(Text.literal("does nothing rn, might need it later"));
 
-                        try {
-                            block.getClass().getField("scriptContainer").set(null,
-                                    new CustomScript(
-                                            ((CustomScript) block.getClass().getField("scriptContainer").get(null))
-                                                    .name));
-                        } catch (IllegalAccessException | NoSuchFieldException e) {
-                            e.printStackTrace();
-                        }
-                    });
                     return 1;
                 })));
+
+         */
     }
 }

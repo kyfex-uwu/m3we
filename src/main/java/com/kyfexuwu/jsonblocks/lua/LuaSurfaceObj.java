@@ -2,6 +2,7 @@ package com.kyfexuwu.jsonblocks.lua;
 
 import com.kyfexuwu.jsonblocks.Utils;
 import org.luaj.vm2.*;
+import org.luaj.vm2.lib.TwoArgFunction;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -10,7 +11,20 @@ import java.util.LinkedList;
 public class LuaSurfaceObj extends LuaTable {
     public Object object;
     private final String[] valueNames;
+    public static final TwoArgFunction eqFunc=new TwoArgFunction() {
+        @Override
+        public LuaValue call(LuaValue one, LuaValue two) {
+            if(!(one instanceof LuaSurfaceObj && two instanceof LuaSurfaceObj))
+                return FALSE;
+            return LuaValue.valueOf(((LuaSurfaceObj)one).object.equals(((LuaSurfaceObj)two).object));
+        }
+    };
+
     public LuaSurfaceObj(Object object){
+        LuaTable thisMT = new LuaTable();
+        thisMT.set(EQ, eqFunc);
+        this.setmetatable(thisMT);
+
         this.object=object;
         Field[] fields = object.getClass().getFields();
         Method[] methods = object.getClass().getMethods();

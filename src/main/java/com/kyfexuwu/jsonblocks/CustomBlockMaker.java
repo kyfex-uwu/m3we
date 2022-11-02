@@ -31,6 +31,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
 
 import java.util.LinkedList;
 
@@ -40,7 +41,7 @@ import static com.kyfexuwu.jsonblocks.Utils.validPropertyName;
 public class CustomBlockMaker {
     public static Block from(AbstractBlock.Settings settings, JsonObject blockStates, JsonElement blockShapeJson, String scriptName) {
 
-        class thisCustomBlock extends CustomBlock {
+        class thisCustomBlock extends Block implements CustomBlock {
             public final CustomScript scriptContainer;
             public Property[] props;
             public final VoxelShape blockShape;
@@ -128,7 +129,6 @@ public class CustomBlockMaker {
                     }
                 }
                 this.props = propsList.toArray(new Property[0]);
-                System.out.println(this.props[0].toString());
 
                 for (Property prop : props) {
                     builder.add(prop);
@@ -243,17 +243,26 @@ public class CustomBlockMaker {
             }
 
             @Override
+            public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction){
+                scriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
+
+                return Utils.tryAndExecute(0,scriptContainer,"getStrongRedstonePower",
+                        new Object[]{state,world,pos,direction}, LuaValue::checkint);
+            }
+
+            @Override
             public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
                 scriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
 
-                return Utils.tryAndExecute(ActionResult.PASS,scriptContainer,"onUse",
-                        new Object[]{state,world,pos,player,hand,hit},returnValue->{
-                    try {
-                        return ActionResult.valueOf(returnValue.toString());
-                    }catch(IllegalArgumentException e) {
-                        return ActionResult.PASS;
-                    }
+                ActionResult toReturn = Utils.tryAndExecute(ActionResult.PASS,scriptContainer,"onUse",
+                    new Object[]{state,world,pos,player,hand,hit}, returnValue->{
+                        try {
+                            return ActionResult.valueOf(returnValue.tojstring());
+                        }catch(IllegalArgumentException e) {
+                            return ActionResult.PASS;
+                        }
                 });
+                return toReturn;
             }
 
             @Override
