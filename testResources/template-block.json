@@ -3,7 +3,7 @@
 		"_comment": "if you leave out slipperiness, it will be automatically set to 0.6",
 		"_comment": "the fields marked with OR mean you can give it either data type",
 
-	"namespace": "json-blocks",
+	"namespace": "m3we",
 	"blockName":"name",
 	"material":"STONE",
 

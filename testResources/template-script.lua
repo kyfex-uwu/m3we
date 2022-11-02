@@ -4,8 +4,8 @@
 -- return a table of blockstates to change the default blockstate
 function getStateOnPlace(context)
     return {--needs to return a table!
-        {"int_prop",2},
-        {"direc_prop","north"}
+        int_prop=2,
+        direc_prop="north"
     }
 end
 

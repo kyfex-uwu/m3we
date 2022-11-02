@@ -153,6 +153,7 @@ public class JBBlockIniter {
                 System.out.println(propToTranslate.jsonProp+" failt");
             }
         }
+        script.remove();//IMPORTANT
 
         Block thisBlock;
         if(blockJsonData.has("blockStates")||blockJsonData.has("script")){

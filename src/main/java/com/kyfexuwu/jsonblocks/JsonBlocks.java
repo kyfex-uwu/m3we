@@ -1,13 +1,23 @@
 package com.kyfexuwu.jsonblocks;
 
+import com.kyfexuwu.jsonblocks.lua.CustomBlock;
+import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.text.Text;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.nio.file.*;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.function.Consumer;
 
 public class JsonBlocks implements ModInitializer {
 
@@ -48,5 +58,56 @@ public class JsonBlocks implements ModInitializer {
                 }
             }
         }
+
+        //--
+
+        try {
+            WatchService watcher = FileSystems.getDefault().newWatchService();
+            new File(JsonBlocks.JBFolder + "\\scripts").toPath().register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
+            Thread watcherThread = new Thread(null, () -> {
+                try {
+                    while (true) {
+                        WatchKey key = watcher.take();//blocking
+                        for (WatchEvent<?> event : key.pollEvents()) {
+                            if (event.kind() == StandardWatchEventKinds.ENTRY_MODIFY) {
+                                CustomScript.reloadScript(((Path)event.context()).toString());
+                            }
+                        }
+                        if (!key.reset()) {
+                            //ono this is invalid
+                            System.out.println("unable to can (this is a bad message)");
+                            break;
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    System.out.println("oof ouch interrupted");
+                }
+            });
+            watcherThread.start();
+        } catch (IOException e) {
+            System.out.println("something happened to the watcher");
+            e.printStackTrace();
+        }
+        //--
+
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
+                dispatcher.register(CommandManager.literal("m3wereload")
+                .executes(context -> {
+                    context.getSource().sendMessage(Text.literal("Reloading all M3WE blocks..."));
+                    jsonBlocks.forEach((s, block) -> {
+                        if(!(block instanceof CustomBlock))
+                            return;
+
+                        try {
+                            block.getClass().getField("scriptContainer").set(null,
+                                    new CustomScript(
+                                            ((CustomScript) block.getClass().getField("scriptContainer").get(null))
+                                                    .name));
+                        } catch (IllegalAccessException | NoSuchFieldException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                    return 1;
+                })));
     }
 }
