@@ -41,8 +41,45 @@ public class CustomBlockMaker {
     public static Block from(AbstractBlock.Settings settings, JsonObject blockStates, JsonElement blockShapeJson, String scriptName) {
 
         class thisCustomBlock extends CustomBlock {
+            public final CustomScript scriptContainer;
+            public Property[] props;
+            public final VoxelShape blockShape;
+            public final boolean shapeIsScript;
+            public final String shapeScriptString;
+
             public thisCustomBlock(Settings settings) {
                 super(settings);
+
+                this.scriptContainer=new CustomScript(scriptName);
+
+                //shape
+                if(blockShapeJson.isJsonArray()) {
+                    var blockShapeToGive = VoxelShapes.empty();
+                    for (JsonElement element : (JsonArray) blockShapeJson) {
+                        if (!element.isJsonArray())
+                            continue;
+                        JsonArray elementArray = element.getAsJsonArray();
+                        if (elementArray.size() != 6)
+                            continue;
+                        blockShapeToGive = VoxelShapes.union(blockShapeToGive, VoxelShapes.cuboid(
+                                elementArray.get(0).getAsDouble(),
+                                elementArray.get(1).getAsDouble(),
+                                elementArray.get(2).getAsDouble(),
+                                elementArray.get(3).getAsDouble(),
+                                elementArray.get(4).getAsDouble(),
+                                elementArray.get(5).getAsDouble()
+                        ));
+                    }
+                    this.blockShape = blockShapeToGive;
+                    this.shapeIsScript=false;
+                    this.shapeScriptString=null;
+                }else{
+                    this.blockShape = VoxelShapes.empty();
+                    this.shapeIsScript=blockShapeJson.getAsString().startsWith("script:");
+                    this.shapeScriptString=this.shapeIsScript?null:blockShapeJson.getAsString().substring(7);
+                }
+
+                //--
 
                 var defaultState = getStateManager().getDefaultState();
                 for (Property prop : props) {
@@ -67,6 +104,32 @@ public class CustomBlockMaker {
 
             @Override
             protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+                var propsList = new LinkedList<Property>();
+                for (String propName : blockStates.keySet()) {
+                    if (!validPropertyName.matcher(propName).matches()) continue;
+                    var thisState = blockStates.get(propName).getAsJsonObject();
+                    switch (thisState.get("type").getAsString()) {
+                        case "int":
+                            propsList.add(IntProperty.of(
+                                    propName,
+                                    thisState.get("min").getAsInt(),
+                                    thisState.get("max").getAsInt()
+                            ));
+                            break;
+                        case "boolean":
+                            propsList.add(BooleanProperty.of(propName));
+                            break;
+                        case "enum"://TODO
+                            //propsList.add(EnumProperty.of("test", 0, 3));
+                            break;
+                        case "direction":
+                            propsList.add(DirectionProperty.of(propName));
+                            break;
+                    }
+                }
+                this.props = propsList.toArray(new Property[0]);
+                System.out.println(this.props[0].toString());
+
                 for (Property prop : props) {
                     builder.add(prop);
                 }
@@ -87,7 +150,6 @@ public class CustomBlockMaker {
                         var stateToReturn = this.getDefaultState();
                         for(int i=0;i<length;i++){//iterate over lua table
                             for(Property prop : props){
-                                System.out.println(prop.getName()+","+luaKeys[i]);
                                 if(prop.getName().equals(luaKeys[i].toString())){
                                     switch (prop.getType().getName()) {
                                         case "java.lang.Integer" ->
@@ -214,60 +276,6 @@ public class CustomBlockMaker {
 
                 Utils.tryAndExecute(scriptContainer,"onPlaced",new Object[]{world,pos,state,placer,itemStack});
             }
-        }
-        thisCustomBlock.scriptContainer=new CustomScript(scriptName);
-
-        //props
-        var propsList = new LinkedList<Property>();
-        for (String propName : blockStates.keySet()) {
-            if (!validPropertyName.matcher(propName).matches()) continue;
-            var thisState = blockStates.get(propName).getAsJsonObject();
-            switch (thisState.get("type").getAsString()) {
-                case "int":
-                    propsList.add(IntProperty.of(
-                            propName,
-                            thisState.get("min").getAsInt(),
-                            thisState.get("max").getAsInt()
-                    ));
-                    break;
-                case "boolean":
-                    propsList.add(BooleanProperty.of(propName));
-                    break;
-                case "enum"://TODO
-                    //propsList.add(EnumProperty.of("test", 0, 3));
-                    break;
-                case "direction":
-                    propsList.add(DirectionProperty.of(propName));
-                    break;
-            }
-        }
-        thisCustomBlock.props = propsList.toArray(new Property[0]);
-
-        //shape
-        if(blockShapeJson.isJsonArray()) {
-            var blockShapeToGive = VoxelShapes.empty();
-            for (JsonElement element : (JsonArray) blockShapeJson) {
-                if (!element.isJsonArray())
-                    continue;
-                JsonArray elementArray = element.getAsJsonArray();
-                if (elementArray.size() != 6)
-                    continue;
-                blockShapeToGive = VoxelShapes.union(blockShapeToGive, VoxelShapes.cuboid(
-                        elementArray.get(0).getAsDouble(),
-                        elementArray.get(1).getAsDouble(),
-                        elementArray.get(2).getAsDouble(),
-                        elementArray.get(3).getAsDouble(),
-                        elementArray.get(4).getAsDouble(),
-                        elementArray.get(5).getAsDouble()
-                ));
-            }
-            thisCustomBlock.blockShape = blockShapeToGive;
-            thisCustomBlock.shapeIsScript=false;
-            thisCustomBlock.shapeScriptString=null;
-        }else{
-            thisCustomBlock.blockShape = VoxelShapes.empty();
-            thisCustomBlock.shapeIsScript=blockShapeJson.getAsString().startsWith("script:");
-            thisCustomBlock.shapeScriptString=thisCustomBlock.shapeIsScript?null:blockShapeJson.getAsString().substring(7);
         }
 
         return new thisCustomBlock(settings);

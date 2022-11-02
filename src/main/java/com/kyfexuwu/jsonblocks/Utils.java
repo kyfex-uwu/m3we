@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import org.jetbrains.annotations.NotNull;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
@@ -126,17 +127,22 @@ public class Utils {
     }
 
     public static <T> T tryAndExecute(T dfault, CustomScript scriptContainer, String funcString, Object[] args, Function<LuaValue,T> transformFunc){
-        if(scriptContainer==null) return dfault;
-        var func = scriptContainer.runEnv.get(funcString);
-        if(func.isnil())
+        try {
+            if (scriptContainer == null) return dfault;
+            var func = scriptContainer.runEnv.get(funcString);
+            if (func.isnil())
+                return dfault;
+
+            var luaArgs = new LuaValue[args.length];
+            for (int i = 0; i < luaArgs.length; i++) {
+                luaArgs[i] = Utils.toLuaValue(args[i]);
+            }
+
+            return transformFunc.apply(func.invoke(luaArgs).arg1());
+        }catch(LuaError e){
+            System.out.println("error!");
             return dfault;
-
-        var luaArgs=new LuaValue[args.length];
-        for(int i=0;i<luaArgs.length;i++){
-            luaArgs[i]=Utils.toLuaValue(args[i]);
         }
-
-        return transformFunc.apply(func.invoke(luaArgs).arg1());
     }
     public static void tryAndExecute(CustomScript scriptContainer, String funcString,Object[] args){
         tryAndExecute(null,scriptContainer, funcString, args, returnValue -> null);
