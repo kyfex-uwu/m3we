@@ -134,34 +134,42 @@ public class JBBlockIniter {
             settings = FabricBlockSettings.of(Material.STONE);
         }
 
-        //setting the properties of the blocksettings
-        CustomScript script = new CustomScript(blockJsonData.get("script").getAsString());
-        for(PropertyTranslator propToTranslate : JBBlockIniter.blockPropertyMap){
-            if(!blockJsonData.has(propToTranslate.jsonProp))
-                continue;
+        if(blockJsonData.has("script")) {
+            //setting the properties of the blocksettings
+            CustomScript script = new CustomScript(blockJsonData.get("script").getAsString());
+            for (PropertyTranslator propToTranslate : JBBlockIniter.blockPropertyMap) {
+                if (!blockJsonData.has(propToTranslate.jsonProp))
+                    continue;
 
 
-            try {
-                //setting the specified java field to
-                //the json value put through the transform func
-                settings.getClass().getField(propToTranslate.javaProp)
-                        .set(settings, propToTranslate.transformFunc.apply(new ScriptAndValue(
-                                script,
-                                blockJsonData.get(propToTranslate.jsonProp)
-                        )));
-            }catch(Exception e){
-                System.out.println(propToTranslate.jsonProp+" failt");
+                try {
+                    //setting the specified java field to
+                    //the json value put through the transform func
+                    settings.getClass().getField(propToTranslate.javaProp)
+                            .set(settings, propToTranslate.transformFunc.apply(new ScriptAndValue(
+                                    script,
+                                    blockJsonData.get(propToTranslate.jsonProp)
+                            )));
+                } catch (Exception e) {
+                    System.out.println(propToTranslate.jsonProp + " failt");
+                }
             }
+            script.remove();//IMPORTANT
         }
-        script.remove();//IMPORTANT
 
         Block thisBlock;
-        if(blockJsonData.has("blockStates")||blockJsonData.has("script")){
+        JsonObject blockStates = null;
+        String script = null;
+        if(blockJsonData.has("blockStates"))
+            blockStates = blockJsonData.get("blockStates").getAsJsonObject();
+        if(blockJsonData.has("script"))
+            script = blockJsonData.get("script").getAsString();
+        if(blockStates!=null||script!=null){
             thisBlock = CustomBlockMaker.from(
                     settings,
-                    blockJsonData.get("blockStates").getAsJsonObject(),
+                    blockStates,
                     blockJsonData.get("blockShape"),
-                    blockJsonData.get("script").getAsString()
+                    script
             );
         }else{
             thisBlock = new Block(settings);

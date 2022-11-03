@@ -20,6 +20,7 @@ public class CustomScript {
 
     public Globals runEnv;
     public final String name;
+    public final boolean isFake;
 
     private static Globals createNewGlobal(){
         var toReturn = new Globals();
@@ -54,7 +55,14 @@ public class CustomScript {
     }
 
     public CustomScript(String fileName){
+        if(fileName==null) {
+            this.name = "fake";
+            this.isFake = true;
+            return;
+        }
+
         this.name=fileName;
+        this.isFake=false;
 
         setScript(fileName);
 
@@ -74,6 +82,8 @@ public class CustomScript {
         }
     }
     public void remove(){
+        if(this.isFake) return;
+
         for(int i=0;i<scripts.size();i++){
             if(scripts.get(i).name.equals(this.name)) {
                 scripts.remove(i);
@@ -82,7 +92,12 @@ public class CustomScript {
         }
     }
 
-    private static LinkedList<CustomScript> scripts = new LinkedList<>();
+    public void setSelf(Object self){
+        if(this.isFake) return;
+        this.runEnv.set("self",new LuaSurfaceObj(self));
+    }
+
+    private static final LinkedList<CustomScript> scripts = new LinkedList<>();
     public static void reloadScript(String name){
         for(CustomScript script : scripts){
             if(!(script.name+".lua").equals(name))

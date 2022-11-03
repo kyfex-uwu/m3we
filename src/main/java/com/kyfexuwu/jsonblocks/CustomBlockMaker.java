@@ -105,30 +105,34 @@ public class CustomBlockMaker {
 
             @Override
             protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-                var propsList = new LinkedList<Property>();
-                for (String propName : blockStates.keySet()) {
-                    if (!validPropertyName.matcher(propName).matches()) continue;
-                    var thisState = blockStates.get(propName).getAsJsonObject();
-                    switch (thisState.get("type").getAsString()) {
-                        case "int":
-                            propsList.add(IntProperty.of(
-                                    propName,
-                                    thisState.get("min").getAsInt(),
-                                    thisState.get("max").getAsInt()
-                            ));
-                            break;
-                        case "boolean":
-                            propsList.add(BooleanProperty.of(propName));
-                            break;
-                        case "enum"://TODO
-                            //propsList.add(EnumProperty.of("test", 0, 3));
-                            break;
-                        case "direction":
-                            propsList.add(DirectionProperty.of(propName));
-                            break;
+                if(blockStates!=null) {
+                    var propsList = new LinkedList<Property>();
+                    for (String propName : blockStates.keySet()) {
+                        if (!validPropertyName.matcher(propName).matches()) continue;
+                        var thisState = blockStates.get(propName).getAsJsonObject();
+                        switch (thisState.get("type").getAsString()) {
+                            case "int":
+                                propsList.add(IntProperty.of(
+                                        propName,
+                                        thisState.get("min").getAsInt(),
+                                        thisState.get("max").getAsInt()
+                                ));
+                                break;
+                            case "boolean":
+                                propsList.add(BooleanProperty.of(propName));
+                                break;
+                            case "enum"://TODO
+                                //propsList.add(EnumProperty.of("test", 0, 3));
+                                break;
+                            case "direction":
+                                propsList.add(DirectionProperty.of(propName));
+                                break;
+                        }
                     }
+                    this.props = propsList.toArray(new Property[0]);
+                }else{
+                    this.props= new Property[0];
                 }
-                this.props = propsList.toArray(new Property[0]);
 
                 for (Property prop : props) {
                     builder.add(prop);
@@ -140,7 +144,7 @@ public class CustomBlockMaker {
 
             @Override
             public BlockState getPlacementState(ItemPlacementContext ctx){
-                scriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
+                scriptContainer.setSelf(this);
 
                 return Utils.tryAndExecute(this.getDefaultState(),scriptContainer,"getStateOnPlace",
                         new Object[]{ctx},returnValue->{
@@ -181,7 +185,7 @@ public class CustomBlockMaker {
             @Override//yes dont worry i already checked this is the one you need to override
             public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
                 if(shapeIsScript){
-                    scriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
+                    scriptContainer.setSelf(this);
 
                     return tryAndExecute(
                         VoxelShapes.empty(),
@@ -224,33 +228,33 @@ public class CustomBlockMaker {
 
             @Override
             public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-                scriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
+                scriptContainer.setSelf(this);
                 Utils.tryAndExecute(scriptContainer,"randomTick",new Object[]{state,world,pos,random});
             }
 
             @Override
             public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-                scriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
+                scriptContainer.setSelf(this);
 
                 Utils.tryAndExecute(scriptContainer,"neighborUpdate",new Object[]{state,world,pos,sourceBlock,sourcePos,notify});
             }
 
             @Override
             public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-                scriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
+                scriptContainer.setSelf(this);
 
                 Utils.tryAndExecute(scriptContainer,"scheduledTick",new Object[]{state,world,pos,random});
             }
 
             @Override
             public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction){
-                scriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
+                scriptContainer.setSelf(this);
                 return Utils.tryAndExecute(0,scriptContainer,"getStrongRedstonePower",
                         new Object[]{state,world,pos,direction}, LuaValue::checkint);
             }
             @Override
             public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction){
-                scriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
+                scriptContainer.setSelf(this);
 
                 return Utils.tryAndExecute(0,scriptContainer,"getWeakRedstonePower",
                         new Object[]{state,world,pos,direction}, LuaValue::checkint);
@@ -258,9 +262,9 @@ public class CustomBlockMaker {
 
             @Override
             public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-                scriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
+                scriptContainer.setSelf(this);
 
-                ActionResult toReturn = Utils.tryAndExecute(ActionResult.PASS,scriptContainer,"onUse",
+                return Utils.tryAndExecute(ActionResult.PASS,scriptContainer,"onUse",
                     new Object[]{state,world,pos,player,hand,hit}, returnValue->{
                         try {
                             return ActionResult.valueOf(returnValue.tojstring());
@@ -268,26 +272,25 @@ public class CustomBlockMaker {
                             return ActionResult.PASS;
                         }
                 });
-                return toReturn;
             }
 
             @Override
             public void onBroken(WorldAccess world, BlockPos pos, BlockState state){
-                scriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
+                scriptContainer.setSelf(this);
 
                 Utils.tryAndExecute(scriptContainer,"onBroken",new Object[]{world,pos,state});
             }
 
             @Override
             public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-                scriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
+                scriptContainer.setSelf(this);
 
                 Utils.tryAndExecute(scriptContainer,"onSteppedOn",new Object[]{world,pos,state,entity});
             }
 
             @Override
             public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-                scriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
+                scriptContainer.setSelf(this);
 
                 Utils.tryAndExecute(scriptContainer,"onPlaced",new Object[]{world,pos,state,placer,itemStack});
             }

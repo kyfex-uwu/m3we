@@ -109,12 +109,13 @@ public class JBItemIniter {
         }catch(UnsupportedOperationException ignored){}
 
         FabricItemSettings settings = new FabricItemSettings();
+        settings.group(JsonBlocks.m3weItems);
 
         for(PropertyTranslator propToTranslate : JBItemIniter.itemPropertyMap){
             try {
                 settings.getClass().getField(propToTranslate.javaProp)
                         .set(settings, propToTranslate.transformFunc.apply(
-                                new ScriptAndValue((CustomScript) null,itemJsonData.get(propToTranslate.jsonProp))
+                                new ScriptAndValue(null,itemJsonData.get(propToTranslate.jsonProp))
                         ));
             }catch(Exception ignored){}//whatever goes on in there, i dont wanna know uwu
         }

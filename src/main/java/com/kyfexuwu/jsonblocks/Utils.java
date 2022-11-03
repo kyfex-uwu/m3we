@@ -128,7 +128,7 @@ public class Utils {
 
     public static <T> T tryAndExecute(T dfault, CustomScript scriptContainer, String funcString, Object[] args, Function<LuaValue,T> transformFunc){
         try {
-            if (scriptContainer == null) return dfault;
+            if (scriptContainer.isFake) return dfault;
             var func = scriptContainer.runEnv.get(funcString);
             if (func.isnil())
                 return dfault;

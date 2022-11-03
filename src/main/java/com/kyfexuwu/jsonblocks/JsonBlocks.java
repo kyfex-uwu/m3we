@@ -1,28 +1,42 @@
 package com.kyfexuwu.jsonblocks;
 
-import com.kyfexuwu.jsonblocks.lua.CustomBlock;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.text.Text;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceType;
+import net.minecraft.util.Identifier;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.HashMap;
+import java.util.function.Function;
 
 public class JsonBlocks implements ModInitializer {
+
+    public static String MOD_ID = "m3we";
 
     public static HashMap<String, Block> jsonBlocks= new HashMap<>();
     public static HashMap<String, Item> jsonItems= new HashMap<>();
 
     public static File JBFolder =new File(FabricLoader.getInstance().getConfigDir()//just inside the .minecraft folder
-            .toString()+"\\jsonblocks-mods");
+            .toString()+"\\m3we");
+
+    public static final ItemGroup m3weItems = FabricItemGroupBuilder.build(
+            new Identifier(MOD_ID,"item_group"),
+            ()->new ItemStack(Blocks.BEACON)
+    );
 
     @Override
     public void onInitialize() {
@@ -35,26 +49,23 @@ public class JsonBlocks implements ModInitializer {
         File scriptsFolder = new File(JBFolder.getAbsolutePath()+"\\scripts");
         scriptsFolder.mkdir();
 
-        for (File modFile : blocksFolder.listFiles()) {
-            if(FilenameUtils.isExtension("json")) {
-                switch (JBBlockIniter.blockFromFile(modFile)) {
-                    case CANT_READ -> System.out.println("Can't read the file!");
-                    case BAD_JSON -> System.out.println("lol u messed up ur json");
-                    case IDK -> System.out.println("Message me on discord KYFEX#3614 and tell me to fix my mod");
-                    case YOU_DID_IT -> System.out.println("Registered block!");
+        initObjects(blocksFolder, JBBlockIniter::blockFromFile);
+        initObjects(itemsFolder, JBItemIniter::itemFromFile);
+
+        //--
+
+        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(
+            new SimpleSynchronousResourceReloadListener() {
+                @Override
+                public void reload(ResourceManager manager) {
+                    //todo
                 }
-            }
-        }
-        for (File modFile : itemsFolder.listFiles()) {
-            if(FilenameUtils.isExtension("json")) {
-                switch(JBItemIniter.itemFromFile(modFile)){
-                    case CANT_READ -> System.out.println("Can't read the file!");
-                    case BAD_JSON -> System.out.println("lol u messed up ur json");
-                    case IDK -> System.out.println("Message me on discord KYFEX#3614 and tell me to fix my mod");
-                    case YOU_DID_IT -> System.out.println("Registered item!");
+
+                @Override
+                public Identifier getFabricId() {
+                    return new Identifier(MOD_ID,"m3we_resources");
                 }
-            }
-        }
+            });
 
         //--
 
@@ -97,5 +108,26 @@ public class JsonBlocks implements ModInitializer {
                 })));
 
          */
+    }
+
+    private static void initObjects(File folder, Function<File, Utils.SuccessRate> func){
+        initObjects(folder,func,"");
+    }
+    private static void initObjects(File folder, Function<File, Utils.SuccessRate> func, String prefix){
+        prefix+=folder.getName()+"/";
+
+        for (File modFile : folder.listFiles()) {
+            if(modFile.isDirectory())
+                initObjects(modFile,func,prefix);
+
+            if(FilenameUtils.isExtension("json")) {
+                switch (func.apply(modFile)) {
+                    case CANT_READ -> System.out.println("Can't read file "+prefix+modFile.getName());
+                    case BAD_JSON -> System.out.println("Bad JSON in file "+prefix+modFile.getName());
+                    case IDK -> System.out.println("Message me on discord KYFEX#3614 and tell me to fix my mod");
+                    case YOU_DID_IT -> System.out.println("Registered file "+prefix+modFile.getName());
+                }
+            }
+        }
     }
 }
