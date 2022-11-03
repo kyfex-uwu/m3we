@@ -140,7 +140,7 @@ public class Utils {
 
             return transformFunc.apply(func.invoke(luaArgs).arg1());
         }catch(LuaError e){
-            System.out.println("error!");
+            System.out.println(e.getMessage());
             return dfault;
         }
     }

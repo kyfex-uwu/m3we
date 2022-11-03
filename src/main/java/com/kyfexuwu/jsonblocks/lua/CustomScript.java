@@ -36,7 +36,7 @@ public class CustomScript {
                 try{
                 chatHud=MinecraftClient.getInstance().inGameHud.getChatHud();//test this to see if we can cache it more
                     for (int i = 1, length = args.narg(); i <= length; i++) {
-                        chatHud.addMessage(Text.of(valueToString(args.arg(i), 0)));
+                        chatHud.addMessage(Text.of(valueToString(args.arg(i), 0)));//todo: make this expandable
                     }
                 }catch(NullPointerException e){
                     for (int i = 1, length = args.narg(); i <= length; i++) {
@@ -94,7 +94,7 @@ public class CustomScript {
     }
 
     private static final int maxLevels=5;
-    public static String valueToString(LuaValue value, int indents){
+    private static String valueToString(LuaValue value, int indents){
         StringBuilder toReturn= new StringBuilder();
         toReturn.append("  ".repeat(indents));
 
@@ -114,7 +114,32 @@ public class CustomScript {
                 }
             }
             case "surfaceObj" -> toReturn.append("java object: ").append(((LuaSurfaceObj) value).object.getClass().getSimpleName());
-            case "undecidedFunc" -> toReturn.append("java function: ").append(((UndecidedLuaFunction) value).methods[0].getName());
+            case "undecidedFunc" -> {
+                var refMethod = ((UndecidedLuaFunction) value).methods[0];
+                toReturn.append("java function: ")
+                        .append(refMethod.getName());
+
+                var paramClasses = refMethod.getParameterTypes();
+                if(paramClasses.length>0){
+                    toReturn.append(" [takes parameters of types ");
+                    for(Class clazz : paramClasses){
+                        toReturn.append(clazz.getName())
+                                .append(", ");
+                    }
+                    toReturn.append("]");
+                }else{
+                    toReturn.append(" [takes no parameters]");
+                }
+
+                var returnClass=refMethod.getReturnType();
+                if(!returnClass.equals(Void.class)) {
+                    toReturn.append(" [returns with type ")
+                            .append(returnClass.getName())
+                            .append("]");
+                }else{
+                    toReturn.append(" [does not return]");
+                }
+            }
         }
         return toReturn.toString();
     }

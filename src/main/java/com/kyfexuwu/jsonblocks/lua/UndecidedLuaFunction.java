@@ -56,11 +56,11 @@ public class UndecidedLuaFunction extends VarArgFunction {
                 //number cases
                 if(translatedArgs[i].getClass().equals(Double.class)){
                     if(paramTypes[i].equals(int.class)){
-                        translatedArgs[i] = (int) translatedArgs[i];
+                        translatedArgs[i] = ((Double)translatedArgs[i]).intValue();
                         continue;
                     }
                     if(paramTypes[i].equals(float.class)){
-                        translatedArgs[i] = (float) translatedArgs[i];
+                        translatedArgs[i] = ((Double)translatedArgs[i]).floatValue();
                         continue;
                     }
                     if(paramTypes[i].equals(double.class)){

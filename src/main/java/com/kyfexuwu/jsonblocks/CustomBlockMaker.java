@@ -245,8 +245,14 @@ public class CustomBlockMaker {
             @Override
             public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction){
                 scriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
-
                 return Utils.tryAndExecute(0,scriptContainer,"getStrongRedstonePower",
+                        new Object[]{state,world,pos,direction}, LuaValue::checkint);
+            }
+            @Override
+            public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction){
+                scriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
+
+                return Utils.tryAndExecute(0,scriptContainer,"getWeakRedstonePower",
                         new Object[]{state,world,pos,direction}, LuaValue::checkint);
             }
 
