@@ -91,8 +91,8 @@ public class JBItemIniter {
             new PropertyTranslator("isFireproof","fireproof",BoolTransformFunc),
     };
 
-    public static SuccessRate itemFromFile(File file) {
-        if(!file.canRead()) return SuccessRate.CANT_READ;
+    public static SuccessAndIdentifier itemFromFile(File file) {
+        if(!file.canRead()) return new SuccessAndIdentifier(SuccessRate.CANT_READ);
 
         JsonObject itemJsonData;
         try {
@@ -100,7 +100,7 @@ public class JBItemIniter {
                     Files.readString(file.toPath())
             ).getAsJsonObject();
         }catch(IOException | JsonSyntaxException e) {
-            return SuccessRate.BAD_JSON;
+            return new SuccessAndIdentifier(SuccessRate.BAD_JSON);
         }
 
         String itemName = "Invalid Name";
@@ -134,13 +134,14 @@ public class JBItemIniter {
                 validNamespaceName.matcher(itemJsonData.get("namespace").getAsString()).matches()){
             namespace=itemJsonData.get("namespace").getAsString();
         }
+        Identifier thisId = new Identifier(namespace, itemName);
         Registry.register(
                 Registry.ITEM,
-                new Identifier(namespace, itemName),
+                thisId,
                 thisItem
         );
         JsonBlocks.jsonItems.put(namespace+":"+itemName,thisItem);
 
-        return SuccessRate.YOU_DID_IT;
+        return new SuccessAndIdentifier(SuccessRate.YOU_DID_IT,thisId);
     }
 }

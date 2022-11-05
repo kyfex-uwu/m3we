@@ -3,25 +3,28 @@ package com.kyfexuwu.jsonblocks;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
-import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
 import org.apache.commons.io.FilenameUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.*;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class JsonBlocks implements ModInitializer {
 
@@ -32,6 +35,47 @@ public class JsonBlocks implements ModInitializer {
 
     public static File JBFolder =new File(FabricLoader.getInstance().getConfigDir()//just inside the .minecraft folder
             .toString()+"\\m3we");
+    public static final ResourcePack m3weResourcePack = new ResourcePack() {
+        @Nullable
+        @Override
+        public InputStream openRoot(String fileName) throws IOException {
+            return null;
+        }
+
+        @Override
+        public InputStream open(ResourceType type, Identifier id) throws IOException {
+            return null;
+        }
+
+        @Override
+        public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, Predicate<Identifier> allowedPathPredicate) {
+            return null;
+        }
+
+        @Override
+        public boolean contains(ResourceType type, Identifier id) {
+            return false;
+        }
+
+        @Override
+        public Set<String> getNamespaces(ResourceType type) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) throws IOException {
+            return null;
+        }
+
+        @Override
+        public String getName() {
+            return MOD_ID;
+        }
+
+        @Override
+        public void close() {}
+    };
 
     public static final ItemGroup m3weItems = FabricItemGroupBuilder.build(
             new Identifier(MOD_ID,"item_group"),
@@ -49,23 +93,8 @@ public class JsonBlocks implements ModInitializer {
         File scriptsFolder = new File(JBFolder.getAbsolutePath()+"\\scripts");
         scriptsFolder.mkdir();
 
-        initObjects(blocksFolder, JBBlockIniter::blockFromFile);
-        initObjects(itemsFolder, JBItemIniter::itemFromFile);
-
-        //--
-
-        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(
-            new SimpleSynchronousResourceReloadListener() {
-                @Override
-                public void reload(ResourceManager manager) {
-                    //todo
-                }
-
-                @Override
-                public Identifier getFabricId() {
-                    return new Identifier(MOD_ID,"m3we_resources");
-                }
-            });
+        initObjects(blocksFolder, JBBlockIniter::blockFromFile,"");
+        initObjects(itemsFolder, JBItemIniter::itemFromFile,"");
 
         //--
 
@@ -96,6 +125,7 @@ public class JsonBlocks implements ModInitializer {
             System.out.println("something happened to the watcher");
             e.printStackTrace();
         }
+
         //--
 
         /*
@@ -110,22 +140,22 @@ public class JsonBlocks implements ModInitializer {
          */
     }
 
-    private static void initObjects(File folder, Function<File, Utils.SuccessRate> func){
-        initObjects(folder,func,"");
-    }
-    private static void initObjects(File folder, Function<File, Utils.SuccessRate> func, String prefix){
+    private static void initObjects(File folder,Function<File, Utils.SuccessAndIdentifier> func, String prefix){
         prefix+=folder.getName()+"/";
 
         for (File modFile : folder.listFiles()) {
             if(modFile.isDirectory())
                 initObjects(modFile,func,prefix);
 
-            if(FilenameUtils.isExtension("json")) {
-                switch (func.apply(modFile)) {
+            if(FilenameUtils.isExtension(modFile.getName(),"json")) {
+                Utils.SuccessAndIdentifier modObject = func.apply(modFile);
+                switch (modObject.successRate) {
                     case CANT_READ -> System.out.println("Can't read file "+prefix+modFile.getName());
                     case BAD_JSON -> System.out.println("Bad JSON in file "+prefix+modFile.getName());
                     case IDK -> System.out.println("Message me on discord KYFEX#3614 and tell me to fix my mod");
-                    case YOU_DID_IT -> System.out.println("Registered file "+prefix+modFile.getName());
+                    case YOU_DID_IT -> {
+                        System.out.println("Registered file "+prefix+modFile.getName());
+                    }
                 }
             }
         }

@@ -103,8 +103,8 @@ public class JBBlockIniter {
                     (ScriptAndValue SAV) -> PredTransformFunc(SAV,false)),
     };
 
-    public static SuccessRate blockFromFile(File file) {
-        if(!file.canRead()) return SuccessRate.CANT_READ;
+    public static SuccessAndIdentifier blockFromFile(File file) {
+        if(!file.canRead()) return new SuccessAndIdentifier(SuccessRate.CANT_READ);
 
         //file to json
         JsonObject blockJsonData;
@@ -113,7 +113,7 @@ public class JBBlockIniter {
                     Files.readString(file.toPath())
             ).getAsJsonObject();
         }catch(IOException | JsonSyntaxException e) {
-            return SuccessRate.BAD_JSON;
+            return new SuccessAndIdentifier(SuccessRate.BAD_JSON);
         }
 
         //setting block name
@@ -122,7 +122,7 @@ public class JBBlockIniter {
             blockName = blockJsonData.get("blockName").getAsString();
         }catch(Exception ignored){}//i have no clue what this can throw lol
         if(!validPathName.matcher(blockName).matches())
-            return SuccessRate.BAD_JSON;
+            return new SuccessAndIdentifier(SuccessRate.BAD_JSON);
 
         //setting material
         AbstractBlock.Settings settings;
@@ -180,13 +180,14 @@ public class JBBlockIniter {
                 validNamespaceName.matcher(blockJsonData.get("namespace").getAsString()).matches()){
             namespace=blockJsonData.get("namespace").getAsString();
         }
+        Identifier thisId = new Identifier(namespace, blockName);
         Registry.register(
                 Registry.BLOCK,
-                new Identifier(namespace, blockName),
+                thisId,
                 thisBlock
         );
         JsonBlocks.jsonBlocks.put(namespace+":"+blockName,thisBlock);
 
-        return SuccessRate.YOU_DID_IT;
+        return new SuccessAndIdentifier(SuccessRate.YOU_DID_IT,thisId);
     }
 }

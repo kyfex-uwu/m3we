@@ -7,6 +7,7 @@ import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import com.kyfexuwu.jsonblocks.lua.LuaSurfaceObj;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import org.jetbrains.annotations.NotNull;
@@ -25,11 +26,25 @@ public class Utils {
     public static Pattern validPropertyName = Pattern.compile("[a-z0-9_]+");
     public static Pattern validNamespaceName = Pattern.compile("[a-z0-9_.-]+");
     public static Pattern validPathName = Pattern.compile("[a-z0-9/._-]+");
+
     public enum SuccessRate {
         CANT_READ,
         BAD_JSON,
         IDK,
         YOU_DID_IT
+    }
+    public static class SuccessAndIdentifier{
+        public final SuccessRate successRate;
+        public final Identifier identifier;
+
+        public SuccessAndIdentifier(SuccessRate successRate, Identifier identifier){
+            this.successRate=successRate;
+            this.identifier=identifier;
+        }
+        public SuccessAndIdentifier(SuccessRate successRate){
+            this.successRate=successRate;
+            this.identifier=null;
+        }
     }
 
     public static class ScriptAndValue{
