@@ -1,5 +1,8 @@
 package com.kyfexuwu.jsonblocks;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
@@ -13,6 +16,7 @@ import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,9 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -35,45 +37,68 @@ public class JsonBlocks implements ModInitializer {
 
     public static File JBFolder =new File(FabricLoader.getInstance().getConfigDir()//just inside the .minecraft folder
             .toString()+"\\m3we");
+
+    public static Set<String> packNamespaces = new HashSet<>();
+    public static final JsonObject packMetadata = JsonHelper.deserialize("{" +
+        "\"pack\":{" +
+            "\"pack_format\":9," +
+            "\"description\":\""+MOD_ID+" resources\"" +
+        "}," +
+        "\"filter\":{}" +
+    "}");
     public static final ResourcePack m3weResourcePack = new ResourcePack() {
         @Nullable
-        @Override
+        @Override//done
         public InputStream openRoot(String fileName) throws IOException {
-            return null;
+            if (!fileName.contains("/") && !fileName.contains("\\")) {
+                return this.openFile(fileName);
+            } else {
+                throw new IllegalArgumentException("Root resources can only be filenames, not paths (no / allowed!)");
+            }
         }
 
-        @Override
+        @Override//done
         public InputStream open(ResourceType type, Identifier id) throws IOException {
-            return null;
+            return this.openFile(getFilename(type, id));
         }
 
+        //todo
+        private InputStream openFile(String name) throws IOException{
+            return null;
+        }
+        //todo
+        private static String getFilename(ResourceType type, Identifier id) {
+            return null;
+        }
+        //todo
         @Override
         public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, Predicate<Identifier> allowedPathPredicate) {
             return null;
         }
-
+        //todo
         @Override
         public boolean contains(ResourceType type, Identifier id) {
             return false;
         }
 
-        @Override
+        @Override//done
         public Set<String> getNamespaces(ResourceType type) {
-            return null;
+            return packNamespaces;
         }
 
         @Nullable
-        @Override
+        @Override//done
         public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) throws IOException {
-            return null;
+            return metaReader.fromJson(JsonHelper.getObject(packMetadata, metaReader.getKey()));
+            //large bruh
         }
 
-        @Override
+        @Override//done
         public String getName() {
             return MOD_ID;
         }
 
-        @Override
+        @Override//done
         public void close() {}
     };
 
@@ -155,6 +180,7 @@ public class JsonBlocks implements ModInitializer {
                     case IDK -> System.out.println("Message me on discord KYFEX#3614 and tell me to fix my mod");
                     case YOU_DID_IT -> {
                         System.out.println("Registered file "+prefix+modFile.getName());
+                        packNamespaces.add(modObject.identifier.getNamespace());
                     }
                 }
             }
