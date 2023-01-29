@@ -175,7 +175,7 @@ public class JBBlockIniter {
             thisBlock = new Block(settings);
         }
 
-        var namespace="json-blocks";
+        var namespace="m3we";
         if(blockJsonData.has("namespace")&&
                 validNamespaceName.matcher(blockJsonData.get("namespace").getAsString()).matches()){
             namespace=blockJsonData.get("namespace").getAsString();

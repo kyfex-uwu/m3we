@@ -49,7 +49,6 @@ public class m3weResourceMixin {
             }
         };
 
-        System.out.println("m3we resource pack added to list!");
         return toReturn;
     }
 

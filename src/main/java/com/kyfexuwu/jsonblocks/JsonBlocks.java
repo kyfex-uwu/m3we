@@ -1,8 +1,7 @@
 package com.kyfexuwu.jsonblocks;
 
-import com.google.gson.JsonElement;
+import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
@@ -20,9 +19,7 @@ import net.minecraft.util.JsonHelper;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.function.Function;
@@ -37,70 +34,6 @@ public class JsonBlocks implements ModInitializer {
 
     public static File JBFolder =new File(FabricLoader.getInstance().getConfigDir()//just inside the .minecraft folder
             .toString()+"\\m3we");
-
-    public static Set<String> packNamespaces = new HashSet<>();
-    public static final JsonObject packMetadata = JsonHelper.deserialize("{" +
-        "\"pack\":{" +
-            "\"pack_format\":9," +
-            "\"description\":\""+MOD_ID+" resources\"" +
-        "}," +
-        "\"filter\":{}" +
-    "}");
-    public static final ResourcePack m3weResourcePack = new ResourcePack() {
-        @Nullable
-        @Override//done
-        public InputStream openRoot(String fileName) throws IOException {
-            if (!fileName.contains("/") && !fileName.contains("\\")) {
-                return this.openFile(fileName);
-            } else {
-                throw new IllegalArgumentException("Root resources can only be filenames, not paths (no / allowed!)");
-            }
-        }
-
-        @Override//done
-        public InputStream open(ResourceType type, Identifier id) throws IOException {
-            return this.openFile(getFilename(type, id));
-        }
-
-        //todo
-        private InputStream openFile(String name) throws IOException{
-            return null;
-        }
-        //todo
-        private static String getFilename(ResourceType type, Identifier id) {
-            return null;
-        }
-        //todo
-        @Override
-        public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, Predicate<Identifier> allowedPathPredicate) {
-            return null;
-        }
-        //todo
-        @Override
-        public boolean contains(ResourceType type, Identifier id) {
-            return false;
-        }
-
-        @Override//done
-        public Set<String> getNamespaces(ResourceType type) {
-            return packNamespaces;
-        }
-
-        @Nullable
-        @Override//done
-        public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) throws IOException {
-            return metaReader.fromJson(JsonHelper.getObject(packMetadata, metaReader.getKey()));
-            //large bruh
-        }
-
-        @Override//done
-        public String getName() {
-            return MOD_ID;
-        }
-
-        @Override//done
-        public void close() {}
-    };
 
     public static final ItemGroup m3weItems = FabricItemGroupBuilder.build(
             new Identifier(MOD_ID,"item_group"),
@@ -179,11 +112,93 @@ public class JsonBlocks implements ModInitializer {
                     case BAD_JSON -> System.out.println("Bad JSON in file "+prefix+modFile.getName());
                     case IDK -> System.out.println("Message me on discord KYFEX#3614 and tell me to fix my mod");
                     case YOU_DID_IT -> {
-                        System.out.println("Registered file "+prefix+modFile.getName());
                         packNamespaces.add(modObject.identifier.getNamespace());
                     }
                 }
             }
         }
     }
+
+    public static File m3weResources = new File(JBFolder.getAbsolutePath()+"\\resources");
+    static{ m3weResources.mkdir(); }
+    public static final JsonObject packMetadata = JsonHelper.deserialize("{" +
+        "\"pack\":{" +
+            "\"pack_format\":9," +
+            "\"description\":\""+MOD_ID+" resources\"" +
+        "}" +
+    "}");
+    public static Set<String> packNamespaces = new HashSet<>();
+    public static HashMap<String,String> packFiles = new HashMap<>();
+    private static void crawlResources(File folder, String prefix, String namespace, String origFilePath){
+        for (File modFile : folder.listFiles()) {
+            if(modFile.isDirectory()) {
+                crawlResources(modFile, prefix+modFile.getName()+"/", namespace, origFilePath);
+            }else{
+                packFiles.put(namespace+":"+prefix+modFile.getName(),origFilePath+prefix+modFile.getName());
+            }
+        }
+    }
+    static{
+        m3weResources.mkdir();
+        for (File packDir : m3weResources.listFiles()) {
+            if(packDir.isDirectory()&&
+                Arrays.stream(packDir.list()).anyMatch(str-> str.equals("assets"))) {
+                for(File resourceDir : new File(packDir.getAbsolutePath()+"\\assets").listFiles()){
+                    crawlResources(resourceDir,"", resourceDir.getName(),
+                            packDir.getName()+"/assets/"+resourceDir.getName()+"/");
+                }
+            }
+        }
+    }
+    public static final ResourcePack m3weResourcePack = new ResourcePack() {
+        @Nullable
+        @Override//done
+        public InputStream openRoot(String fileName) throws IOException {
+            if (!fileName.contains("/") && !fileName.contains("\\")) {
+                return null;
+                //literally no clue what this is
+            } else {
+                throw new IllegalArgumentException("Root resources can only be filenames, not paths (no / allowed!)");
+            }
+        }
+
+        @Override//done
+        public InputStream open(ResourceType type, Identifier id) throws IOException {
+            return new FileInputStream(m3weResources.getAbsolutePath()+"/"+packFiles.get(id.toString()));
+        }
+
+        @Override//done
+        public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, Predicate<Identifier> allowedPathPredicate) {
+            //System.out.println(namespace+"\n"+prefix+"\n"+allowedPathPredicate.toString());
+            //todo: this asks for a font and a realms main screen, maybe i add?
+            return Lists.newArrayList();
+        }
+
+        @Override//done
+        public boolean contains(ResourceType type, Identifier id){
+            if(type==ResourceType.SERVER_DATA) return false;
+
+            return packFiles.containsKey(id.toString());
+        }
+
+        @Override//done
+        public Set<String> getNamespaces(ResourceType type) {
+            return packNamespaces;
+        }
+
+        @Nullable
+        @Override//done
+        public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) throws IOException {
+            if(!packMetadata.has(metaReader.getKey())) return null;
+            return metaReader.fromJson(JsonHelper.getObject(packMetadata, metaReader.getKey()));
+        }
+
+        @Override//done
+        public String getName() {
+            return MOD_ID;
+        }
+
+        @Override//done
+        public void close() {}
+    };
 }
