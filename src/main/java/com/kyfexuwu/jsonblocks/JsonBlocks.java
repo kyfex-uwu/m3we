@@ -3,19 +3,29 @@ package com.kyfexuwu.jsonblocks;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
+import com.kyfexuwu.jsonblocks.luablock.LuaBlock;
+import com.kyfexuwu.jsonblocks.luablock.LuaBlockEntity;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,6 +38,22 @@ import java.util.function.Predicate;
 public class JsonBlocks implements ModInitializer {
 
     public static String MOD_ID = "m3we";
+
+    public static Block luaBlock = new LuaBlock(FabricBlockSettings.copyOf(Blocks.COMMAND_BLOCK));
+    public static final BlockEntityType<LuaBlockEntity> luaBlockEntity = Registry.register(
+            Registry.BLOCK_ENTITY_TYPE,
+            new Identifier(MOD_ID, "lua_block"),
+            FabricBlockEntityTypeBuilder.create(LuaBlockEntity::new,luaBlock).build()
+    );
+    static{
+        Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "lua_block"),luaBlock);
+        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "lua_block"),
+                new BlockItem(luaBlock, new FabricItemSettings()));
+    }
+
+    public static final ScreenHandlerType<LuaBlockEntity.LuaBlockScreenHandler> luaBlockScreenHandler =
+            Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "lua_block"),
+            LuaBlockEntity.LuaBlockScreenHandlerType);
 
     public static HashMap<String, Block> jsonBlocks= new HashMap<>();
     public static HashMap<String, Item> jsonItems= new HashMap<>();
@@ -83,19 +109,6 @@ public class JsonBlocks implements ModInitializer {
             System.out.println("something happened to the watcher");
             e.printStackTrace();
         }
-
-        //--
-
-        /*
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
-                dispatcher.register(CommandManager.literal("m3wereload")
-                .executes(context -> {
-                    context.getSource().sendMessage(Text.literal("does nothing rn, might need it later"));
-
-                    return 1;
-                })));
-
-         */
     }
 
     private static void initObjects(File folder,Function<File, Utils.SuccessAndIdentifier> func, String prefix){

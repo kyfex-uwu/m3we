@@ -51,10 +51,4 @@ public class m3weResourceMixin {
 
         return toReturn;
     }
-
-    @Inject(method = "<init>", at = @At("TAIL"))
-    private void lookAtDirectories(RunArgs args, CallbackInfo info) {
-        System.out.println("args.directories.runDir: "+args.directories.runDir.getAbsolutePath());
-        System.out.println("args.directories.getResourceIndex(): "+args.directories.getResourceIndex());
-    }
 }
