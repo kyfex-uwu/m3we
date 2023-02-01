@@ -42,9 +42,10 @@ public class CustomBlockMaker {
     public static Block from(AbstractBlock.Settings settings, JsonObject blockStates, JsonElement blockShapeJson, String scriptName) {
 
         class thisCustomBlock extends Block implements CustomBlock {
-            public final CustomScript scriptContainer;
             public Property[] props;
             public final VoxelShape blockShape;
+
+            public final CustomScript scriptContainer;
             public final boolean shapeIsScript;
             public final String shapeScriptString;
 
@@ -62,6 +63,7 @@ public class CustomBlockMaker {
                         JsonArray elementArray = element.getAsJsonArray();
                         if (elementArray.size() != 6)
                             continue;
+
                         blockShapeToGive = VoxelShapes.union(blockShapeToGive, VoxelShapes.cuboid(
                                 elementArray.get(0).getAsDouble(),
                                 elementArray.get(1).getAsDouble(),
@@ -83,7 +85,7 @@ public class CustomBlockMaker {
                 //--
 
                 var defaultState = getStateManager().getDefaultState();
-                for (Property prop : props) {
+                for (Property prop : this.props) {
                     try {
                         var jsonDefault = blockStates.get(prop.getName()).getAsJsonObject().get("default");
                         switch (prop.getType().getName()) {
@@ -134,7 +136,7 @@ public class CustomBlockMaker {
                     this.props= new Property[0];
                 }
 
-                for (Property prop : props) {
+                for (Property prop : this.props) {
                     builder.add(prop);
                 }
             }
@@ -184,7 +186,7 @@ public class CustomBlockMaker {
 
             @Override//yes dont worry i already checked this is the one you need to override
             public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-                if(shapeIsScript){
+                if(this.shapeIsScript){
                     scriptContainer.setSelf(this);
 
                     return tryAndExecute(
@@ -217,7 +219,7 @@ public class CustomBlockMaker {
                         }
                     );
                 }else{
-                    return blockShape;
+                    return this.blockShape;
                 }
             }
             @Override

@@ -3,8 +3,7 @@ package com.kyfexuwu.jsonblocks;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
-import com.kyfexuwu.jsonblocks.luablock.LuaBlock;
-import com.kyfexuwu.jsonblocks.luablock.LuaBlockEntity;
+import com.kyfexuwu.jsonblocks.luablock.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -18,7 +17,6 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
@@ -124,9 +122,7 @@ public class JsonBlocks implements ModInitializer {
                     case CANT_READ -> System.out.println("Can't read file "+prefix+modFile.getName());
                     case BAD_JSON -> System.out.println("Bad JSON in file "+prefix+modFile.getName());
                     case IDK -> System.out.println("Message me on discord KYFEX#3614 and tell me to fix my mod");
-                    case YOU_DID_IT -> {
-                        packNamespaces.add(modObject.identifier.getNamespace());
-                    }
+                    case YOU_DID_IT -> packNamespaces.add(modObject.identifier.getNamespace());
                 }
             }
         }
@@ -155,7 +151,7 @@ public class JsonBlocks implements ModInitializer {
         m3weResources.mkdir();
         for (File packDir : m3weResources.listFiles()) {
             if(packDir.isDirectory()&&
-                Arrays.stream(packDir.list()).anyMatch(str-> str.equals("assets"))) {
+                Arrays.asList(packDir.list()).contains("assets")) {
                 for(File resourceDir : new File(packDir.getAbsolutePath()+"\\assets").listFiles()){
                     crawlResources(resourceDir,"", resourceDir.getName(),
                             packDir.getName()+"/assets/"+resourceDir.getName()+"/");
@@ -166,7 +162,7 @@ public class JsonBlocks implements ModInitializer {
     public static final ResourcePack m3weResourcePack = new ResourcePack() {
         @Nullable
         @Override//done
-        public InputStream openRoot(String fileName) throws IOException {
+        public InputStream openRoot(String fileName){
             if (!fileName.contains("/") && !fileName.contains("\\")) {
                 return null;
                 //literally no clue what this is

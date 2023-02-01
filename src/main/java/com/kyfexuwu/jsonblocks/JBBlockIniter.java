@@ -134,46 +134,41 @@ public class JBBlockIniter {
             settings = FabricBlockSettings.of(Material.STONE);
         }
 
-        if(blockJsonData.has("script")) {
-            //setting the properties of the blocksettings
-            CustomScript script = new CustomScript(blockJsonData.get("script").getAsString());
-            for (PropertyTranslator propToTranslate : JBBlockIniter.blockPropertyMap) {
-                if (!blockJsonData.has(propToTranslate.jsonProp))
-                    continue;
+        //setting the properties of the blocksettings
+        String scriptName = null;
+        try{ scriptName = blockJsonData.get("script").getAsString(); }catch(Exception ignored){}
+        CustomScript tempScript = new CustomScript(scriptName);
+        for (PropertyTranslator propToTranslate : JBBlockIniter.blockPropertyMap) {
+            if (!blockJsonData.has(propToTranslate.jsonProp))
+                continue;
 
-
-                try {
-                    //setting the specified java field to
-                    //the json value put through the transform func
-                    settings.getClass().getField(propToTranslate.javaProp)
-                            .set(settings, propToTranslate.transformFunc.apply(new ScriptAndValue(
-                                    script,
-                                    blockJsonData.get(propToTranslate.jsonProp)
-                            )));
-                } catch (Exception e) {
-                    System.out.println(propToTranslate.jsonProp + " failt");
-                }
+            try {
+                //setting the specified java field to
+                //the json value put through the transform func
+                settings.getClass().getField(propToTranslate.javaProp)
+                        .set(settings, propToTranslate.transformFunc.apply(new ScriptAndValue(
+                                tempScript,
+                                blockJsonData.get(propToTranslate.jsonProp)
+                        )));
+            } catch (Exception e) {
+                System.out.println(propToTranslate.jsonProp + " failt");
             }
-            script.remove();//IMPORTANT
         }
+        tempScript.remove();
 
         Block thisBlock;
-        JsonObject blockStates = null;
+        JsonObject blockStates = new JsonObject();
         String script = null;
         if(blockJsonData.has("blockStates"))
             blockStates = blockJsonData.get("blockStates").getAsJsonObject();
         if(blockJsonData.has("script"))
             script = blockJsonData.get("script").getAsString();
-        if(blockStates!=null||script!=null){
-            thisBlock = CustomBlockMaker.from(
-                    settings,
-                    blockStates,
-                    blockJsonData.get("blockShape"),
-                    script
-            );
-        }else{
-            thisBlock = new Block(settings);
-        }
+        thisBlock = CustomBlockMaker.from(
+                settings,
+                blockStates,
+                blockJsonData.get("blockShape"),
+                script
+        );
 
         var namespace="m3we";
         if(blockJsonData.has("namespace")&&
