@@ -25,8 +25,6 @@ end
 function onUse(state,world,pos,player,hand,hit)
     for key in pairs(state) do
         print(key)
-        -- make sure you launch minecraft with the console
-        -- enabled, so you can see prints (this will be fixed later)
     end
 end
 

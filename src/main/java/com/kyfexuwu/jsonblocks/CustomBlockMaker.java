@@ -225,7 +225,7 @@ public class CustomBlockMaker {
             @Override
             public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
                 return getOutlineShape(state,world,pos,context);
-                //todo (this is so easy)
+                //todo (this is so easy) (but i do not wanna do it)
             }
 
             @Override
@@ -234,7 +234,7 @@ public class CustomBlockMaker {
                 Utils.tryAndExecute(scriptContainer,"randomTick",new Object[]{state,world,pos,random});
             }
 
-            @Override
+            @Override//this is actually deprecated, might wanna look into that
             public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
                 scriptContainer.setSelf(this);
 

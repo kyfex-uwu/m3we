@@ -1,20 +1,20 @@
 {
 	"namespace": "json-blocks",
-	"itemName":"name",
+	"itemName": "name",
 
-	"maxCount":64,
-	"maxDamage":0,
-	"recipeRemainder":"minecraft:air",
-	"itemGroup":"MISC",
-	"rarity":"COMMON",
-	"isFireproof":false,
+	"maxCount": 64,
+	"maxDamage": 0,
+	"recipeRemainder": "minecraft:air",
+	"itemGroup": "MISC",
+	"rarity": "COMMON",
+	"isFireproof": false,
 
-	"foodComponent":{
-		"hunger":0,
-		"saturation":0.0,
-		"isMeat":false,
-		"isAlwaysEdible":false,
-		"canEatFast":false,
+	"foodComponent": {
+		"hunger": 0,
+		"saturation": 0.0,
+		"isMeat": false,
+		"isAlwaysEdible": false,
+		"canEatFast": false,
 
 		"statusEffects": [
 			{

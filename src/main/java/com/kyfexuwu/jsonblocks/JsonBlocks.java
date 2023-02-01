@@ -12,6 +12,8 @@ import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityT
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -21,6 +23,7 @@ import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
@@ -28,6 +31,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.nio.file.*;
 import java.util.*;
 import java.util.function.Function;
@@ -66,6 +70,12 @@ public class JsonBlocks implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        /* //for enums
+        for(Field field : .class.getDeclaredFields())
+            if(field.getName().toUpperCase().equals(field.getName()))
+                System.out.print("\""+field.getName()+"\", ");
+         */
+
         JBFolder.mkdir();
 
         File blocksFolder = new File(JBFolder.getAbsolutePath()+"\\blocks");

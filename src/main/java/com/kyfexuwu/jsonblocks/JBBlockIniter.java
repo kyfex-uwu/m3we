@@ -24,7 +24,6 @@ import java.util.function.ToIntFunction;
 
 public class JBBlockIniter {
 
-    //need to just overhaul this entire thingy
     private static final PropertyTranslator[] blockPropertyMap = {
             new PropertyTranslator("hardness","hardness",FloatTransformFunc),
             new PropertyTranslator("resistance","resistance",FloatTransformFunc),
