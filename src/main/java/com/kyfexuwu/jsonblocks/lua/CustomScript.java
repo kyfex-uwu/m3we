@@ -48,10 +48,10 @@ public class CustomScript {
                     .setStyle(Style.EMPTY.withClickEvent(new CustomClickEvent(()->{
                         if(value.typename().equals("surfaceObj")||
                                 value.typename().equals("table")){
-                            LuaValue nextKey=LuaValue.NIL;
+                            LuaValue nextKey=(LuaValue) value.next(nextKey);
                             do {
-                                nextKey = (LuaValue) value.next(nextKey);
                                 toReturn.get("explore").call(value.get(nextKey),nextKey);
+                                nextKey = (LuaValue) value.next(nextKey);
                             } while (nextKey != LuaValue.NIL);
                         }else{
                             toReturn.get("print").call(value);
