@@ -3,8 +3,7 @@ package com.kyfexuwu.jsonblocks.lua;
 import com.kyfexuwu.jsonblocks.JsonBlocks;
 import com.kyfexuwu.jsonblocks.lua.api.*;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.ChatHud;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;
 import org.luaj.vm2.lib.*;
@@ -33,16 +32,32 @@ public class CustomScript {
         toReturn.set("print", new VarArgFunction() {
             @Override
             public Varargs invoke(Varargs args) {
-                try{
-                    for (int i = 1, length = args.narg(); i <= length; i++) {
-                        MinecraftClient.getInstance().inGameHud.getChatHud()
-                                .addMessage(Text.of(valueToString(args.arg(i), 0)));
-                    }
-                }catch(NullPointerException e){
-                    for (int i = 1, length = args.narg(); i <= length; i++) {
-                        System.out.println("printing: "+valueToString(args.arg(i), 0));
-                    }
+                for (int i = 1, length = args.narg(); i <= length; i++) {
+                    MinecraftClient.getInstance().inGameHud.getChatHud()
+                            .addMessage(Text.of(valueToString(args.arg(i), 0)));
                 }
+                return NIL;
+            }
+        });
+        toReturn.set("explore", new TwoArgFunction() {
+            @Override
+            public LuaValue call(LuaValue value, LuaValue key) {
+                if(key==LuaValue.NIL) key = LuaString.valueOf("Click to explore");
+
+                MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(Text.literal(key.toString())
+                    .setStyle(Style.EMPTY.withClickEvent(new CustomClickEvent(()->{
+                        if(value.typename().equals("surfaceObj")||
+                                value.typename().equals("table")){
+                            LuaValue nextKey=LuaValue.NIL;
+                            do {
+                                nextKey = (LuaValue) value.next(nextKey);
+                                toReturn.get("explore").call(value.get(nextKey),nextKey);
+                            } while (nextKey != LuaValue.NIL);
+                        }else{
+                            toReturn.get("print").call(value);
+                        }
+
+                    }))));
                 return NIL;
             }
         });
@@ -137,7 +152,7 @@ public class CustomScript {
                 if(paramClasses.length>0){
                     toReturn.append(" [takes parameters of types ");
                     for(Class clazz : paramClasses){
-                        toReturn.append(clazz.getName())
+                        toReturn.append(clazz.getSimpleName())
                                 .append(", ");
                     }
                     toReturn.append("]");
@@ -148,7 +163,7 @@ public class CustomScript {
                 var returnClass=refMethod.getReturnType();
                 if(!returnClass.equals(Void.class)) {
                     toReturn.append(" [returns with type ")
-                            .append(returnClass.getName())
+                            .append(returnClass.getSimpleName())
                             .append("]");
                 }else{
                     toReturn.append(" [does not return]");

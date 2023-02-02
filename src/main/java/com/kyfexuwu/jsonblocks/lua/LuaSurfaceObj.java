@@ -98,4 +98,8 @@ public class LuaSurfaceObj extends LuaTable {
     public void set(LuaValue key, LuaValue value){}
     @Override
     public void rawset(LuaValue key, LuaValue value){}
+
+    public String toString(){
+        return "java "+Object.class.getSimpleName();
+    }
 }

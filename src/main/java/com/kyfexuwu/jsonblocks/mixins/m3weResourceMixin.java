@@ -2,25 +2,16 @@ package com.kyfexuwu.jsonblocks.mixins;
 
 import com.kyfexuwu.jsonblocks.JsonBlocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.RunArgs;
-import net.minecraft.client.resource.ClientBuiltinResourcePackProvider;
 import net.minecraft.resource.*;
-import net.minecraft.resource.metadata.PackResourceMetadata;
-import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.io.File;
 import java.util.Arrays;
 
 @Mixin(MinecraftClient.class)
 public class m3weResourceMixin {
-    private static ResourcePack m3weResourcePack;
-
-    //i would be surprised if there werent bugs in here
     @ModifyArg(
             method = "<init>",
             at = @At(

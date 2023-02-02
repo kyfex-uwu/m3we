@@ -102,4 +102,8 @@ public class UndecidedLuaFunction extends VarArgFunction {
         }
         return NIL;
     }
+
+    public String toString(){
+        return "java function "+this.methods[0].getName();
+    }
 }
