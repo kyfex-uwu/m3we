@@ -71,9 +71,9 @@ public class Utils {
     static final Function<ScriptAndValue, Object> BoolTransformFunc = scriptAndValue -> scriptAndValue.value.getAsBoolean();
     static final Function<ScriptAndValue, Object> FloatTransformFunc = scriptAndValue -> scriptAndValue.value.getAsFloat();
     static final Function<ScriptAndValue, Object> IntTransformFunc = scriptAndValue -> scriptAndValue.value.getAsInt();
-    static Function<ScriptAndValue, Object> PredTransformFunc(ScriptAndValue SAV, boolean dfault){
+    static AbstractBlock.ContextPredicate PredTransformFunc(ScriptAndValue SAV, boolean dfault){ //this one works differently
         if(SAV.value.getAsString().startsWith("script:")) {
-            return scriptAndValue ->(AbstractBlock.ContextPredicate) (state, world, pos) -> tryAndExecute(
+            return (state, world, pos) -> tryAndExecute(
                     dfault,
                     SAV.script,
                     SAV.value.getAsString().substring(7),
@@ -81,7 +81,7 @@ public class Utils {
                     LuaValue::checkboolean
             );
         }else{
-            return scriptAndValue ->(AbstractBlock.ContextPredicate) (state, world, pos) -> SAV.value.getAsBoolean();
+            return (state, world, pos) -> SAV.value.getAsBoolean();
         }
     }
 

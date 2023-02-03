@@ -63,9 +63,9 @@ public class JBBlockIniter {
             }),
             new PropertyTranslator("drops","lootTableId",(ScriptAndValue SAV) -> {
                 try{
-                    return LootTables.class.getField(SAV.value.getAsString());
+                    return LootTables.class.getField(SAV.value.getAsString()).get(null);
                     //todo: custom drops
-                }catch(NoSuchFieldException e){
+                }catch(NoSuchFieldException | IllegalAccessException e){
                     return LootTables.EMPTY;
                 }
             }),
@@ -133,7 +133,7 @@ public class JBBlockIniter {
             settings = FabricBlockSettings.of(Material.STONE);
         }
 
-        //setting the properties of the blocksettings
+        //setting the properties of the block settings
         String scriptName = null;
         try{ scriptName = blockJsonData.get("script").getAsString(); }catch(Exception ignored){}
         CustomScript tempScript = new CustomScript(scriptName);
@@ -150,8 +150,6 @@ public class JBBlockIniter {
                                 blockJsonData.get(propToTranslate.jsonProp)
                         )));
             } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println(blockJsonData.get(propToTranslate.jsonProp).getClass().getSimpleName());
                 System.out.println(propToTranslate.jsonProp + " failt");
             }
         }
