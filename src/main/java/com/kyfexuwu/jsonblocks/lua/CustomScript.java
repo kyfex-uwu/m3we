@@ -42,22 +42,25 @@ public class CustomScript {
         toReturn.set("explore", new TwoArgFunction() {
             @Override
             public LuaValue call(LuaValue value, LuaValue key) {
+                var chatHud = MinecraftClient.getInstance().inGameHud.getChatHud();
+
                 if(key==LuaValue.NIL) key = LuaString.valueOf("Click to explore");
 
-                MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(Text.literal(key.toString())
-                    .setStyle(Style.EMPTY.withClickEvent(new CustomClickEvent(()->{
-                        if(value.typename().equals("surfaceObj")||
-                                value.typename().equals("table")){
-                            LuaValue nextKey=(LuaValue) value.next(nextKey);
-                            do {
-                                toReturn.get("explore").call(value.get(nextKey),nextKey);
-                                nextKey = (LuaValue) value.next(nextKey);
-                            } while (nextKey != LuaValue.NIL);
-                        }else{
-                            toReturn.get("print").call(value);
-                        }
-
-                    }))));
+                Style toStyle;
+                if(value.typename().equals("surfaceObj")||
+                        value.typename().equals("table")) {
+                    toStyle = Style.EMPTY.withClickEvent(new CustomClickEvent(() -> {
+                        LuaValue nextKey = (LuaValue) value.next(LuaValue.NIL);
+                        do {
+                            toReturn.get("explore").call(value.get(nextKey), nextKey);
+                            nextKey = (LuaValue) value.next(nextKey);
+                        } while (nextKey != LuaValue.NIL);
+                    }));
+                }else{
+                    toStyle = Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                            Text.of(value.toString())));
+                }
+                chatHud.addMessage(Text.literal(key.toString()).setStyle(toStyle));
                 return NIL;
             }
         });

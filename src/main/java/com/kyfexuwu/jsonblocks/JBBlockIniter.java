@@ -150,6 +150,8 @@ public class JBBlockIniter {
                                 blockJsonData.get(propToTranslate.jsonProp)
                         )));
             } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println(blockJsonData.get(propToTranslate.jsonProp).getClass().getSimpleName());
                 System.out.println(propToTranslate.jsonProp + " failt");
             }
         }
