@@ -6,6 +6,7 @@ import org.luaj.vm2.lib.TwoArgFunction;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 public class LuaSurfaceObj extends LuaTable {
@@ -48,6 +49,7 @@ public class LuaSurfaceObj extends LuaTable {
         }
 
         tempFieldNames.addAll(tempMethodNames);
+        tempFieldNames.sort(String::compareTo);
         valueNames = tempFieldNames.toArray(new String[0]);
     }
 
@@ -85,7 +87,7 @@ public class LuaSurfaceObj extends LuaTable {
         }
         String key = keyAsValue.toString();
         for(int i=0;i<this.valueNames.length-1;i++){
-            if(key.equals(this.valueNames[i])&&!key.equals("wait")){
+            if(key.equals(this.valueNames[i])&&!key.equals("wait")){//todo
                 return LuaValue.valueOf(this.valueNames[i+1]);
             }
         }

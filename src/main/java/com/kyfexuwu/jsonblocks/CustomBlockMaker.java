@@ -79,7 +79,7 @@ public class CustomBlockMaker {
                 }else{
                     this.blockShape = VoxelShapes.empty();
                     this.shapeIsScript=blockShapeJson.getAsString().startsWith("script:");
-                    this.shapeScriptString=this.shapeIsScript?null:blockShapeJson.getAsString().substring(7);
+                    this.shapeScriptString=this.shapeIsScript?blockShapeJson.getAsString().substring(7):null;
                 }
 
                 //--
@@ -189,6 +189,7 @@ public class CustomBlockMaker {
                 if(this.shapeIsScript){
                     scriptContainer.setSelf(this);
 
+                    if(shapeScriptString==null) return VoxelShapes.fullCube();
                     return tryAndExecute(
                         VoxelShapes.empty(),
                         scriptContainer,
@@ -196,11 +197,16 @@ public class CustomBlockMaker {
                         new Object[]{state, world, pos, context},
                         value -> {
                             var toReturn = VoxelShapes.empty();
+                            if(!value.istable()) return toReturn;
+
+                            if(!value.get(1).istable()) value = new LuaTable(value);
+                            //if there is only one table, use that
+                            //{0,0,0,1,1,1} => {{0,0,0,1,1,1}}
 
                             var size = value.length();
-                            for(int i=0;i<size;i++) {
-                                var currValue = value.get(i+1);
-                                if (!currValue.istable() || currValue.length() == 6)
+                            for (int i = 0; i < size; i++) {
+                                var currValue = value.get(i + 1);
+                                if (!currValue.istable() || currValue.length() != 6)
                                     continue;
 
                                 for (int count = 1; count <= 6; count++) {//lua Poopy
