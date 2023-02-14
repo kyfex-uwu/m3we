@@ -1,22 +1,15 @@
 package com.kyfexuwu.jsonblocks;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonPrimitive;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import com.kyfexuwu.jsonblocks.lua.LuaSurfaceObj;
 import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
-import org.jetbrains.annotations.NotNull;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
 import java.lang.reflect.Array;
-import java.util.HashMap;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 

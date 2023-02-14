@@ -33,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import static com.kyfexuwu.jsonblocks.Utils.tryAndExecute;
@@ -95,10 +96,12 @@ public class CustomBlockMaker {
                                     defaultState = defaultState.with(prop, jsonDefault.getAsBoolean());
                             case "net.minecraft.util.math.Direction" ->
                                     defaultState = defaultState.with(prop,
-                                        Direction.byName(jsonDefault.getAsString()));
-                            //todo: add enum
+                                            Direction.byName(jsonDefault.getAsString()));
+                            //case "java.lang.String" -> //fake enum
+                                    //todo: fix this rn, im lazy
                         }
                     } catch (Exception e) {
+                        e.printStackTrace();
                         System.out.println("Property " + prop.getName() + " has an invalid default value");
                     }
                 }
@@ -113,22 +116,24 @@ public class CustomBlockMaker {
                         if (!validPropertyName.matcher(propName).matches()) continue;
                         var thisState = blockStates.get(propName).getAsJsonObject();
                         switch (thisState.get("type").getAsString()) {
-                            case "int":
-                                propsList.add(IntProperty.of(
-                                        propName,
-                                        thisState.get("min").getAsInt(),
-                                        thisState.get("max").getAsInt()
-                                ));
-                                break;
-                            case "boolean":
-                                propsList.add(BooleanProperty.of(propName));
-                                break;
-                            case "enum"://TODO
-                                //propsList.add(EnumProperty.of("test", 0, 3));
-                                break;
-                            case "direction":
-                                propsList.add(DirectionProperty.of(propName));
-                                break;
+                            case "int" -> propsList.add(IntProperty.of(
+                                    propName,
+                                    thisState.get("min").getAsInt(),
+                                    thisState.get("max").getAsInt()
+                            ));
+                            case "boolean" -> propsList.add(BooleanProperty.of(propName));
+                            case "enum" -> {//TODO
+                                try {
+                                    var jsonArr=thisState.get("values").getAsJsonArray();
+                                    var arr=new ArrayList<String>();
+                                    for(JsonElement element : jsonArr){
+                                        arr.add(element.getAsString());
+                                    }
+
+                                    propsList.add(DynamicEnumProperty.of(propName,arr.toArray(new String[]{})));
+                                } catch (Exception ignored) {}
+                            }
+                            case "direction" -> propsList.add(DirectionProperty.of(propName));
                         }
                     }
                     this.props = propsList.toArray(new Property[0]);
