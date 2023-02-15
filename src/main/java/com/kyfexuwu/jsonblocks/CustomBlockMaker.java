@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.kyfexuwu.jsonblocks.lua.CustomBlock;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
-import com.kyfexuwu.jsonblocks.lua.LuaSurfaceObj;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -94,9 +93,6 @@ public class CustomBlockMaker {
                                     defaultState = defaultState.with(prop, jsonDefault.getAsInt());
                             case "java.lang.Boolean" ->
                                     defaultState = defaultState.with(prop, jsonDefault.getAsBoolean());
-                            case "net.minecraft.util.math.Direction" ->
-                                    defaultState = defaultState.with(prop,
-                                            Direction.byName(jsonDefault.getAsString()));
                             //case "java.lang.String" -> //fake enum
                                     //todo: fix this rn, im lazy
                         }
@@ -122,7 +118,7 @@ public class CustomBlockMaker {
                                     thisState.get("max").getAsInt()
                             ));
                             case "boolean" -> propsList.add(BooleanProperty.of(propName));
-                            case "enum" -> {//TODO
+                            case "enum" -> {
                                 try {
                                     var jsonArr=thisState.get("values").getAsJsonArray();
                                     var arr=new ArrayList<String>();
@@ -133,7 +129,6 @@ public class CustomBlockMaker {
                                     propsList.add(DynamicEnumProperty.of(propName,arr.toArray(new String[]{})));
                                 } catch (Exception ignored) {}
                             }
-                            case "direction" -> propsList.add(DirectionProperty.of(propName));
                         }
                     }
                     this.props = propsList.toArray(new Property[0]);
@@ -169,14 +164,9 @@ public class CustomBlockMaker {
                                         case "java.lang.Boolean" ->
                                                 stateToReturn = stateToReturn.with(prop,
                                                     returnValue.get(luaKeys[i]).checkboolean());
-                                        case "net.minecraft.util.math.Direction" -> {
-                                            if (returnValue.typename().equals("surfaceObj")){
-                                                stateToReturn = stateToReturn.with(prop,(Direction)((LuaSurfaceObj)returnValue).object);
-                                            }else {
+                                        case "java.lang.String" ->
                                                 stateToReturn = stateToReturn.with(prop,
-                                                        Direction.byName(returnValue.get(luaKeys[i]).toString()));
-                                            }
-                                        }
+                                                        returnValue.get(luaKeys[i]).checkjstring());
                                         //todo: add enum
                                     }
                                 }

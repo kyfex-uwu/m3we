@@ -40,11 +40,6 @@
 			"type": "boolean",
 			"default": true
 		},
-		"direc_prop":{
-				"_comment": "this is being deprecated soon",
-			"type": "direction",
-			"default": "south"
-		},
 		"enum_prop": {
 			"type": "enum",
 			"values": ["valueone","valuetwo","etc"]
