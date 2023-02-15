@@ -46,7 +46,8 @@ public class PropertyAPI extends TwoArgFunction {
             var setTo=(Object)Utils.toObject(luaSetTo);
             if(setTo instanceof Double) setTo=((Double)setTo).intValue();
             if(setTo instanceof Boolean) setTo= (Boolean) setTo;
-            if(setTo instanceof String) setTo=Direction.byName((String) setTo);//needs to be changed when i implement enums
+            if(setTo instanceof String) setTo=(String) setTo;
+            //todo: if the property is an enum, get the enum
 
             var world=(ServerWorld)((LuaSurfaceObj)worldPosState.get(1)).object;
             var pos=(BlockPos)((LuaSurfaceObj)worldPosState.get(2)).object;
