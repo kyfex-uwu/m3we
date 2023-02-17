@@ -27,7 +27,7 @@ public class LuaSurfaceObj extends LuaTable {
         this.setmetatable(thisMT);
 
         this.object=object;
-        Field[] fields = object.getClass().getFields();
+        Field[] fields = object.getClass().getFields();//todo: dont copy methods from Object class
         Method[] methods = object.getClass().getMethods();
 
         var tempFieldNames = new LinkedList<String>();

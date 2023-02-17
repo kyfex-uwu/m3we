@@ -1,4 +1,4 @@
-package com.kyfexuwu.jsonblocks;
+package com.kyfexuwu.jsonblocks.lua;
 
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.state.property.Property;

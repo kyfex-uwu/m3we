@@ -42,6 +42,7 @@ public class LuaBlockScreen extends HandledScreen<ScreenHandler> {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
         super.render(matrices, mouseX, mouseY, delta);
+        drawMouseoverTooltip(matrices, mouseX, mouseY);
     }
 
     @Override//done
