@@ -17,9 +17,14 @@ import java.util.Optional;
 public class DynamicGui extends HandledScreen<ScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("m3we", "textures/gui/gui_maker.png");
 
-    public DynamicGui(ScreenHandler handler, PlayerInventory inventory, Text title) {
-        super(handler, inventory, title);
-        //todo, get rendering from handler
+    private DynamicGuiBuilder.GuiRect[] rects = new DynamicGuiBuilder.GuiRect[0];
+    public DynamicGui(ScreenHandler pHandler, PlayerInventory inventory, Text title) {
+        super(pHandler, inventory, title);
+        if(!(pHandler instanceof DynamicGuiHandler)) return;
+
+        DynamicGuiHandler handler = (DynamicGuiHandler) pHandler;
+        rects=handler.rects;
+        rects= new DynamicGuiBuilder.GuiRect[]{new DynamicGuiBuilder.GuiRect(0, 0, 3, 3)};
     }
 
     @Override
@@ -30,20 +35,9 @@ public class DynamicGui extends HandledScreen<ScreenHandler> {
         int x = (width - 256) / 2;
         int y = (height - 196) / 2;
 
-        drawPiece(PieceType.TOPLEFT,matrices,x,y);
-        for(int i=1;i<=10;i++)
-            drawPiece(PieceType.TOP,matrices,x+i*4,y);
-        drawPiece(PieceType.TOPRIGHT,matrices,x+11*4,y);
-        for(int i=1;i<=5;i++) {
-            drawPiece(PieceType.LEFT,matrices,x,y+i*4);
-            for (int j = 1; j <= 10; j++)
-                drawPiece(PieceType.CENTER,matrices,x+j*4,y+i*4);
-            drawPiece(PieceType.RIGHT,matrices,x+11*4,y+i*4);
+        for(DynamicGuiBuilder.GuiRect rect : this.rects){
+            drawRect(matrices, rect.x,rect.y,rect.w,rect.h);
         }
-        drawPiece(PieceType.BOTTOMLEFT,matrices,x,y+6*4);
-        for(int i=1;i<=10;i++)
-            drawPiece(PieceType.BOTTOM,matrices,x+i*4,y+6*4);
-        drawPiece(PieceType.BOTTOMRIGHT,matrices,x+11*4,y+6*4);
     }
 
     private enum PieceType{
@@ -81,6 +75,22 @@ public class DynamicGui extends HandledScreen<ScreenHandler> {
     }
     private void drawPiece(PieceType type, MatrixStack matrices, int x, int y){
         DrawableHelper.drawTexture(matrices, x, y, 4,4,type.x,type.y,type.w,type.h,32,32);
+    }
+    private void drawRect(MatrixStack matrices, int x, int y, int w, int h){
+        drawPiece(PieceType.TOPLEFT,matrices,x,y);
+        for(int i=1;i<w-1;i++)
+            drawPiece(PieceType.TOP,matrices,x+i*4,y);
+        drawPiece(PieceType.TOPRIGHT,matrices,x+(w-1)*4,y);
+        for(int i=1;i<h-1;i++) {
+            drawPiece(PieceType.LEFT,matrices,x,y+i*4);
+            for (int j = 1; j <w-1; j++)
+                drawPiece(PieceType.CENTER,matrices,x+j*4,y+i*4);
+            drawPiece(PieceType.RIGHT,matrices,x+(w-1)*4,y+i*4);
+        }
+        drawPiece(PieceType.BOTTOMLEFT,matrices,x,y+(h-1)*4);
+        for(int i=1;i<w-1;i++)
+            drawPiece(PieceType.BOTTOM,matrices,x+i*4,y+(h-1)*4);
+        drawPiece(PieceType.BOTTOMRIGHT,matrices,x+(w-1)*4,y+(h-1)*4);
     }
 
     @Override
