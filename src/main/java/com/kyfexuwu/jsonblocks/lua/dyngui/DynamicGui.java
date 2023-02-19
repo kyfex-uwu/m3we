@@ -7,9 +7,12 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -17,14 +20,22 @@ import java.util.Optional;
 public class DynamicGui extends HandledScreen<ScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("m3we", "textures/gui/gui_maker.png");
 
-    private DynamicGuiBuilder.GuiRect[] rects = new DynamicGuiBuilder.GuiRect[0];
+    public DynamicGuiHandler handler;
     public DynamicGui(ScreenHandler pHandler, PlayerInventory inventory, Text title) {
         super(pHandler, inventory, title);
-        if(!(pHandler instanceof DynamicGuiHandler)) return;
+        this.handler = (DynamicGuiHandler) pHandler;
 
-        DynamicGuiHandler handler = (DynamicGuiHandler) pHandler;
-        rects=handler.rects;
-        rects= new DynamicGuiBuilder.GuiRect[]{new DynamicGuiBuilder.GuiRect(0, 0, 3, 3)};
+        this.handler.addListener(new ScreenHandlerListener(){
+            @Override
+            public void onSlotUpdate(ScreenHandler handler2, int slotId, ItemStack stack) {
+                System.out.println(stack.getName());
+            }
+
+            @Override
+            public void onPropertyUpdate(ScreenHandler handler2, int property, int value) {
+                System.out.println(property+","+value);
+            }
+        });
     }
 
     @Override
@@ -32,40 +43,37 @@ public class DynamicGui extends HandledScreen<ScreenHandler> {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, TEXTURE);
-        int x = (width - 256) / 2;
-        int y = (height - 196) / 2;
+        int x = (this.width-this.handler.gui.getLeft().width)/2;
+        int y = (this.height-this.handler.gui.getLeft().height)/2;
 
-        for(DynamicGuiBuilder.GuiRect rect : this.rects){
-            drawRect(matrices, rect.x,rect.y,rect.w,rect.h);
+        for(DynamicGuiBuilder.GuiRect rect : this.handler.gui.getLeft().rects){
+            drawRect(matrices, x+rect.x,y+rect.y,rect.w,rect.h);
+        }
+        for(Pair<Integer, Integer> slot : this.handler.gui.getLeft().slots){
+            drawPiece(PieceType.SLOT, matrices, x+slot.getLeft(), y+slot.getRight());
         }
     }
 
     private enum PieceType{
-        TOPLEFT(0,0),
-        TOP(4,0),
-        TOPRIGHT(8,0),
-        LEFT(0,4),
-        CENTER(4,4),
-        RIGHT(8,4),
-        BOTTOMLEFT(0,8),
-        BOTTOM(4,8),
-        BOTTOMRIGHT(8,8),
-        ITOPLEFT(12,0),
-        ITOPRIGHT(16,0),
-        IBOTTOMLEFT(12,4),
-        IBOTTOMRIGHT(16,4),
-        INVSPOT(0,14,18,18);
+        TOPLEFT(0,0,4,4),
+        TOP(4,0,1,4),
+        TOPRIGHT(5,0,4,5),
+        LEFT(0,4,4,1),
+        CENTER(4,4,1,1),
+        RIGHT(5,4,4,1),
+        BOTTOMLEFT(0,5,4,4),
+        BOTTOM(4,5,1,4),
+        BOTTOMRIGHT(5,5,4,4),
+        ITOPLEFT(9,0,4,4),
+        ITOPRIGHT(13,0,4,4),
+        IBOTTOMLEFT(9,4,4,4),
+        IBOTTOMRIGHT(13,4,4,4),
+        SLOT(0,14,18,18);
 
         public final int x;
         public final int y;
         public final int w;
         public final int h;
-        PieceType(int x, int y){
-            this.x=x;
-            this.y=y;
-            this.w=4;
-            this.h=4;
-        }
         PieceType(int x, int y, int w, int h){
             this.x=x;
             this.y=y;
@@ -73,24 +81,24 @@ public class DynamicGui extends HandledScreen<ScreenHandler> {
             this.h=h;
         }
     }
+    private void drawPiece(PieceType type, MatrixStack matrices, int x, int y, int w, int h){
+        DrawableHelper.drawTexture(matrices, x, y, w, h, type.x,type.y,type.w,type.h,32,32);
+    }
     private void drawPiece(PieceType type, MatrixStack matrices, int x, int y){
-        DrawableHelper.drawTexture(matrices, x, y, 4,4,type.x,type.y,type.w,type.h,32,32);
+        drawPiece(type,matrices, x, y, type.w,type.h);
     }
     private void drawRect(MatrixStack matrices, int x, int y, int w, int h){
         drawPiece(PieceType.TOPLEFT,matrices,x,y);
-        for(int i=1;i<w-1;i++)
-            drawPiece(PieceType.TOP,matrices,x+i*4,y);
-        drawPiece(PieceType.TOPRIGHT,matrices,x+(w-1)*4,y);
-        for(int i=1;i<h-1;i++) {
-            drawPiece(PieceType.LEFT,matrices,x,y+i*4);
-            for (int j = 1; j <w-1; j++)
-                drawPiece(PieceType.CENTER,matrices,x+j*4,y+i*4);
-            drawPiece(PieceType.RIGHT,matrices,x+(w-1)*4,y+i*4);
-        }
-        drawPiece(PieceType.BOTTOMLEFT,matrices,x,y+(h-1)*4);
-        for(int i=1;i<w-1;i++)
-            drawPiece(PieceType.BOTTOM,matrices,x+i*4,y+(h-1)*4);
-        drawPiece(PieceType.BOTTOMRIGHT,matrices,x+(w-1)*4,y+(h-1)*4);
+        drawPiece(PieceType.TOP,matrices,x+4,y,w-8,4);
+        drawPiece(PieceType.TOPRIGHT,matrices,x+w-4,y);
+
+        drawPiece(PieceType.LEFT,matrices,x,y+4,4,h-8);
+        drawPiece(PieceType.CENTER,matrices,x+4,y+4,w-8,h-8);
+        drawPiece(PieceType.RIGHT,matrices,x+w-4,y+4,4,h-8);
+
+        drawPiece(PieceType.BOTTOMLEFT,matrices,x,y+h-4);
+        drawPiece(PieceType.BOTTOM,matrices,x+4,y+h-4,w-8,4);
+        drawPiece(PieceType.BOTTOMRIGHT,matrices,x+w-4,y+h-4);
     }
 
     @Override
@@ -139,8 +147,4 @@ public class DynamicGui extends HandledScreen<ScreenHandler> {
     public boolean changeFocus(boolean lookForwards) {
         return super.changeFocus(lookForwards);
     }
-
-    //--
-
-    //public ScreenHandler getHandler
 }

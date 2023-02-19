@@ -1,20 +1,16 @@
 package com.kyfexuwu.jsonblocks.luablock;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.SharedConstants;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-public class LuaBlockScreen extends HandledScreen<ScreenHandler> {
+public class LuaBlockScreen extends HandledScreen<ScreenHandler>{
     private static final Identifier TEXTURE = new Identifier("m3we", "textures/gui/lua_code.png");
 
     public LuaBlockScreen(ScreenHandler handler, PlayerInventory inventory, Text title) {

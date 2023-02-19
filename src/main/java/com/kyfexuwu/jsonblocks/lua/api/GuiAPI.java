@@ -1,20 +1,20 @@
 package com.kyfexuwu.jsonblocks.lua.api;
 
 import com.kyfexuwu.jsonblocks.Utils;
-import com.kyfexuwu.jsonblocks.lua.dyngui.DynamicGui;
 import com.kyfexuwu.jsonblocks.lua.dyngui.DynamicGuiBuilder;
-import com.kyfexuwu.jsonblocks.lua.dyngui.DynamicGuiHandler;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.screen.AnvilScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.ThreeArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 
@@ -30,38 +30,50 @@ public class GuiAPI extends TwoArgFunction {
         return thisApi;
     }
 
-    static final class newGui extends OneArgFunction {
+    static final class newGui extends TwoArgFunction {
         @Override
-        public LuaValue call(LuaValue arg) {
-            return Utils.toLuaValue(new DynamicGuiBuilder());
-            //what is a "syncId"
-            //do player inv?
+        public LuaValue call(LuaValue width, LuaValue height) {
+            return Utils.toLuaValue(new DynamicGuiBuilder(width.checkint(), height.checkint()));
         }
     }
     static final class openGui extends ThreeArgFunction {
         @Override
-        public LuaValue call(LuaValue luaPlayer, LuaValue arg, LuaValue stateWorldPos) {
+        public LuaValue call(LuaValue luaPlayer, LuaValue guiName, LuaValue stateWorldPos) {
             if(!stateWorldPos.istable()||stateWorldPos.length()<3) return FALSE;
 
             PlayerEntity player;
             BlockState state;
             World world;
             BlockPos pos;
-            DynamicGuiBuilder thisGui;
+            String thisGui;
             try {
                 player = (PlayerEntity) Utils.toObject(luaPlayer);
                 state = (BlockState) Utils.toObject(stateWorldPos.get(1));
                 world = (World) Utils.toObject(stateWorldPos.get(2));
                 pos = (BlockPos) Utils.toObject(stateWorldPos.get(3));
-                thisGui = (DynamicGuiBuilder) Utils.toObject(arg);
+                thisGui = guiName.checkjstring();
             }catch(Exception e){
                 return FALSE;
             }
 
             try {
-                player.openHandledScreen(new SimpleNamedScreenHandlerFactory(
-                        (syncId,inventory,playerParam)->thisGui.build(syncId,inventory,playerParam),
-                        Text.of("Custom Interface")));
+                player.openHandledScreen(new ExtendedScreenHandlerFactory() {
+                    @Nullable
+                    @Override
+                    public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+                        return RegistryAPI.getGui(thisGui).getLeft().build(syncId,inv,player,thisGui);
+                    }
+
+                    @Override
+                    public Text getDisplayName() {
+                        return Text.of("Custom Interface");
+                    }
+
+                    @Override
+                    public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+                        buf.writeString(thisGui);
+                    }
+                });
             }catch(Exception e){
                 e.printStackTrace();
             }
