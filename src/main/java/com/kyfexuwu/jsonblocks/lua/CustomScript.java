@@ -68,6 +68,7 @@ public class CustomScript {
         toReturn.load(new PropertyAPI());
         toReturn.load(new GuiAPI());
         toReturn.load(new RegistryAPI());
+        toReturn.load(new DatastoreAPI());
         //toReturn.load(new EnumsAPI());
 
         return toReturn;

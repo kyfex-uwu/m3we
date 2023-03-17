@@ -10,9 +10,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
-import org.luaj.vm2.LuaFunction;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -24,7 +22,7 @@ public class DynamicGuiHandler extends ScreenHandler {
             Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "m3we_gui"),
                     new ExtendedScreenHandlerType<>(DynamicGuiHandler::new));
 
-    public final Pair<DynamicGuiBuilder, LuaFunction> gui;
+    public final DynamicGuiBuilder gui;
     public DynamicInventory inv= new DynamicInventory();
 
     //client
@@ -36,9 +34,17 @@ public class DynamicGuiHandler extends ScreenHandler {
         super(dynamicGuiHandler, syncId);
         this.gui = RegistryAPI.getGui(guiName);
 
-        var slots=this.gui.getLeft().slots;
-        for(int i=0;i<slots.size();i++)
-            this.addSlot(new Slot(inv, i,slots.get(i).getLeft(),slots.get(i).getRight()));//todo:position?
+        this.inv.setSize(this.gui.slotCount);
+        this.inv.onOpen(playerInventory.player);
+
+        if(this.gui.hasPlayerInventory){
+            for(int i=0;i<27;i++)
+                this.addSlot(new Slot(playerInventory,i+9,0,0));
+            for(int i=0;i<9;i++)
+                this.addSlot(new Slot(playerInventory,i,0,0));
+        }
+        for(int i=0;i<this.gui.slotCount;i++)
+            this.addSlot(new Slot(this.inv,i,i*5,i%5*5));
     }
 
     @Override
@@ -51,7 +57,7 @@ public class DynamicGuiHandler extends ScreenHandler {
         return true;//todo
     }
 
-    //--
+    //-- dont actually know if i need these
 
     public static final Field listenersField;
     static{

@@ -15,25 +15,25 @@ import java.util.HashMap;
 public class RegistryAPI extends TwoArgFunction {
     @Override
     public LuaValue call(LuaValue modname, LuaValue env) {
-        LuaTable thisApi = new LuaTable();
+        APITable thisApi = new APITable();
         thisApi.set("registerGui",new RegisterGUI());
         thisApi.set("getGui",new GetGUI());
 
+        thisApi.locked=true;
         env.set("Registry", thisApi);
         env.get("package").get("loaded").set("Registry", thisApi);
         return thisApi;
     }
 
-    static final HashMap<String, Pair<DynamicGuiBuilder, LuaFunction>> guis = new HashMap<>();
-    static final class RegisterGUI extends ThreeArgFunction {
+    static final HashMap<String, DynamicGuiBuilder> guis = new HashMap<>();
+    static final class RegisterGUI extends TwoArgFunction {
         @Override
-        public LuaValue call(LuaValue guiName, LuaValue guiVisuals, LuaValue guiBehavior) {
+        public LuaValue call(LuaValue guiName, LuaValue guiBehavior) {
             //if(guis.containsKey(guiName.checkjstring())) return FALSE;
             //to allow re-registering during development
 
             try{
-                guis.put(guiName.checkjstring(),
-                        new Pair<>((DynamicGuiBuilder) Utils.toObject(guiVisuals),guiBehavior.checkfunction()));
+                guis.put(guiName.checkjstring(),new DynamicGuiBuilder(guiBehavior));
                 return TRUE;
             }catch(Exception e){
                 e.printStackTrace();
@@ -49,7 +49,7 @@ public class RegistryAPI extends TwoArgFunction {
             return Utils.toLuaValue(toReturn);
         }
     }
-    public static Pair<DynamicGuiBuilder, LuaFunction> getGui(String name){
+    public static DynamicGuiBuilder getGui(String name){
         if(!guis.containsKey(name)) return null;
         return guis.get(name);
     }

@@ -15,10 +15,11 @@ import org.luaj.vm2.lib.TwoArgFunction;
 public class PropertyAPI extends TwoArgFunction {
     @Override
     public LuaValue call(LuaValue modname, LuaValue env) {
-        LuaTable thisApi = new LuaTable();
+        APITable thisApi = new APITable();
         thisApi.set("get",new getPropValue());
         thisApi.set("set",new setProperty());
 
+        thisApi.locked=true;
         env.set("Properties", thisApi);
         env.get("package").get("loaded").set("Properties", thisApi);
         return thisApi;

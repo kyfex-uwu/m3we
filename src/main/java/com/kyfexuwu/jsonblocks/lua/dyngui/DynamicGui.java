@@ -1,57 +1,56 @@
 package com.kyfexuwu.jsonblocks.lua.dyngui;
 
+import com.kyfexuwu.jsonblocks.lua.api.GuiAPI;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
+import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.util.Util;
+import org.lwjgl.glfw.GLFW;
 
-import java.util.Optional;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
-public class DynamicGui extends HandledScreen<ScreenHandler> {
-    private static final Identifier TEXTURE = new Identifier("m3we", "textures/gui/gui_maker.png");
+@Environment(value= EnvType.CLIENT)
+public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
+    //todo: widget support
+    // net.minecraft.client.gui.widget
+    public static final Identifier TEXTURE = new Identifier("m3we", "textures/gui/gui_maker.png");
 
     public DynamicGuiHandler handler;
-    public DynamicGui(ScreenHandler pHandler, PlayerInventory inventory, Text title) {
+    public PlayerInventory playerInventory;
+    public DynamicGui(DynamicGuiHandler pHandler, PlayerInventory inventory, Text title) {
         super(pHandler, inventory, title);
-        this.handler = (DynamicGuiHandler) pHandler;
+        this.handler = pHandler;
+        this.playerInventory = inventory;
 
         this.handler.addListener(new ScreenHandlerListener(){
             @Override
-            public void onSlotUpdate(ScreenHandler handler2, int slotId, ItemStack stack) {
-                System.out.println(stack.getName());
+            public void onSlotUpdate(ScreenHandler thisHandler, int slotId, ItemStack stack) {
+                thisHandler.slots.get(slotId).setStack(stack);
             }
 
             @Override
-            public void onPropertyUpdate(ScreenHandler handler2, int property, int value) {
+            public void onPropertyUpdate(ScreenHandler thisHandler, int property, int value) {
                 System.out.println(property+","+value);
             }
         });
-    }
-
-    @Override
-    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, TEXTURE);
-        int x = (this.width-this.handler.gui.getLeft().width)/2;
-        int y = (this.height-this.handler.gui.getLeft().height)/2;
-
-        for(DynamicGuiBuilder.GuiRect rect : this.handler.gui.getLeft().rects){
-            drawRect(matrices, x+rect.x,y+rect.y,rect.w,rect.h);
-        }
-        for(Pair<Integer, Integer> slot : this.handler.gui.getLeft().slots){
-            drawPiece(PieceType.SLOT, matrices, x+slot.getLeft(), y+slot.getRight());
-        }
     }
 
     private enum PieceType{
@@ -81,13 +80,13 @@ public class DynamicGui extends HandledScreen<ScreenHandler> {
             this.h=h;
         }
     }
-    private void drawPiece(PieceType type, MatrixStack matrices, int x, int y, int w, int h){
+    private static void drawPiece(PieceType type, MatrixStack matrices, int x, int y, int w, int h){
         DrawableHelper.drawTexture(matrices, x, y, w, h, type.x,type.y,type.w,type.h,32,32);
     }
-    private void drawPiece(PieceType type, MatrixStack matrices, int x, int y){
+    private static void drawPiece(PieceType type, MatrixStack matrices, int x, int y){
         drawPiece(type,matrices, x, y, type.w,type.h);
     }
-    private void drawRect(MatrixStack matrices, int x, int y, int w, int h){
+    private static void drawRect(MatrixStack matrices, int x, int y, int w, int h){
         drawPiece(PieceType.TOPLEFT,matrices,x,y);
         drawPiece(PieceType.TOP,matrices,x+4,y,w-8,4);
         drawPiece(PieceType.TOPRIGHT,matrices,x+w-4,y);
@@ -101,6 +100,125 @@ public class DynamicGui extends HandledScreen<ScreenHandler> {
         drawPiece(PieceType.BOTTOMRIGHT,matrices,x+w-4,y+h-4);
     }
 
+    static abstract class GuiComponent{
+        public int x=0;
+        public int y=0;
+        public DynamicGui gui;
+        public abstract void draw(MatrixStack matrices, int x, int y);
+    }
+    Field slotX;
+    Field slotY;{
+        try {
+            slotX=Slot.class.getField("x");
+            slotX.setAccessible(true);
+            slotY=Slot.class.getField("y");
+            slotY.setAccessible(true);
+        } catch (Exception ignored) { }
+    }
+    public static class RectGuiComponent extends GuiComponent{
+        public int w;
+        public int h;
+        public RectGuiComponent(int x, int y, int w, int h){
+            this.x=x;
+            this.y=y;
+            this.w=w;
+            this.h=h;
+        }
+        public void draw(MatrixStack matrices, int x, int y){
+            drawRect(matrices, this.x+x,this.y+y,this.w,this.h);
+        }
+    }
+    public static class SlotGuiComponent extends GuiComponent{
+        public int index;
+        public boolean isPlayerInv;
+        public SlotGuiComponent(int x, int y, int index, DynamicGui gui, boolean isPlayerInv){
+            this.x=x;
+            this.y=y;
+            this.index=index;
+            this.gui=gui;
+            this.isPlayerInv=isPlayerInv;
+        }
+        public void draw(MatrixStack matrices, int x, int y){
+            drawPiece(PieceType.SLOT,matrices,this.x+x,this.y+y);
+        }
+        public void drawItem(MatrixStack matrices, int x, int y){
+            Slot slot;//big todo here
+            if(this.isPlayerInv)
+                slot=this.gui.handler.slots.get(this.index);
+            else
+                slot=this.gui.handler.slots.get(this.index+36);
+            if (slot.x != this.x + 1 && slot.y != this.y + 1) {
+                try {//TODO!!! CAN THIS BE A MIXIN
+                    this.gui.slotX.set(slot, this.x + 1);
+                    this.gui.slotY.set(slot, this.y + 1);
+                } catch (Exception ignored) {
+                }
+            }
+        }
+    }
+    public static class TextGuiComponent extends GuiComponent{
+        public String text;
+        public TextGuiComponent(String text, int x, int y, DynamicGui gui){
+            this.text=text;
+            this.x=x;
+            this.y=y;
+            this.gui=gui;
+        }
+        public void draw(MatrixStack matrices, int x, int y){
+            gui.textRenderer.draw(matrices, this.text, this.x+x,this.y+y, 0x404040);
+        }
+    }
+
+    public ArrayList<GuiComponent> componentsToDraw = new ArrayList<>();
+    public GuiAPI.DrawingProps props;
+
+    @Override
+    public void init(){ }
+
+    public int mouseX;
+    public int mouseY;
+
+    Class[] guiComponentOrder = {RectGuiComponent.class, SlotGuiComponent.class, TextGuiComponent.class};
+    @Override
+    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderTexture(0, TEXTURE);
+
+        this.componentsToDraw.clear();
+        this.handler.gui.drawPrep.accept(this);
+        this.x=this.props.x;
+        this.y=this.props.y;
+        this.backgroundWidth=this.props.w;
+        this.backgroundHeight=this.props.h;
+
+        this.mouseX=mouseX;
+        this.mouseY=mouseY;
+        this.componentsToDraw.sort((c1,c2)->{
+            int c1Index=-1;
+            int c2Index=-1;
+            for(int i=0;i<this.guiComponentOrder.length;i++)
+                if(this.guiComponentOrder[i].isAssignableFrom(c1.getClass())){
+                    c1Index = i;
+                    break;
+                }
+            for(int i=0;i<this.guiComponentOrder.length;i++)
+                if(this.guiComponentOrder[i].isAssignableFrom(c2.getClass())){
+                    c2Index = i;
+                    break;
+                }
+
+            return c1Index-c2Index;
+        });
+        for(GuiComponent component : this.componentsToDraw) {
+            component.draw(matrices,this.x,this.y);
+        }
+        for(GuiComponent component : this.componentsToDraw){
+            if(component instanceof SlotGuiComponent)
+                ((SlotGuiComponent) component).drawItem(matrices, this.x, this.y);
+        }
+    }
+
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
@@ -109,42 +227,5 @@ public class DynamicGui extends HandledScreen<ScreenHandler> {
     }
 
     @Override
-    public Optional<Element> hoveredElement(double mouseX, double mouseY) {
-        return super.hoveredElement(mouseX, mouseY);
-    }
-
-    @Override
-    public void mouseMoved(double mouseX, double mouseY) {
-        super.mouseMoved(mouseX, mouseY);
-    }
-
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        return super.mouseScrolled(mouseX, mouseY, amount);
-    }
-
-    @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        return super.keyReleased(keyCode, scanCode, modifiers);
-    }
-
-    @Override
-    public boolean charTyped(char chr, int modifiers) {
-        return super.charTyped(chr, modifiers);
-    }
-
-    @Override
-    public void setInitialFocus(@Nullable Element element) {
-        super.setInitialFocus(element);
-    }
-
-    @Override
-    public void focusOn(@Nullable Element element) {
-        super.focusOn(element);
-    }
-
-    @Override
-    public boolean changeFocus(boolean lookForwards) {
-        return super.changeFocus(lookForwards);
-    }
+    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {}
 }
