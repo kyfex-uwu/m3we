@@ -1,4 +1,4 @@
-package com.kyfexuwu.jsonblocks;
+package com.kyfexuwu.jsonblocks.lua;
 
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.state.property.Property;
@@ -7,6 +7,7 @@ import java.util.*;
 
 public class DynamicEnumProperty extends Property<String> {
     private final ImmutableSet<String> values;
+    //todo: for some reason, in the test block "north"/first property arent being saved
 
     protected DynamicEnumProperty(String name, String[] values) {
         super(name, String.class);

@@ -1,6 +1,8 @@
 package com.kyfexuwu.jsonblocks.lua;
 
 import com.kyfexuwu.jsonblocks.Utils;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Text;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.TwoArgFunction;
 
@@ -27,7 +29,7 @@ public class LuaSurfaceObj extends LuaTable {
         this.setmetatable(thisMT);
 
         this.object=object;
-        Field[] fields = object.getClass().getFields();
+        Field[] fields = object.getClass().getFields();//todo: dont copy methods from Object class
         Method[] methods = object.getClass().getMethods();
 
         var tempFieldNames = new LinkedList<String>();
@@ -97,11 +99,18 @@ public class LuaSurfaceObj extends LuaTable {
     }
 
     @Override
-    public void set(LuaValue key, LuaValue value){}
+    public void set(LuaValue key, LuaValue value){
+        MinecraftClient.getInstance().inGameHud.getChatHud()
+                .addMessage(Text.of("You can't set properties on Java objects directly," +
+                        "see if there's a helper function instead!"));
+    }
     @Override
-    public void rawset(LuaValue key, LuaValue value){}
+    public void rawset(LuaValue key, LuaValue value){
+        MinecraftClient.getInstance().inGameHud.getChatHud()
+                .addMessage(Text.of("bruh"));
+    }
 
     public String toString(){
-        return "java "+Object.class.getSimpleName();
+        return "java: "+Object.class.getSimpleName();
     }
 }

@@ -1,5 +1,6 @@
 package com.kyfexuwu.jsonblocks;
 
+import com.kyfexuwu.jsonblocks.lua.dyngui.DynamicGui;
 import com.kyfexuwu.jsonblocks.luablock.LuaBlockScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
@@ -9,6 +10,7 @@ import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.RenderLayer;
 
 import static com.kyfexuwu.jsonblocks.JsonBlocks.luaBlockScreenHandler;
+import static com.kyfexuwu.jsonblocks.lua.dyngui.DynamicGuiHandler.dynamicGuiHandler;
 
 @Environment(EnvType.CLIENT)
 public class JsonBlocksClient implements ClientModInitializer {
@@ -19,5 +21,7 @@ public class JsonBlocksClient implements ClientModInitializer {
             if(!block.getDefaultState().isOpaque())
                 BlockRenderLayerMap.INSTANCE.putBlock(block, RenderLayer.getCutout());
         });
+
+        HandledScreens.register(dynamicGuiHandler, DynamicGui::new);
     }
 }

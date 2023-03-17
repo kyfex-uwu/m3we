@@ -66,7 +66,10 @@ public class CustomScript {
         });
 
         toReturn.load(new PropertyAPI());
-        toReturn.load(new EnumsAPI());
+        toReturn.load(new GuiAPI());
+        toReturn.load(new RegistryAPI());
+        toReturn.load(new DatastoreAPI());
+        //toReturn.load(new EnumsAPI());
 
         return toReturn;
     }
@@ -96,6 +99,7 @@ public class CustomScript {
             ).call();
         }catch(IOException | LuaError e){
             System.out.println("script "+fileName+" not loaded... it was a "+e.getClass().getName()+" exception");
+            e.printStackTrace();
         }
     }
     public void remove(){

@@ -14,7 +14,7 @@ public class EnumsAPI extends TwoArgFunction {
         applyEnum(Hand.values(),thisApi,"Hand");
 
         env.set("Enums", thisApi);
-        env.get("package").get("loaded").set("Properties", thisApi);
+        env.get("package").get("loaded").set("Enums", thisApi);
         return thisApi;
     }
 
