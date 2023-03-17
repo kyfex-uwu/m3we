@@ -40,15 +40,18 @@ import static com.kyfexuwu.jsonblocks.Utils.tryAndExecute;
 import static com.kyfexuwu.jsonblocks.Utils.validPropertyName;
 
 public class CustomBlockMaker {
-    public static Block from(AbstractBlock.Settings settings, JsonObject blockStates, JsonElement blockShapeJson, String scriptName) {
+    public static Block from(AbstractBlock.Settings settings, JsonObject blockStates,
+                             JsonElement blockShapeJson, JsonElement outlineShapeJson, String scriptName) {
 
         class thisCustomBlock extends Block implements CustomBlock {
             public Property[] props;
             public final VoxelShape blockShape;
+            public final VoxelShape outlineShape;
 
             public final CustomScript scriptContainer;
             public final boolean shapeIsScript;
             public final String shapeScriptString;
+            public final String outlineScriptString;
 
             public thisCustomBlock(Settings settings) {
                 super(settings);
@@ -81,6 +84,33 @@ public class CustomBlockMaker {
                     this.blockShape = VoxelShapes.empty();
                     this.shapeIsScript=blockShapeJson.getAsString().startsWith("script:");
                     this.shapeScriptString=this.shapeIsScript?blockShapeJson.getAsString().substring(7):null;
+                }
+                if(outlineShapeJson == null){
+                    this.outlineShape=this.blockShape;
+                    this.outlineScriptString=this.shapeScriptString;
+                }else if(outlineShapeJson.isJsonArray()){
+                    var outlineShapeToGive = VoxelShapes.empty();
+                    for (JsonElement element : (JsonArray) outlineShapeJson) {
+                        if (!element.isJsonArray())
+                            continue;
+                        JsonArray elementArray = element.getAsJsonArray();
+                        if (elementArray.size() != 6)
+                            continue;
+
+                        outlineShapeToGive = VoxelShapes.union(outlineShapeToGive, VoxelShapes.cuboid(
+                                elementArray.get(0).getAsDouble(),
+                                elementArray.get(1).getAsDouble(),
+                                elementArray.get(2).getAsDouble(),
+                                elementArray.get(3).getAsDouble(),
+                                elementArray.get(4).getAsDouble(),
+                                elementArray.get(5).getAsDouble()
+                        ));
+                    }
+                    this.outlineShape = outlineShapeToGive;
+                    this.outlineScriptString=null;
+                }else{
+                    this.outlineShape = VoxelShapes.empty();
+                    this.outlineScriptString=this.shapeScriptString;
                 }
 
                 //--
@@ -183,21 +213,20 @@ public class CustomBlockMaker {
             @Override//yes dont worry i already checked this is the one you need to override
             public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
                 if(this.shapeIsScript){
-                    scriptContainer.setSelf(this);
+                    if(this.outlineScriptString==null)
+                        return this.outlineShape!=null ? this.outlineShape : this.getCollisionShape(state, world, pos, context);
 
-                    if(shapeScriptString==null) return VoxelShapes.fullCube();
+                    scriptContainer.setSelf(this);
                     return tryAndExecute(
                         VoxelShapes.empty(),
                         scriptContainer,
-                        shapeScriptString,
+                        outlineScriptString,
                         new Object[]{state, world, pos, context},
                         value -> {
                             var toReturn = VoxelShapes.empty();
                             if(!value.istable()) return toReturn;
 
                             if(!value.get(1).istable()) value = new LuaTable(value);
-                            //if there is only one table, use that
-                            //{0,0,0,1,1,1} => {{0,0,0,1,1,1}}
 
                             var size = value.length();
                             for (int i = 0; i < size; i++) {
@@ -221,13 +250,52 @@ public class CustomBlockMaker {
                         }
                     );
                 }else{
-                    return this.blockShape;
+                    return this.outlineShape!=null ? this.outlineShape : this.getCollisionShape(state,world,pos,context);
                 }
             }
             @Override
             public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-                return getOutlineShape(state,world,pos,context);
-                //todo (this is so easy) (but i do not wanna do it)
+                if(this.shapeIsScript){
+                    if(shapeScriptString==null) return VoxelShapes.fullCube();
+                    scriptContainer.setSelf(this);
+
+                    return tryAndExecute(
+                            VoxelShapes.empty(),
+                            scriptContainer,
+                            shapeScriptString,
+                            new Object[]{state, world, pos, context},
+                            value -> {
+                                var toReturn = VoxelShapes.empty();
+                                if(!value.istable()) return toReturn;
+
+                                if(!value.get(1).istable()) value = new LuaTable(value);
+                                //if there is only one table, use that
+                                //{0,0,0,1,1,1} => {{0,0,0,1,1,1}}
+
+                                var size = value.length();
+                                for (int i = 0; i < size; i++) {
+                                    var currValue = value.get(i + 1);
+                                    if (!currValue.istable() || currValue.length() != 6)
+                                        continue;
+
+                                    for (int count = 1; count <= 6; count++) {//lua Poopy
+                                        toReturn = VoxelShapes.union(toReturn,
+                                                VoxelShapes.cuboid(
+                                                        currValue.get(1).checkdouble(),
+                                                        currValue.get(2).checkdouble(),
+                                                        currValue.get(3).checkdouble(),
+                                                        currValue.get(4).checkdouble(),
+                                                        currValue.get(5).checkdouble(),
+                                                        currValue.get(6).checkdouble()
+                                                ));
+                                    }
+                                }
+                                return toReturn;
+                            }
+                    );
+                }else{
+                    return this.blockShape;
+                }
             }
 
             @Override

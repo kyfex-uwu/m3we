@@ -166,6 +166,7 @@ public class JBBlockIniter {
                 settings,
                 blockStates,
                 blockJsonData.get("blockShape"),
+                blockJsonData.get("outlineShape"),
                 script
         );
 
