@@ -15,11 +15,15 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.LinkedList;
 
+import static org.luaj.vm2.LuaValue.NIL;
+
 public class CustomScript {
 
     public Globals runEnv;
     public final String name;
     public final boolean isFake;
+
+    public static LuaTable dataStore = new LuaTable();//todo, make this per world
 
     private static Globals createNewGlobal(){
         var toReturn = new Globals();
@@ -32,36 +36,13 @@ public class CustomScript {
         toReturn.set("print", new VarArgFunction() {
             @Override
             public Varargs invoke(Varargs args) {
-                for (int i = 1, length = args.narg(); i <= length; i++) {
-                    MinecraftClient.getInstance().inGameHud.getChatHud()
-                            .addMessage(Text.of(valueToString(args.arg(i), 0)));
-                }
-                return NIL;
+                return print(args);
             }
         });
         toReturn.set("explore", new TwoArgFunction() {
             @Override
             public LuaValue call(LuaValue value, LuaValue key) {
-                var chatHud = MinecraftClient.getInstance().inGameHud.getChatHud();
-
-                if(key==LuaValue.NIL) key = LuaString.valueOf("Click to explore");
-
-                Style toStyle;
-                if(value.typename().equals("surfaceObj")||
-                        value.typename().equals("table")) {
-                    toStyle = Style.EMPTY.withClickEvent(new CustomClickEvent(() -> {
-                        LuaValue nextKey = (LuaValue) value.next(LuaValue.NIL);
-                        do {
-                            toReturn.get("explore").call(value.get(nextKey), nextKey);
-                            nextKey = (LuaValue) value.next(nextKey);
-                        } while (nextKey != LuaValue.NIL);
-                    }));
-                }else{
-                    toStyle = Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                            Text.of(value.toString())));
-                }
-                chatHud.addMessage(Text.literal(key.toString()).setStyle(toStyle));
-                return NIL;
+                return explore(value, key);
             }
         });
 
@@ -69,9 +50,47 @@ public class CustomScript {
         toReturn.load(new GuiAPI());
         toReturn.load(new RegistryAPI());
         toReturn.load(new DatastoreAPI());
-        //toReturn.load(new EnumsAPI());
+        toReturn.load(new CreateApi());
 
         return toReturn;
+    }
+
+    public static Varargs print(Varargs args){
+        StringBuilder toPrint= new StringBuilder();
+        for (int i = 1, length = args.narg(); i <= length; i++) {
+            if(args.narg()==1&&args.arg(1).isstring())
+                toPrint = new StringBuilder(args.arg(1).checkjstring());
+            else
+                toPrint.append(valueToString(args.arg(i), 0));
+        }
+        MinecraftClient.getInstance().inGameHud.getChatHud()
+                .addMessage(Text.of(toPrint.toString()));
+        return NIL;
+    }
+    public static LuaValue explore(LuaValue value, LuaValue key){
+        var chatHud = MinecraftClient.getInstance().inGameHud.getChatHud();
+
+        MutableText message = Text.empty();
+
+        if(value.typename().equals("surfaceObj") || value.typename().equals("table")) {
+            message.setStyle(Style.EMPTY.withClickEvent(new CustomClickEvent(() -> {
+                LuaValue nextKey = (LuaValue) value.next(NIL);
+                do {
+                    LuaValue finalNextKey = nextKey;
+                    message.append(Text.literal(nextKey.toString()+", ")
+                            .setStyle(Style.EMPTY.withClickEvent(new CustomClickEvent(()->{
+                                explore(value.get(finalNextKey), finalNextKey);
+                            }))));
+
+                    nextKey = (LuaValue) value.next(nextKey);
+                } while (nextKey != NIL);
+            })));
+        }else{
+            message.append(Text.literal(value.toString()));
+        }
+
+        chatHud.addMessage(message);
+        return NIL;
     }
 
     public CustomScript(String fileName){

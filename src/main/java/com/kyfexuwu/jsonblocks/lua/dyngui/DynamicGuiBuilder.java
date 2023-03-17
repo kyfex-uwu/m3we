@@ -16,13 +16,19 @@ import java.util.function.Consumer;
 
 public class DynamicGuiBuilder {
     public final Consumer<DynamicGui> drawPrep;
+    public final Runnable guiBehavior;
     public int slotCount;
     public boolean hasPlayerInventory;
 
     public DynamicGuiBuilder(LuaValue value){
         this.drawPrep = (gui) -> {
             ScriptError.execute(()->{
-                value.get("draw").call(Utils.toLuaValue(gui));
+                value.get("onClient").call(Utils.toLuaValue(gui));
+            });
+        };
+        this.guiBehavior = () -> {
+            ScriptError.execute(()->{
+                value.get("onServer").call();
             });
         };
         ScriptError.execute(()->{

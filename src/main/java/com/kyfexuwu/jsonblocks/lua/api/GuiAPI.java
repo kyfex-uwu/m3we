@@ -9,6 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -16,10 +17,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
-import org.luaj.vm2.lib.OneArgFunction;
-import org.luaj.vm2.lib.ThreeArgFunction;
-import org.luaj.vm2.lib.TwoArgFunction;
-import org.luaj.vm2.lib.VarArgFunction;
+import org.luaj.vm2.lib.*;
 
 public class GuiAPI extends TwoArgFunction {
     @Override
@@ -31,10 +29,14 @@ public class GuiAPI extends TwoArgFunction {
 
         thisApi.set("registerContext",new registerContext(props));
         thisApi.set("setBounds", new setBounds(props));
+
         thisApi.set("rect",new drawRect(props));
         thisApi.set("slot",new drawSlot(props));
         thisApi.set("text",new drawText(props));
         thisApi.set("playerInventory",new drawInv(props));
+
+        thisApi.set("getSlot",new getSlot(props));
+        thisApi.set("syncToClient",new syncClientServer(props));
 
         thisApi.locked = true;
         env.set("Gui", thisApi);
@@ -48,6 +50,8 @@ public class GuiAPI extends TwoArgFunction {
         public int y=0;
         public int w=0;
         public int h=0;
+
+        public int slotAmt=0;
     }
 
     static final class registerContext extends OneArgFunction {
@@ -155,11 +159,17 @@ public class GuiAPI extends TwoArgFunction {
 
         @Override
         public LuaValue call(LuaValue x, LuaValue y, LuaValue index){
-            return ScriptError.execute(()->{
+            var success =  ScriptError.execute(()->{
                 this.props.gui.componentsToDraw.add(new DynamicGui.SlotGuiComponent(
                         x.checkint(),y.checkint(),
                         index.checkint(), this.props.gui, false));
             });
+            if(success.v){
+                var toReturn=this.props.slotAmt+(this.props.gui.handler.gui.hasPlayerInventory?36:0);
+                this.props.slotAmt++;
+                return LuaValue.valueOf(toReturn);
+            }
+            return LuaValue.valueOf(-1);
         }
     }
     static final class drawText extends ThreeArgFunction {
@@ -213,6 +223,39 @@ public class GuiAPI extends TwoArgFunction {
                     index++;
                 }
             });
+        }
+    }
+
+    static final class getSlot extends OneArgFunction{
+        final DrawingProps props;
+        public getSlot(DrawingProps props){
+            super();
+            this.props=props;
+        }
+
+        @Override
+        public LuaValue call(LuaValue slotNum) {
+            final Slot[] toReturn = new Slot[1];
+            ScriptError.execute(()->{
+                toReturn[0] = this.props.gui.handler.slots.get(slotNum.checkint());
+            });
+            if(toReturn[0] == null)
+                return NIL;
+            return Utils.toLuaValue(toReturn[0]);
+        }
+    }
+    static final class syncClientServer extends ZeroArgFunction{
+        final DrawingProps props;
+        public syncClientServer(DrawingProps props){
+            super();
+            this.props=props;
+        }
+
+        @Override
+        public LuaValue call() {
+            this.props.gui.handler.inv.markDirty();
+            this.props.gui.playerInventory.markDirty();
+            return NIL;
         }
     }
 }

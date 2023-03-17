@@ -141,9 +141,9 @@ public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
         public void draw(MatrixStack matrices, int x, int y){
             drawPiece(PieceType.SLOT,matrices,this.x+x,this.y+y);
         }
-        public void drawItem(MatrixStack matrices, int x, int y){
+        public void drawItem(MatrixStack matrices, int x, int y, boolean noPlayerInv){
             Slot slot;//big todo here
-            if(this.isPlayerInv)
+            if(this.isPlayerInv || noPlayerInv)
                 slot=this.gui.handler.slots.get(this.index);
             else
                 slot=this.gui.handler.slots.get(this.index+36);
@@ -215,8 +215,11 @@ public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
         }
         for(GuiComponent component : this.componentsToDraw){
             if(component instanceof SlotGuiComponent)
-                ((SlotGuiComponent) component).drawItem(matrices, this.x, this.y);
+                ((SlotGuiComponent) component).drawItem(matrices, this.x, this.y,
+                        !this.handler.gui.hasPlayerInventory);
         }
+
+        this.props.slotAmt=0;
     }
 
     @Override
