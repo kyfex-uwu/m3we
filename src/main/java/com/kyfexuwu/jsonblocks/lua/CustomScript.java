@@ -1,6 +1,7 @@
 package com.kyfexuwu.jsonblocks.lua;
 
 import com.kyfexuwu.jsonblocks.JsonBlocks;
+import com.kyfexuwu.jsonblocks.Utils;
 import com.kyfexuwu.jsonblocks.lua.api.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.*;
@@ -13,6 +14,7 @@ import org.luaj.vm2.lib.jse.JseMathLib;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.Arrays;
 import java.util.LinkedList;
 
 import static org.luaj.vm2.LuaValue.NIL;
@@ -22,6 +24,9 @@ public class CustomScript {
     public Globals runEnv;
     public final String name;
     public final boolean isFake;
+
+    static final Disabled disabled = new Disabled();
+    static final LuaValue load = new Globals().get("load");
 
     public static LuaTable dataStore = new LuaTable();//todo, make this per world
 
@@ -39,10 +44,10 @@ public class CustomScript {
                 return print(args);
             }
         });
-        toReturn.set("explore", new TwoArgFunction() {
+        toReturn.set("explore", new OneArgFunction() {
             @Override
-            public LuaValue call(LuaValue value, LuaValue key) {
-                return explore(value, key);
+            public LuaValue call(LuaValue value) {
+                return explore(value);
             }
         });
 
@@ -52,9 +57,46 @@ public class CustomScript {
         toReturn.load(new DatastoreAPI());
         toReturn.load(new CreateApi());
 
+        toReturn.set("require",new require());
+        toReturn.set("load",disabled);
+        toReturn.set("dofile",disabled);
+        toReturn.set("loadfile",disabled);
+
         return toReturn;
     }
 
+    static Varargs createVarArgs(Object... args){
+        var luaArgs = Arrays.stream(args).map(Utils::toLuaValue).toArray(LuaValue[]::new);
+        return new Varargs() {
+            @Override
+            public LuaValue arg(int i) {
+                return luaArgs[i-1];
+            }
+
+            @Override
+            public int narg() {
+                return luaArgs.length;
+            }
+
+            @Override
+            public LuaValue arg1() {
+                return arg(1);
+            }
+
+            @Override
+            public Varargs subargs(int start) {
+                return createVarArgs(Arrays.copyOfRange(luaArgs,start-1,luaArgs.length));
+            }
+        };
+    }
+
+    static class Disabled extends VarArgFunction{
+        @Override
+        public Varargs invoke(Varargs args) {
+            print(LuaValue.valueOf("This value is disabled"));
+            return NIL;
+        }
+    }
     public static Varargs print(Varargs args){
         StringBuilder toPrint= new StringBuilder();
         for (int i = 1, length = args.narg(); i <= length; i++) {
@@ -67,7 +109,10 @@ public class CustomScript {
                 .addMessage(Text.of(toPrint.toString()));
         return NIL;
     }
-    public static LuaValue explore(LuaValue value, LuaValue key){
+    public static void print(Object... args){
+        print(createVarArgs(args));
+    }
+    public static LuaValue explore(LuaValue value){
         var chatHud = MinecraftClient.getInstance().inGameHud.getChatHud();
 
         MutableText message = Text.empty();
@@ -79,7 +124,7 @@ public class CustomScript {
                     LuaValue finalNextKey = nextKey;
                     message.append(Text.literal(nextKey.toString()+", ")
                             .setStyle(Style.EMPTY.withClickEvent(new CustomClickEvent(()->{
-                                explore(value.get(finalNextKey), finalNextKey);
+                                explore(value.get(finalNextKey));
                             }))));
 
                     nextKey = (LuaValue) value.next(nextKey);
@@ -91,6 +136,23 @@ public class CustomScript {
 
         chatHud.addMessage(message);
         return NIL;
+    }
+    public static class require extends OneArgFunction{
+        @Override
+        public LuaValue call(LuaValue arg) {
+            if(!arg.isstring() || arg.checkjstring().contains("..")) return NIL;
+            try{
+                System.out.println(load.call(LuaValue.valueOf("return 1")));
+                /*
+                System.out.println(load.call(Files.readString(new File(JsonBlocks.scriptsFolder.getAbsolutePath() +
+                        "\\" + arg.checkjstring() + ".lua").toPath())));
+
+                 */
+            }catch(Exception ignored){
+                ignored.printStackTrace();
+            }
+            return NIL;
+        }
     }
 
     public CustomScript(String fileName){

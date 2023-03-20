@@ -56,8 +56,11 @@ public class JsonBlocks implements ModInitializer {
     public static HashMap<String, Block> jsonBlocks= new HashMap<>();
     public static HashMap<String, Item> jsonItems= new HashMap<>();
 
-    public static File JBFolder =new File(FabricLoader.getInstance().getConfigDir()//just inside the .minecraft folder
+    public static File JBFolder = new File(FabricLoader.getInstance().getConfigDir()//just inside the .minecraft folder
             .toString()+"\\m3we");
+    public static File blocksFolder = new File(JBFolder.getAbsolutePath()+"\\blocks");
+    public static File itemsFolder = new File(JBFolder.getAbsolutePath()+"\\items");
+    public static File scriptsFolder = new File(JBFolder.getAbsolutePath()+"\\scripts");
 
     public static final ItemGroup m3weItems = FabricItemGroupBuilder.build(
             new Identifier(MOD_ID,"item_group"),
@@ -73,12 +76,8 @@ public class JsonBlocks implements ModInitializer {
          */
 
         JBFolder.mkdir();
-
-        File blocksFolder = new File(JBFolder.getAbsolutePath()+"\\blocks");
         blocksFolder.mkdir();
-        File itemsFolder = new File(JBFolder.getAbsolutePath()+"\\items");
         itemsFolder.mkdir();
-        File scriptsFolder = new File(JBFolder.getAbsolutePath()+"\\scripts");
         scriptsFolder.mkdir();
 
         initObjects(blocksFolder, JBBlockIniter::blockFromFile,"");
