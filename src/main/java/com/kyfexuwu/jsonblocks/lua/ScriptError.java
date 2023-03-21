@@ -9,11 +9,14 @@ import static org.luaj.vm2.LuaValue.TRUE;
 
 public class ScriptError {
      public static LuaBoolean execute(Runnable toRun){
-        return execute(toRun,false);
+        return execute(toRun,true);
     }
     public static LuaBoolean execute(Runnable toRun, boolean log){
          return execute(toRun,(e)->{
-             if(log) e.printStackTrace();
+             if(log){
+                 e.printStackTrace();
+                 CustomScript.print("Lua Error: "+e.getMessage());
+             }
          });
     }
     public static LuaBoolean execute(Runnable toRun, Consumer<Exception> onError){
