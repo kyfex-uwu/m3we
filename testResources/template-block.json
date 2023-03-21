@@ -1,10 +1,10 @@
 {
-		"_comment": "everything here is optional (unless marked otherwise, and it is the default.",
+		"_comment": "everything here is optional (unless marked otherwise), and it is the default. (unless marked otherwise)",
 		"_comment": "for example: if you leave out slipperiness, it will be automatically set to 0.6",
 		"_comment": "the fields marked with OR mean you can give it either data type",
 
 	"namespace": "m3we",
-	"blockName": "name",
+	"blockName": "name" REQUIRED,
 	"material": "STONE",
 
 	"hardness": 0.0,
@@ -44,18 +44,18 @@
 			"type": "enum",
 			"values": ["valueone","valuetwo","etc"]
 		}
-	},
+	} (defaults to no blockstates),
 
 	"blockShape": [
 		[0,0,0,1,0.5,1],
 		[0.375,0.5,0.375,0.625,0.75,0.625],
 		...
-	], OR "script:(state, world, pos, context) returnsTable",
+	], OR "script:(state, world, pos, context) returnsTable" (defaults to no blockshape),
 	"outlineShape": [
 		[0,0,0,1,0.5,1],
 		[0.375,0.5,0.375,0.625,0.75,0.625],
 		...
 	], OR "script:(state, world, pos, context) returnsTable" (if outlineShape is not specified, it defaults to blockShape),
 
-	"script": "template-script"
+	"script": "template-script" (defaults to no script)
 }
