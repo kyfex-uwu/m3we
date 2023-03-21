@@ -26,11 +26,10 @@ public class CustomScript {
     public final boolean isFake;
 
     static final Disabled disabled = new Disabled();
-    static final LuaValue load = new Globals().get("load");
 
     public static LuaTable dataStore = new LuaTable();//todo, make this per world
 
-    private static Globals createNewGlobal(){
+    private static Globals unsafeGlobal(){
         var toReturn = new Globals();
         toReturn.load(new JseBaseLib());
         toReturn.load(new PackageLib());//needed, trust me
@@ -57,7 +56,24 @@ public class CustomScript {
         toReturn.load(new DatastoreAPI());
         toReturn.load(new CreateApi());
 
-        toReturn.set("require",new require());
+        return toReturn;
+    }
+    private static Globals safeGlobal(){
+        var toReturn = unsafeGlobal();
+
+        var load = toReturn.get("load");
+        toReturn.set("loadLib", new OneArgFunction() {
+            @Override
+            public LuaValue call(LuaValue arg) {
+                if(!arg.isstring() || arg.checkjstring().contains("..")) return NIL;
+                try{
+                    return load.call(Files.readString(new File(JsonBlocks.scriptsFolder.getAbsolutePath() +
+                            "\\" + arg.checkjstring() + ".lua").toPath())).call();
+                }catch(Exception ignored){}
+                return NIL;
+            }
+        });
+        toReturn.set("require",disabled);
         toReturn.set("load",disabled);
         toReturn.set("dofile",disabled);
         toReturn.set("loadfile",disabled);
@@ -105,8 +121,12 @@ public class CustomScript {
             else
                 toPrint.append(valueToString(args.arg(i), 0));
         }
-        MinecraftClient.getInstance().inGameHud.getChatHud()
-                .addMessage(Text.of(toPrint.toString()));
+        try {
+            MinecraftClient.getInstance().inGameHud.getChatHud()
+                    .addMessage(Text.of(toPrint.toString()));
+        }catch(Exception e){
+            System.out.println(toPrint);
+        }
         return NIL;
     }
     public static void print(Object... args){
@@ -115,44 +135,26 @@ public class CustomScript {
     public static LuaValue explore(LuaValue value){
         var chatHud = MinecraftClient.getInstance().inGameHud.getChatHud();
 
-        MutableText message = Text.empty();
+        MutableText message = Text.literal("\n");
 
         if(value.typename().equals("surfaceObj") || value.typename().equals("table")) {
-            message.setStyle(Style.EMPTY.withClickEvent(new CustomClickEvent(() -> {
-                LuaValue nextKey = (LuaValue) value.next(NIL);
-                do {
-                    LuaValue finalNextKey = nextKey;
-                    message.append(Text.literal(nextKey.toString()+", ")
-                            .setStyle(Style.EMPTY.withClickEvent(new CustomClickEvent(()->{
-                                explore(value.get(finalNextKey));
-                            }))));
+            LuaValue nextKey = (LuaValue) value.next(NIL);
+            do {
+                LuaValue finalNextKey = nextKey;
+                message.append(Text.literal(nextKey.toString()+", ")
+                        .setStyle(Style.EMPTY.withClickEvent(new CustomClickEvent(()->{
+                            explore(value.get(finalNextKey));
+                        })).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                Text.literal(valueToString(value.get(finalNextKey),0))))));
 
-                    nextKey = (LuaValue) value.next(nextKey);
-                } while (nextKey != NIL);
-            })));
+                nextKey = (LuaValue) value.next(nextKey);
+            } while (nextKey != NIL);
         }else{
             message.append(Text.literal(value.toString()));
         }
 
         chatHud.addMessage(message);
         return NIL;
-    }
-    public static class require extends OneArgFunction{
-        @Override
-        public LuaValue call(LuaValue arg) {
-            if(!arg.isstring() || arg.checkjstring().contains("..")) return NIL;
-            try{
-                System.out.println(load.call(LuaValue.valueOf("return 1")));
-                /*
-                System.out.println(load.call(Files.readString(new File(JsonBlocks.scriptsFolder.getAbsolutePath() +
-                        "\\" + arg.checkjstring() + ".lua").toPath())));
-
-                 */
-            }catch(Exception ignored){
-                ignored.printStackTrace();
-            }
-            return NIL;
-        }
     }
 
     public CustomScript(String fileName){
@@ -170,7 +172,7 @@ public class CustomScript {
         scripts.add(this);
     }
     private void setScript(String fileName){
-        this.runEnv = createNewGlobal();
+        this.runEnv = safeGlobal();
 
         LoadState.install(this.runEnv);
         LuaC.install(this.runEnv);

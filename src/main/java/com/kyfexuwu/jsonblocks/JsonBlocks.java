@@ -87,7 +87,7 @@ public class JsonBlocks implements ModInitializer {
 
         try {
             WatchService watcher = FileSystems.getDefault().newWatchService();
-            new File(JsonBlocks.JBFolder + "\\scripts").toPath().register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
+            scriptsFolder.toPath().register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
             Thread watcherThread = new Thread(null, () -> {
                 try {
                     while (true) {
@@ -202,7 +202,7 @@ public class JsonBlocks implements ModInitializer {
 
         @Nullable
         @Override//done
-        public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) throws IOException {
+        public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) {
             if(!packMetadata.has(metaReader.getKey())) return null;
             return metaReader.fromJson(JsonHelper.getObject(packMetadata, metaReader.getKey()));
         }

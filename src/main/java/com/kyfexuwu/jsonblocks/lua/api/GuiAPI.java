@@ -3,6 +3,7 @@ package com.kyfexuwu.jsonblocks.lua.api;
 import com.kyfexuwu.jsonblocks.Utils;
 import com.kyfexuwu.jsonblocks.lua.ScriptError;
 import com.kyfexuwu.jsonblocks.lua.dyngui.DynamicGui;
+import com.kyfexuwu.jsonblocks.lua.dyngui.DynamicGuiHandler;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,18 +26,19 @@ public class GuiAPI extends TwoArgFunction {
         APITable thisApi = new APITable();
         thisApi.set("openGui",new openGui());
 
-        var props = new DrawingProps();
+        var dProps = new DrawingProps();
+        var hProps = new HandlerProps();
 
-        thisApi.set("registerContext",new registerContext(props));
-        thisApi.set("setBounds", new setBounds(props));
+        thisApi.set("registerContext",new registerContext(dProps,hProps));
 
-        thisApi.set("rect",new drawRect(props));
-        thisApi.set("slot",new drawSlot(props));
-        thisApi.set("text",new drawText(props));
-        thisApi.set("playerInventory",new drawInv(props));
+        thisApi.set("setBounds", new setBounds(dProps));
+        thisApi.set("rect",new drawRect(dProps));
+        thisApi.set("slot",new drawSlot(dProps));
+        thisApi.set("text",new drawText(dProps));
+        thisApi.set("playerInventory",new drawInv(dProps));
 
-        thisApi.set("getSlot",new getSlot(props));
-        thisApi.set("syncToClient",new syncClientServer(props));
+        thisApi.set("getSlot",new getSlot(hProps));
+        thisApi.set("doInWorld",new doInWorld(hProps));
 
         thisApi.locked = true;
         env.set("Gui", thisApi);
@@ -53,19 +55,30 @@ public class GuiAPI extends TwoArgFunction {
 
         public int slotAmt=0;
     }
+    public static class HandlerProps{
+        DynamicGuiHandler handler;
+    }
 
     static final class registerContext extends OneArgFunction {
-        final DrawingProps props;
-        public registerContext(DrawingProps props){
+        final DrawingProps dProps;
+        final HandlerProps hProps;
+        public registerContext(DrawingProps dProps, HandlerProps hProps){
             super();
-            this.props=props;
+            this.dProps=dProps;
+            this.hProps=hProps;
         }
 
         @Override
         public LuaValue call(LuaValue gui){
             return ScriptError.execute(()->{
-                this.props.gui = (DynamicGui) Utils.toObject(gui);
-                this.props.gui.props = this.props;
+                Object toSet = Utils.toObject(gui);
+
+                if(toSet instanceof DynamicGui) {
+                    this.dProps.gui = (DynamicGui) toSet;
+                    this.dProps.gui.props = this.dProps;
+                }else if(toSet instanceof DynamicGuiHandler){
+                    this.hProps.handler = (DynamicGuiHandler) Utils.toObject(gui);
+                }
             });
         }
     }
@@ -94,7 +107,7 @@ public class GuiAPI extends TwoArgFunction {
                     @Nullable
                     @Override
                     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                        return RegistryAPI.getGui(thisGui).build(syncId,inv,player,thisGui);
+                        return RegistryAPI.getGui(thisGui).build(syncId,inv,player,world,pos,thisGui);
                     }
 
                     @Override
@@ -226,35 +239,41 @@ public class GuiAPI extends TwoArgFunction {
         }
     }
 
-    static final class getSlot extends OneArgFunction{
-        final DrawingProps props;
-        public getSlot(DrawingProps props){
+    static final class getSlot extends TwoArgFunction{
+        final HandlerProps props;
+        public getSlot(HandlerProps props){
             super();
             this.props=props;
         }
 
         @Override
-        public LuaValue call(LuaValue slotNum) {
+        public LuaValue call(LuaValue slotNum, LuaValue invType) {
+
             final Slot[] toReturn = new Slot[1];
             ScriptError.execute(()->{
-                toReturn[0] = this.props.gui.handler.slots.get(slotNum.checkint());
+                if(!invType.checkjstring().equals("player")&&this.props.handler.gui.hasPlayerInventory)
+                        slotNum.add(36);
+
+                toReturn[0] = this.props.handler.slots.get(slotNum.checkint());
             });
             if(toReturn[0] == null)
                 return NIL;
             return Utils.toLuaValue(toReturn[0]);
         }
     }
-    static final class syncClientServer extends ZeroArgFunction{
-        final DrawingProps props;
-        public syncClientServer(DrawingProps props){
+    static final class doInWorld extends OneArgFunction{
+        final HandlerProps props;
+        public doInWorld(HandlerProps props){
             super();
             this.props=props;
         }
 
         @Override
-        public LuaValue call() {
-            this.props.gui.handler.inv.markDirty();
-            this.props.gui.playerInventory.markDirty();
+        public LuaValue call(LuaValue arg) {
+            ScriptError.execute(()->{
+                this.props.handler.context.run((world, pos) ->
+                        arg.call(Utils.toLuaValue(world),Utils.toLuaValue(pos)));
+            });
             return NIL;
         }
     }

@@ -5,9 +5,6 @@ import com.kyfexuwu.jsonblocks.lua.ScriptError;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -50,7 +47,7 @@ public class CreateApi extends TwoArgFunction {
                     if(!arg.get("count").isnil()) count = arg.get("count").checkint();
 
                     toReturn[0] = new ItemStack(item, count);
-                });
+                },false);
             }
 
             return Utils.toLuaValue(toReturn[0]);

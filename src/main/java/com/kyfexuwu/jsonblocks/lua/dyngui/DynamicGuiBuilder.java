@@ -2,21 +2,20 @@ package com.kyfexuwu.jsonblocks.lua.dyngui;
 
 import com.kyfexuwu.jsonblocks.Utils;
 import com.kyfexuwu.jsonblocks.lua.ScriptError;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.Pair;
-import org.apache.logging.log4j.util.TriConsumer;
+import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.luaj.vm2.*;
 
-import java.security.InvalidParameterException;
-import java.util.ArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class DynamicGuiBuilder {
     public final Consumer<DynamicGui> drawPrep;
-    public final Runnable guiBehavior;
+    public final Consumer<DynamicGuiHandler> guiBehavior;
+    public final BiConsumer<DynamicGuiHandler, PlayerEntity> onClose;
     public int slotCount;
     public boolean hasPlayerInventory;
 
@@ -26,9 +25,14 @@ public class DynamicGuiBuilder {
                 value.get("onClient").call(Utils.toLuaValue(gui));
             });
         };
-        this.guiBehavior = () -> {
+        this.guiBehavior = (gui) -> {
             ScriptError.execute(()->{
-                value.get("onServer").call();
+                value.get("onServer").call(Utils.toLuaValue(gui));
+            });
+        };
+        this.onClose = (gui,player) -> {
+            ScriptError.execute(()->{
+                value.get("onClose").call(Utils.toLuaValue(gui),Utils.toLuaValue(player));
             });
         };
         ScriptError.execute(()->{
@@ -39,7 +43,8 @@ public class DynamicGuiBuilder {
         });
     }
 
-    public DynamicGuiHandler build(int syncId, PlayerInventory inventory, PlayerEntity player, String guiName){
-        return new DynamicGuiHandler(syncId, inventory, guiName);
+    public DynamicGuiHandler build(int syncId, PlayerInventory inventory, PlayerEntity player,
+                                   World world, BlockPos pos, String guiName){
+        return new DynamicGuiHandler(syncId, inventory, ScreenHandlerContext.create(world, pos), guiName);
     }
 }
