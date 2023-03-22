@@ -1,5 +1,5 @@
 # m3we
-![m3we](https://github.com/kyfex-uwu/m3we/blob/master/modImages/m3we.png | width=100)
+<img src="https://github.com/kyfex-uwu/m3we/blob/master/modImages/m3we.png" height="100">
 plug in json, get out blocks! (and items)
 
 hi
