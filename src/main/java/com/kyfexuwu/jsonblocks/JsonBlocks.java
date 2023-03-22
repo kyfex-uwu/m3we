@@ -49,9 +49,6 @@ public class JsonBlocks implements ModInitializer {
                 new BlockItem(luaBlock, new FabricItemSettings()));
         //.group(ItemGroup.OPERATOR)
     }
-    public static final ScreenHandlerType<LuaBlockEntity.LuaBlockScreenHandler> luaBlockScreenHandler =
-            Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "lua_block"),
-            LuaBlockEntity.LuaBlockScreenHandlerType);
 
     public static HashMap<String, Block> jsonBlocks= new HashMap<>();
     public static HashMap<String, Item> jsonItems= new HashMap<>();
