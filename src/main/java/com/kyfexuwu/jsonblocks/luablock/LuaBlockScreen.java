@@ -1,14 +1,17 @@
 package com.kyfexuwu.jsonblocks.luablock;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.lwjgl.glfw.GLFW;
 
 public class LuaBlockScreen extends HandledScreen<ScreenHandler>{
     private static final Identifier TEXTURE = new Identifier("m3we", "textures/gui/lua_code.png");
@@ -17,10 +20,8 @@ public class LuaBlockScreen extends HandledScreen<ScreenHandler>{
         super(handler, inventory, title);
     }
 
-    // backgroundWidth = 256;
-    // backgroundHeight = 196;
-    // titleX = -32;
-    // titleY = -9;
+    public int backgroundWidth = 256;
+    public int backgroundHeight = 196;
 
     protected TextFieldWidget code;
 
@@ -38,6 +39,7 @@ public class LuaBlockScreen extends HandledScreen<ScreenHandler>{
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
         super.render(matrices, mouseX, mouseY, delta);
+        this.code.render(matrices, mouseX, mouseY, delta);
         drawMouseoverTooltip(matrices, mouseX, mouseY);
     }
 
@@ -49,16 +51,47 @@ public class LuaBlockScreen extends HandledScreen<ScreenHandler>{
     @Override
     protected void init() {
         super.init();
+
+        this.client.keyboard.setRepeatEvents(true);
+        int i = (this.width - this.backgroundWidth) / 2;
+        int j = (this.height - this.backgroundHeight) / 2; //-32, -9
+        this.code = new TextFieldWidget(this.textRenderer, i + 8, j + 18, 240, 170, Text.literal("container.repair"));
+        this.code.setFocusUnlocked(false);
+        this.code.setEditableColor(-1);
+        this.code.setUneditableColor(-1);
+        this.code.setMaxLength(32767);
+        this.code.setText("");
+        this.addSelectableChild(this.code);
+        this.setInitialFocus(this.code);
+        this.code.setEditable(false);
+
     }
 
-    @Override//done
+    @Override
     public boolean shouldPause() {
         return true;
     }
 
-    @Override//todo
-    public void close() {
-        this.client.player.closeHandledScreen();
-        super.close();
+    @Override
+    public void removed() {
+        super.removed();
+        this.client.keyboard.setRepeatEvents(false);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            this.client.player.closeHandledScreen();
+        }
+        if (this.code.keyPressed(keyCode, scanCode, modifiers) || this.code.isActive()) {
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public void handledScreenTick() {
+        super.handledScreenTick();
+        this.code.tick();
     }
 }

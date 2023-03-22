@@ -70,7 +70,7 @@ public class LuaBlockEntity extends BlockEntity implements NamedScreenHandlerFac
         }
     }
 
-    @Override//this could probably be optimized
+    @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
         return new LuaBlockScreenHandler(syncId,null);
     }
