@@ -1,25 +1,27 @@
 package com.kyfexuwu.jsonblocks.luablock;
 
+import com.kyfexuwu.jsonblocks.JsonBlocks;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.Drawable;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import org.lwjgl.glfw.GLFW;
 
 public class LuaBlockScreen extends Screen {
     private static final Identifier TEXTURE = new Identifier("m3we", "textures/gui/lua_code.png");
     private static final Text title = Text.translatable("m3we.lua_script");
 
-    public LuaBlockScreen() {
+    final BlockPos pos;
+
+    public LuaBlockScreen(BlockPos pos) {
         super(title);
+        this.pos=pos;
     }
 
     public int backgroundWidth = 256;
@@ -36,6 +38,8 @@ public class LuaBlockScreen extends Screen {
         int x = (this.width - 256) / 2;
         int y = (this.height - 196) / 2;
         drawTexture(matrices, x, y, 0, 0, 256, 196);
+
+        this.textRenderer.draw(matrices, this.getTitle(), x + 8, y + 6, 0x404040);
     }
 
     @Override
@@ -73,7 +77,8 @@ public class LuaBlockScreen extends Screen {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             this.client.keyboard.setRepeatEvents(false);
-            //this.handler.
+            ClientPlayNetworking.send(JsonBlocks.updateLuaBlockPacket,
+                    PacketByteBufs.create().writeBlockPos(this.pos).writeString(this.code.getText()));
             this.client.player.closeHandledScreen();
         }
         if (this.code.keyPressed(keyCode, scanCode, modifiers) || this.code.isActive()) {

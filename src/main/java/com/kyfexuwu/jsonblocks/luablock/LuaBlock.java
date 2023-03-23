@@ -3,19 +3,13 @@ package com.kyfexuwu.jsonblocks.luablock;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.CommandBlockScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 
@@ -86,7 +80,7 @@ public class LuaBlock extends BlockWithEntity implements OperatorBlock {
         if (world.getBlockEntity(pos) instanceof LuaBlockEntity && player.isCreativeLevelTwoOp()) {
             if(player instanceof ClientPlayerEntity){
                 try{
-                    ((MinecraftClient)widenedClient.get(player)).setScreen(new LuaBlockScreen());
+                    ((MinecraftClient)widenedClient.get(player)).setScreen(new LuaBlockScreen(pos));
                 }catch(Exception ignored){}
             }
             return ActionResult.success(world.isClient);

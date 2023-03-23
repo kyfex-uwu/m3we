@@ -36,7 +36,6 @@ public class MultilineTextWidget extends TextFieldWidget {
         if (!this.isActive()) {
             return false;
         }
-        System.out.println(chr);
         if (SharedConstants.isValidChar(chr)||chr == '\n') {
             if (this.widenedIsEditable()) {
                 this.write(Character.toString(chr));

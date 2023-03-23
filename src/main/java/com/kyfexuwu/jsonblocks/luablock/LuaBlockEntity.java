@@ -43,15 +43,13 @@ public class LuaBlockEntity extends BlockEntity{
     @Override
     protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
-        //this.commandExecutor.writeNbt(nbt);
 
-        nbt.putString("lua", "text");
+        nbt.putString("lua", this.lua);
     }
 
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
-        //this.commandExecutor.readNbt(nbt);
 
         this.lua = nbt.getString("lua");
     }
