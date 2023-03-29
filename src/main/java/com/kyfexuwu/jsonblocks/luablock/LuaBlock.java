@@ -1,7 +1,10 @@
 package com.kyfexuwu.jsonblocks.luablock;
 
+import com.kyfexuwu.jsonblocks.JsonBlocks;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -80,13 +83,19 @@ public class LuaBlock extends BlockWithEntity implements OperatorBlock {
         if (world.getBlockEntity(pos) instanceof LuaBlockEntity && player.isCreativeLevelTwoOp()) {
             if(player instanceof ClientPlayerEntity){
                 try{
-                    ((MinecraftClient)widenedClient.get(player)).setScreen(new LuaBlockScreen(pos));
+                    ((MinecraftClient)widenedClient.get(player)).setScreen(
+                            new LuaBlockScreen(pos,((LuaBlockEntity) world.getBlockEntity(pos)).getLua()));
                 }catch(Exception ignored){}
             }
             return ActionResult.success(world.isClient);
         } else {
             return ActionResult.PASS;
         }
+    }
+
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return checkType(type, JsonBlocks.luaBlockEntity, LuaBlockEntity::tick);
     }
 
     @Override
