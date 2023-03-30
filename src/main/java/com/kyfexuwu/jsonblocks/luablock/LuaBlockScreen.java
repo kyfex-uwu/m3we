@@ -35,8 +35,28 @@ public class LuaBlockScreen extends Screen {
     void updateCode(){
         this.formattedCode = Arrays.stream(code.split("\n")).map((str) -> Text.of(str)).toArray(Text[]::new);
     }
+    Pair<Integer, Integer> getXY(int charPos){
+        int x=0;
+        int y=0;
+
+        int charCount=0;
+        for(;y<this.formattedCode.length;y++){
+
+            var thisLength=this.formattedCode[y].getString().length()+1;
+            if(charPos>=charCount&&charPos<charCount+thisLength){
+                x=charPos-charCount;
+                break;
+            }
+            charCount+=thisLength;
+        }
+        return new Pair<>(x,y);
+    }
     void setCursor(int pos){
         this.cursorPos=Math.max(Math.min(pos,this.code.length()),0);
+        var y = this.getXY(this.cursorPos).getRight();
+
+        if(this.scroll<y-LINES_AMT+1) this.scroll=y-LINES_AMT+1;
+        else if(this.scroll>y) this.scroll=y;
     }
     void moveCursor(int move){
         setCursor(this.cursorPos+move);
@@ -60,11 +80,13 @@ public class LuaBlockScreen extends Screen {
     }
 
     public int backgroundWidth = 256;
-    public int backgroundHeight = 196;
+    public int backgroundHeight = 200;
 
     int cursorPos = 0;
     int selectionPos = -1;
     float blinkInterval = 0;
+    int scroll = 0;
+    final static int LINES_AMT =19;
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
@@ -75,30 +97,29 @@ public class LuaBlockScreen extends Screen {
         RenderSystem.setShaderTexture(0, TEXTURE);
         int x = (this.width - this.backgroundWidth) / 2;
         int y = (this.height - this.backgroundHeight) / 2;
-        drawTexture(matrices, x, y, 0, 0, 256, 196);
+        drawTexture(matrices, x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
 
         this.textRenderer.draw(matrices, this.getTitle(), x + 8, y + 6, 0x404040);
 
         this.blinkInterval+=delta;
         if(this.blinkInterval>=16) this.blinkInterval%=16;
-        int charCount=0;
-        boolean renderedCursor=false;
-        for(int line=0;line<this.formattedCode.length;line++) {
-            //this.formattedCode[line].getStyle().getColor().getRgb();
-            this.textRenderer.draw(matrices, this.formattedCode[line], x + 10, y + 20 + this.textRenderer.fontHeight * line, 0xffffff);
-            if(renderedCursor||this.blinkInterval<8) continue;
 
-            var s = this.formattedCode[line].getString();
-            var l = s.length();
-            if (charCount + l >= this.cursorPos) {
+        for(int line=this.scroll;line<this.formattedCode.length;line++) {
+            if(line>=this.scroll+LINES_AMT) break;
+
+            //this.formattedCode[line].getStyle().getColor().getRgb();
+            this.textRenderer.draw(matrices, this.formattedCode[line],
+                    x + 10, y + 20 + this.textRenderer.fontHeight * (line-this.scroll), 0xffffff);
+        }
+
+        if(this.blinkInterval<8) {
+            var cursorXY = this.getXY(this.cursorPos);
+            if (cursorXY.getRight() < this.formattedCode.length) { //todo
                 this.textRenderer.draw(matrices, "|",
-                        x+10+this.textRenderer.getWidth(s.substring(0, this.cursorPos - charCount))-1,
-                        y + 20 + this.textRenderer.fontHeight * line,
-                        0xffffff
-                );
-                renderedCursor=true;
+                        x + 10 - 1 + this.textRenderer.getWidth(this.formattedCode[cursorXY.getRight()].getString().substring(0, cursorXY.getLeft())),
+                        y + 20 + this.textRenderer.fontHeight * (cursorXY.getRight() - this.scroll),
+                        0xffffff);
             }
-            charCount += l+1;
         }
     }
 
@@ -170,10 +191,12 @@ public class LuaBlockScreen extends Screen {
                 return true;
             }
             case 265: {
-                //todo
+                //todo: up
+                this.moveCursor(-1);
             }
             case 264: {
-                //todo
+                //todo: down
+                this.moveCursor(1);
             }
             case 259: {
                 if(this.cursorPos<=0) return true;
@@ -209,7 +232,7 @@ public class LuaBlockScreen extends Screen {
         if(adjMouseX<0||adjMouseY<0||adjMouseX>this.backgroundWidth-16||adjMouseY>this.backgroundHeight-26) return false;
 
         int newPos=0;
-        int y = (int) (adjMouseY/this.textRenderer.fontHeight);
+        int y = (int) (adjMouseY/this.textRenderer.fontHeight)+this.scroll;
         int end = Math.min(this.formattedCode.length,y);
         for(int i=0;i<end;i++) {
             newPos += this.formattedCode[i].getString().length()+1;
@@ -221,4 +244,11 @@ public class LuaBlockScreen extends Screen {
 
         return true;
      }
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount){
+        this.scroll-=amount;
+        if (this.scroll+LINES_AMT>this.formattedCode.length) this.scroll = this.formattedCode.length-LINES_AMT;
+        if(this.scroll<0) this.scroll=0;
+        return true;
+    }
 }
