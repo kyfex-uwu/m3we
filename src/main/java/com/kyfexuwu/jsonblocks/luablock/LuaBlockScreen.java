@@ -43,8 +43,10 @@ public class LuaBlockScreen extends Screen {
         for(;y<this.formattedCode.length;y++){
 
             var thisLength=this.formattedCode[y].getString().length()+1;
-            if(charPos>=charCount&&charPos<charCount+thisLength){
+            if(charPos>charCount&&charPos<charCount+thisLength){
                 x=charPos-charCount;
+                break;
+            }else if(charPos==charCount+thisLength){
                 break;
             }
             charCount+=thisLength;
@@ -57,6 +59,7 @@ public class LuaBlockScreen extends Screen {
 
         if(this.scroll<y-LINES_AMT+1) this.scroll=y-LINES_AMT+1;
         else if(this.scroll>y) this.scroll=y;
+        System.out.println(this.getXY(this.cursorPos).getLeft()+","+y);
     }
     void moveCursor(int move){
         setCursor(this.cursorPos+move);
