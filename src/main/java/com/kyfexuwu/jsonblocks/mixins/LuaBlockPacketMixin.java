@@ -19,6 +19,8 @@ public class LuaBlockPacketMixin {
 
         var thisObj = (ServerPlayNetworkHandler) (Object) this;
 
+        if(!thisObj.player.isCreativeLevelTwoOp()) return;
+
         NetworkThreadUtils.forceMainThread(packet, thisObj, thisObj.player.getWorld());
         var luaBlock = thisObj.player.world.getBlockEntity(buffer.readBlockPos());
         if(!(luaBlock instanceof LuaBlockEntity)) return;

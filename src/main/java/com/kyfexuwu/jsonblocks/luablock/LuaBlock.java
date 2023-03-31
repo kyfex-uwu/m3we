@@ -39,38 +39,6 @@ public class LuaBlock extends BlockWithEntity implements OperatorBlock {
         }
     }
 
-    /*
-    @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof CommandBlockBlockEntity) {
-            CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
-            CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
-            boolean bl = !StringHelper.isEmpty(commandBlockExecutor.getCommand());
-            CommandBlockBlockEntity.Type type = commandBlockBlockEntity.getCommandBlockType();
-            boolean bl2 = commandBlockBlockEntity.isConditionMet();
-            if (type == CommandBlockBlockEntity.Type.AUTO) {
-                commandBlockBlockEntity.updateConditionMet();
-                if (bl2) {
-                    this.execute(state, world, pos, commandBlockExecutor, bl);
-                } else if (commandBlockBlockEntity.isConditionalCommandBlock()) {
-                    commandBlockExecutor.setSuccessCount(0);
-                }
-                if (commandBlockBlockEntity.isPowered() || commandBlockBlockEntity.isAuto()) {
-                    world.createAndScheduleBlockTick(pos, this, 1);
-                }
-            } else if (type == CommandBlockBlockEntity.Type.REDSTONE) {
-                if (bl2) {
-                    this.execute(state, world, pos, commandBlockExecutor, bl);
-                } else if (commandBlockBlockEntity.isConditionalCommandBlock()) {
-                    commandBlockExecutor.setSuccessCount(0);
-                }
-            }
-            world.updateComparators(pos, this);
-        }
-    }
-     */
-
     public static Field widenedClient;
     static{
         try {

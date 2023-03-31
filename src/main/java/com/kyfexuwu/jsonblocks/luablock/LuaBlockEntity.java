@@ -1,7 +1,6 @@
 package com.kyfexuwu.jsonblocks.luablock;
 
 import com.kyfexuwu.jsonblocks.JsonBlocks;
-import com.kyfexuwu.jsonblocks.Utils;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import com.kyfexuwu.jsonblocks.lua.ScriptError;
 import net.minecraft.block.BlockState;
@@ -45,7 +44,7 @@ public class LuaBlockEntity extends BlockEntity {
 
                 var clientTick = blockEntity.script.runEnv.get("clientTick");
                 if(!clientTick.isnil())
-                    clientTick.call(Utils.toLuaValue(blockEntity),Utils.toLuaValue(world));
+                    clientTick.call();
                 blockEntity.errored=false;
             }, (e) -> {
                 if(blockEntity.currRevision!=blockEntity.script.revision&&blockEntity.errored){
@@ -66,7 +65,7 @@ public class LuaBlockEntity extends BlockEntity {
 
                 var serverTick = blockEntity.script.runEnv.get("serverTick");
                 if(!serverTick.isnil())
-                    serverTick.call(Utils.toLuaValue(blockEntity),Utils.toLuaValue(world));
+                    serverTick.call();
                 blockEntity.errored = false;
             }, (e) -> {
                 if(blockEntity.currRevision!=blockEntity.script.revision&&blockEntity.errored){
