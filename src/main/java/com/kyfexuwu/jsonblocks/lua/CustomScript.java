@@ -13,6 +13,7 @@ import org.luaj.vm2.lib.jse.JseMathLib;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.file.*;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -58,7 +59,7 @@ public class CustomScript {
 
         return toReturn;
     }
-    private static Globals safeGlobal(){
+    protected static Globals safeGlobal(){
         var toReturn = unsafeGlobal();
 
         var load = toReturn.get("load");
@@ -157,6 +158,10 @@ public class CustomScript {
         return NIL;
     }
 
+    protected CustomScript(String name, boolean isFake){
+        this.name=name;
+        this.isFake=isFake;
+    }
     public CustomScript(String fileName){
         if(fileName==null) {
             this.name = "fake";
@@ -197,7 +202,6 @@ public class CustomScript {
     }
 
     public void setSelf(Object self){
-        if(this.isFake) return;
         this.runEnv.set("self",new LuaSurfaceObj(self));
     }
 
@@ -234,29 +238,31 @@ public class CustomScript {
             }
             case "surfaceObj" -> toReturn.append("java object: ").append(((LuaSurfaceObj) value).object.getClass().getSimpleName());
             case "undecidedFunc" -> {
-                var refMethod = ((UndecidedLuaFunction) value).methods[0];
+                var refMethods = ((UndecidedLuaFunction) value).methods;
                 toReturn.append("java function: ")
-                        .append(refMethod.getName());
+                        .append(refMethods[0].getName());
 
-                var paramClasses = refMethod.getParameterTypes();
-                if(paramClasses.length>0){
-                    toReturn.append(" [takes parameters of types ");
-                    for(Class clazz : paramClasses){
-                        toReturn.append(clazz.getSimpleName())
-                                .append(", ");
+                for(Method m : refMethods) {
+                    var paramClasses = m.getParameterTypes();
+                    if (paramClasses.length > 0) {
+                        toReturn.append(" [takes parameters of types: ");
+                        for (Class<?> clazz : paramClasses) {
+                            toReturn.append(clazz.getSimpleName())
+                                    .append(", ");
+                        }
+                    } else {
+                        toReturn.append(" [takes no parameters, ");
                     }
-                    toReturn.append("]");
-                }else{
-                    toReturn.append(" [takes no parameters]");
-                }
+                    toReturn.append("and ");
 
-                var returnClass=refMethod.getReturnType();
-                if(!returnClass.equals(Void.class)) {
-                    toReturn.append(" [returns with type ")
-                            .append(returnClass.getSimpleName())
-                            .append("]");
-                }else{
-                    toReturn.append(" [does not return]");
+                    var returnClass = m.getReturnType();
+                    if (!returnClass.equals(Void.class)) {
+                        toReturn.append("returns with type ")
+                                .append(returnClass.getSimpleName())
+                                .append("]");
+                    } else {
+                        toReturn.append("does not return a value]");
+                    }
                 }
             }
         }

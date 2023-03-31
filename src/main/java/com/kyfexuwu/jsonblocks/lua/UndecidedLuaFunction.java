@@ -7,6 +7,7 @@ import org.luaj.vm2.lib.VarArgFunction;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Locale;
 
 public class UndecidedLuaFunction extends VarArgFunction {
     public Object thisObj;
@@ -51,8 +52,20 @@ public class UndecidedLuaFunction extends VarArgFunction {
                 if(translatedArgs[i]==null)
                     continue;
                 //boolean case
-                if(translatedArgs[i].getClass().equals(Boolean.class)&&paramTypes[i].equals(boolean.class))
+                if(translatedArgs[i] instanceof Boolean&&paramTypes[i].equals(boolean.class))
                     continue;
+                //enum case
+                if(translatedArgs[i]instanceof String&&Enum.class.isAssignableFrom(paramTypes[i])){
+                    var enums = paramTypes[i].getEnumConstants();
+                    for(var val : enums){
+                        if(((Enum<?>)val).name().toLowerCase(Locale.ROOT).equals(
+                                ((String) translatedArgs[i]).toLowerCase(Locale.ROOT))){
+                            translatedArgs[i]=val;
+                            break;
+                        }
+                    }
+                    continue;
+                }
                 //number cases
                 if(translatedArgs[i].getClass().equals(Double.class)){
                     if(paramTypes[i].equals(int.class)){

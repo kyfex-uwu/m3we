@@ -20,7 +20,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
-import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
@@ -34,7 +33,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class JsonBlocks implements ModInitializer {
-
     public static String MOD_ID = "m3we";
 
     public static Block luaBlock = new LuaBlock(FabricBlockSettings.copyOf(Blocks.COMMAND_BLOCK));
@@ -49,9 +47,6 @@ public class JsonBlocks implements ModInitializer {
                 new BlockItem(luaBlock, new FabricItemSettings()));
         //.group(ItemGroup.OPERATOR)
     }
-    public static final ScreenHandlerType<LuaBlockEntity.LuaBlockScreenHandler> luaBlockScreenHandler =
-            Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "lua_block"),
-            LuaBlockEntity.LuaBlockScreenHandlerType);
 
     public static HashMap<String, Block> jsonBlocks= new HashMap<>();
     public static HashMap<String, Item> jsonItems= new HashMap<>();
@@ -66,6 +61,8 @@ public class JsonBlocks implements ModInitializer {
             new Identifier(MOD_ID,"item_group"),
             ()->new ItemStack(Blocks.BEACON)
     );
+
+    public static final Identifier updateLuaBlockPacket = new Identifier("m3we","update_lua_block");
 
     @Override
     public void onInitialize() {

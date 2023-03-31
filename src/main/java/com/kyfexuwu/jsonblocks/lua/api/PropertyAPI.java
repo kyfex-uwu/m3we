@@ -6,8 +6,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.ThreeArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
@@ -32,7 +30,7 @@ public class PropertyAPI extends TwoArgFunction {
 
             var state = (BlockState)((LuaSurfaceObj)luaState).object;
             var props=state.getProperties();
-            for(Property prop : props) {
+            for(Property<?> prop : props) {
                 if (prop.getName().equals(propNameStr))
                     return Utils.toLuaValue(state.get(prop));
             }
@@ -45,9 +43,6 @@ public class PropertyAPI extends TwoArgFunction {
             String propNameStr=propName.checkjstring();
 
             var setTo=(Object)Utils.toObject(luaSetTo);
-            if(setTo instanceof Double) setTo=((Double)setTo).intValue();
-            if(setTo instanceof Boolean) setTo= (Boolean) setTo;
-            if(setTo instanceof String) setTo=(String) setTo;
             //todo: if the property is an enum, get the enum
 
             var world=(ServerWorld)((LuaSurfaceObj)worldPosState.get(1)).object;
@@ -56,10 +51,12 @@ public class PropertyAPI extends TwoArgFunction {
             var props=state.getProperties();
             for(Property prop : props) {
                 if (prop.getName().equals(propNameStr)&&prop.getValues().contains(setTo)){
-                    try {
-                        world.setBlockState(pos, (BlockState) state.getClass()
-                                .getMethod("with",Property.class,Comparable.class).invoke(state,prop,setTo));
-                    } catch (Exception ignored) {}
+                    if(setTo instanceof Double)
+                        world.setBlockState(pos,state.with(prop,((Double) setTo).intValue()));
+                    if(setTo instanceof Boolean)
+                        world.setBlockState(pos,state.with(prop,(Boolean) setTo));
+                    if(setTo instanceof String)
+                        world.setBlockState(pos,state.with(prop,(String) setTo));
                     return NIL;
                 }
             }

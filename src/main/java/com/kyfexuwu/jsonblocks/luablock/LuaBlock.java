@@ -1,20 +1,22 @@
 package com.kyfexuwu.jsonblocks.luablock;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.BlockState;
+import com.kyfexuwu.jsonblocks.JsonBlocks;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class LuaBlock extends Block implements BlockEntityProvider {
+import java.lang.reflect.Field;
+
+public class LuaBlock extends BlockWithEntity implements OperatorBlock {
 
     public LuaBlock(Settings settings) {
         super(settings);
@@ -26,9 +28,65 @@ public class LuaBlock extends Block implements BlockEntityProvider {
     }
 
     @Override
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+        if (world.isClient) {
+            return;
+        }
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof LuaBlockEntity && world.isReceivingRedstonePower(pos)) {
+            //todo
+            world.createAndScheduleBlockTick(pos, this, 1);
+        }
+    }
+
+    /*
+    @Override
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof CommandBlockBlockEntity) {
+            CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
+            CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
+            boolean bl = !StringHelper.isEmpty(commandBlockExecutor.getCommand());
+            CommandBlockBlockEntity.Type type = commandBlockBlockEntity.getCommandBlockType();
+            boolean bl2 = commandBlockBlockEntity.isConditionMet();
+            if (type == CommandBlockBlockEntity.Type.AUTO) {
+                commandBlockBlockEntity.updateConditionMet();
+                if (bl2) {
+                    this.execute(state, world, pos, commandBlockExecutor, bl);
+                } else if (commandBlockBlockEntity.isConditionalCommandBlock()) {
+                    commandBlockExecutor.setSuccessCount(0);
+                }
+                if (commandBlockBlockEntity.isPowered() || commandBlockBlockEntity.isAuto()) {
+                    world.createAndScheduleBlockTick(pos, this, 1);
+                }
+            } else if (type == CommandBlockBlockEntity.Type.REDSTONE) {
+                if (bl2) {
+                    this.execute(state, world, pos, commandBlockExecutor, bl);
+                } else if (commandBlockBlockEntity.isConditionalCommandBlock()) {
+                    commandBlockExecutor.setSuccessCount(0);
+                }
+            }
+            world.updateComparators(pos, this);
+        }
+    }
+     */
+
+    public static Field widenedClient;
+    static{
+        try {
+            widenedClient = ClientPlayerEntity.class.getDeclaredField("client");
+            widenedClient.setAccessible(true);
+        }catch(Exception ignored){}
+    }
+    @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.getBlockEntity(pos) instanceof LuaBlockEntity && player.isCreativeLevelTwoOp()) {
-            player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
+            if(player instanceof ClientPlayerEntity){
+                try{
+                    ((MinecraftClient)widenedClient.get(player)).setScreen(
+                            new LuaBlockScreen(pos,((LuaBlockEntity) world.getBlockEntity(pos)).getLua()));
+                }catch(Exception ignored){}
+            }
             return ActionResult.success(world.isClient);
         } else {
             return ActionResult.PASS;
@@ -36,8 +94,23 @@ public class LuaBlock extends Block implements BlockEntityProvider {
     }
 
     @Override
-    public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
-        return new SimpleNamedScreenHandlerFactory((syncId, inventory, player)->
-                new LuaBlockEntity.LuaBlockScreenHandler(syncId, inventory), Text.translatable("m3we.lua_script"));
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return checkType(type, JsonBlocks.luaBlockEntity, LuaBlockEntity::tick);
+    }
+
+    @Override
+    public boolean hasComparatorOutput(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+        //todo: make this the return value
+        return 0;
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
     }
 }

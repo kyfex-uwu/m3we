@@ -1,81 +1,109 @@
 package com.kyfexuwu.jsonblocks.luablock;
 
 import com.kyfexuwu.jsonblocks.JsonBlocks;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.kyfexuwu.jsonblocks.Utils;
+import com.kyfexuwu.jsonblocks.lua.CustomScript;
+import com.kyfexuwu.jsonblocks.lua.ScriptError;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.Generic3x3ContainerScreenHandler;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.Packet;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.World;
 
-public class LuaBlockEntity extends BlockEntity implements NamedScreenHandlerFactory {
+public class LuaBlockEntity extends BlockEntity {
     public LuaBlockEntity(BlockPos pos, BlockState state) {
         super(JsonBlocks.luaBlockEntity, pos, state);
+        this.script = new LuaBlockScript(this);
     }
 
     private String lua = "";
+    public LuaBlockScript script;
     public String getLua(){
         return this.lua;
     }
     public void setLua(String lua){
         this.lua=lua;
-        markDirty();
+        this.script.updateScript(lua);
+        this.markDirty();
+    }
+
+    boolean errored=false;
+    int currRevision =-1;
+    public static void tick(World world, BlockPos pos, BlockState state, LuaBlockEntity blockEntity){
+        blockEntity.script.setSelf(blockEntity);
+        if(blockEntity.currRevision==-1) blockEntity.currRevision=blockEntity.script.revision;
+
+        //todo: when error, stop executing
+        if(world.isClient) {
+            ScriptError.execute(() -> {
+                if(blockEntity.currRevision==blockEntity.script.revision&&blockEntity.errored){
+                    return;
+                }
+
+                var clientTick = blockEntity.script.runEnv.get("clientTick");
+                if(!clientTick.isnil())
+                    clientTick.call(Utils.toLuaValue(blockEntity),Utils.toLuaValue(world));
+                blockEntity.errored=false;
+            }, (e) -> {
+                if(blockEntity.currRevision!=blockEntity.script.revision&&blockEntity.errored){
+                    blockEntity.errored=false;
+                    blockEntity.currRevision=blockEntity.script.revision;
+                    return;
+                }
+                if (blockEntity.errored) return;
+                blockEntity.errored=true;
+
+                CustomScript.print("clientTick: "+e.getMessage());
+            });
+        }else{
+            ScriptError.execute(() -> {
+                if(blockEntity.currRevision==blockEntity.script.revision&&blockEntity.errored){
+                    return;
+                }
+
+                var serverTick = blockEntity.script.runEnv.get("serverTick");
+                if(!serverTick.isnil())
+                    serverTick.call(Utils.toLuaValue(blockEntity),Utils.toLuaValue(world));
+                blockEntity.errored = false;
+            }, (e) -> {
+                if(blockEntity.currRevision!=blockEntity.script.revision&&blockEntity.errored){
+                    blockEntity.errored=false;
+                    blockEntity.currRevision=blockEntity.script.revision;
+                    return;
+                }
+                if (blockEntity.errored) return;
+                blockEntity.errored=true;
+
+                CustomScript.print("serverTick: "+e.getMessage());
+            });
+        }
     }
 
     @Override
-    public void writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt) {
         nbt.putString("lua", this.lua);
-
         super.writeNbt(nbt);
     }
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
-
-        lua = nbt.getString("lua");
-    }
-
-    //--
-
-    public static ScreenHandlerType<LuaBlockScreenHandler> LuaBlockScreenHandlerType =
-            new ScreenHandlerType<>(LuaBlockScreenHandler::new);
-    public static class LuaBlockScreenHandler extends ScreenHandler{
-
-        //this is opening
-        public LuaBlockScreenHandler(int syncId, PlayerInventory inv) {
-            super(LuaBlockScreenHandlerType, syncId);
-        }
-
-        @Override
-        public ItemStack transferSlot(PlayerEntity player, int index) {
-            return null;
-        }
-
-        @Override
-        public boolean canUse(PlayerEntity player) {
-            return true;
-        }
-    }
-
-    @Override//this could probably be optimized
-    public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-        return new LuaBlockScreenHandler(syncId,null);
+        this.lua = nbt.getString("lua");
     }
     @Override
-    public Text getDisplayName() {
-        return Text.translatable("m3we.lua_script");
+    public Packet<ClientPlayPacketListener> toUpdatePacket() {
+        return BlockEntityUpdateS2CPacket.create(this);
+    }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt() {
+        return createNbt();
+    }
+
+    @Override
+    public boolean copyItemDataRequiresOperator() {
+        return true;
     }
 }

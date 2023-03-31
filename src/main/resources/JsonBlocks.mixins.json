@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "CustomClickEventMixin",
-    "m3weResourceMixin"
+    "m3weResourceMixin",
+    "LuaBlockPacketMixin"
   ],
   "client": [
   ],
