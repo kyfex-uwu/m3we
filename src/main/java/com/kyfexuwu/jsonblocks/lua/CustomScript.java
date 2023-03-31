@@ -202,7 +202,6 @@ public class CustomScript {
     }
 
     public void setSelf(Object self){
-        if(this.isFake) return;
         this.runEnv.set("self",new LuaSurfaceObj(self));
     }
 

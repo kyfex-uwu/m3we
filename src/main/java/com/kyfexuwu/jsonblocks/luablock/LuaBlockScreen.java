@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -23,7 +24,7 @@ public class LuaBlockScreen extends Screen {
 
     final BlockPos pos;
     String code;
-    Text[] formattedCode;
+    String[] formattedCode;
 
     public LuaBlockScreen(BlockPos pos, String initialCode) {
         super(title);
@@ -33,60 +34,68 @@ public class LuaBlockScreen extends Screen {
     }
 
     void updateCode(){
-        this.formattedCode = Arrays.stream(code.split("\n")).map((str) -> Text.of(str)).toArray(Text[]::new);
+        this.formattedCode = Arrays.stream(code.split("\n")).toArray(String[]::new);
     }
     Pair<Integer, Integer> getXY(int charPos){
+        if(charPos<0) return new Pair<>(0,0);
+
         int x=0;
         int y=0;
 
         int charCount=0;
         for(;y<this.formattedCode.length;y++){
 
-            var thisLength=this.formattedCode[y].getString().length()+1;
-            if(charPos>charCount&&charPos<charCount+thisLength){
+            var thisLength=this.formattedCode[y].length()+1;
+            if(charPos>=charCount&&charPos<charCount+thisLength){
                 x=charPos-charCount;
-                break;
-            }else if(charPos==charCount+thisLength){
                 break;
             }
             charCount+=thisLength;
         }
         return new Pair<>(x,y);
     }
-    void setCursor(int pos){
+    void setCursor(int pos, boolean isSelecting){
         this.cursorPos=Math.max(Math.min(pos,this.code.length()),0);
-        var y = this.getXY(this.cursorPos).getRight();
+        var y = this.getXY(this.cursorPos-1).getRight();
 
         if(this.scroll<y-LINES_AMT+1) this.scroll=y-LINES_AMT+1;
         else if(this.scroll>y) this.scroll=y;
-        System.out.println(this.getXY(this.cursorPos).getLeft()+","+y);
+
+        if(!isSelecting) this.selectionPos = this.cursorPos;
     }
-    void moveCursor(int move){
-        setCursor(this.cursorPos+move);
+    void moveCursor(int move, boolean isSelecting){
+        setCursor(this.cursorPos+move, isSelecting);
     }
     void write(String toWrite){
         var selection = this.getSelection();
         this.code=this.code.substring(0,selection.getLeft())+toWrite+this.code.substring(selection.getRight());
-        this.moveCursor(toWrite.length());
+        this.moveCursor(toWrite.length(), false);
 
         this.updateCode();
     }
     Pair<Integer, Integer> getSelection(){
         var toReturn = new Pair<>(this.cursorPos,this.selectionPos);
-        if(this.selectionPos == -1) toReturn.setRight(this.cursorPos);
-        else if(this.cursorPos<this.selectionPos){
+        if(this.cursorPos>this.selectionPos){
             toReturn.setRight(this.cursorPos);
             toReturn.setLeft(this.selectionPos);
         }
-
         return toReturn;
+    }
+    void delete(int starting, int ending){
+        if(starting<0) starting=0;
+        if(ending>=this.code.length()) ending=this.code.length();
+        this.code=this.code.substring(0,starting)+this.code.substring(ending);
+        this.updateCode();
+
+        this.cursorPos=starting;
+        this.selectionPos=starting;
     }
 
     public int backgroundWidth = 256;
     public int backgroundHeight = 200;
 
     int cursorPos = 0;
-    int selectionPos = -1;
+    int selectionPos = 0;
     float blinkInterval = 0;
     int scroll = 0;
     final static int LINES_AMT =19;
@@ -104,24 +113,44 @@ public class LuaBlockScreen extends Screen {
 
         this.textRenderer.draw(matrices, this.getTitle(), x + 8, y + 6, 0x404040);
 
-        this.blinkInterval+=delta;
-        if(this.blinkInterval>=16) this.blinkInterval%=16;
-
+        var selection = this.getSelection();
+        var sStart = selection.getLeft();
+        var sEnd = selection.getRight();
+        var charCount=0;
+        for(int before=0;before<this.scroll;before++)
+            charCount+=this.formattedCode[before].length()+1;
         for(int line=this.scroll;line<this.formattedCode.length;line++) {
             if(line>=this.scroll+LINES_AMT) break;
+            var thisY=this.textRenderer.fontHeight * (line-this.scroll);
 
-            //this.formattedCode[line].getStyle().getColor().getRgb();
-            this.textRenderer.draw(matrices, this.formattedCode[line],
-                    x + 10, y + 20 + this.textRenderer.fontHeight * (line-this.scroll), 0xffffff);
+            var lineLength = this.formattedCode[line].length()+1;
+
+            var localSStart=0;
+            var localSEnd=-1;
+            if(sStart>=charCount&&sStart<charCount+lineLength)
+                localSStart=this.textRenderer.getWidth(this.formattedCode[line].substring(0,sStart-charCount));
+            if(sEnd>=charCount&&sEnd<charCount+lineLength)
+                localSEnd=this.textRenderer.getWidth(this.formattedCode[line].substring(0,sEnd-charCount));
+            if(localSEnd==-1) localSEnd=this.textRenderer.getWidth(this.formattedCode[line]);
+
+            if(charCount+lineLength>sStart&&charCount<=sEnd)
+                DrawableHelper.fill(matrices,x+10+localSStart,y+20+thisY,x+10+localSEnd,y+20+thisY+this.textRenderer.fontHeight,0xff008800);
+
+            this.textRenderer.draw(matrices, this.textRenderer.trimToWidth(this.formattedCode[line],236),
+                    x + 10, y + 20 + thisY, 0xffffff);
+            charCount+=lineLength;
         }
 
+        this.blinkInterval+=delta;
+        if(this.blinkInterval>=16) this.blinkInterval%=16;
         if(this.blinkInterval<8) {
             var cursorXY = this.getXY(this.cursorPos);
-            if (cursorXY.getRight() < this.formattedCode.length) { //todo
+            if (cursorXY.getRight() < this.formattedCode.length &&
+                    cursorXY.getRight()>=this.scroll&&cursorXY.getRight()<this.scroll+LINES_AMT) {
                 this.textRenderer.draw(matrices, "|",
-                        x + 10 - 1 + this.textRenderer.getWidth(this.formattedCode[cursorXY.getRight()].getString().substring(0, cursorXY.getLeft())),
+                        x + 10 - 1 + this.textRenderer.getWidth(this.formattedCode[cursorXY.getRight()].substring(0, cursorXY.getLeft())),
                         y + 20 + this.textRenderer.fontHeight * (cursorXY.getRight() - this.scroll),
-                        0xffffff);
+                        0x00ff00);
             }
         }
     }
@@ -140,7 +169,7 @@ public class LuaBlockScreen extends Screen {
 
     @Override
     public boolean charTyped(char chr, int modifiers) {
-        if (SharedConstants.isValidChar(chr)||chr=='\n') {
+        if (SharedConstants.isValidChar(chr)) {
             this.write(Character.toString(chr));
             return true;
         }
@@ -160,14 +189,14 @@ public class LuaBlockScreen extends Screen {
             return true;
         }
 
-        //this.selecting = Screen.hasShiftDown();
         if (Screen.isSelectAll(keyCode)) {
-            this.moveCursor(Integer.MAX_VALUE);
+            this.setCursor(Integer.MAX_VALUE, false);
             this.selectionPos=0;
             return true;
         }
         if (Screen.isCopy(keyCode)) {
-            //MinecraftClient.getInstance().keyboard.setClipboard(this.getSelectedText());
+            var selection = this.getSelection();
+            MinecraftClient.getInstance().keyboard.setClipboard(this.code.substring(selection.getLeft(), selection.getRight()));
             return true;
         }
         if (Screen.isPaste(keyCode)) {
@@ -175,51 +204,57 @@ public class LuaBlockScreen extends Screen {
             return true;
         }
         if (Screen.isCut(keyCode)) {
-            //MinecraftClient.getInstance().keyboard.setClipboard(this.getSelectedText());
+            var selection = this.getSelection();
+            MinecraftClient.getInstance().keyboard.setClipboard(this.code.substring(selection.getLeft(), selection.getRight()));
             this.write("");
+            this.setCursor(selection.getLeft(),false);
             return true;
         }
-        //System.out.println(keyCode);
         switch (keyCode) {
             case 257: {
                 this.write("\n");
                 return true;
             }
             case 263: {
-                this.moveCursor(-1);
+                this.moveCursor(-1, Screen.hasShiftDown());
                 return true;
             }
             case 262: {
-                this.moveCursor(1);
+                this.moveCursor(1, Screen.hasShiftDown());
                 return true;
             }
             case 265: {
                 //todo: up
-                this.moveCursor(-1);
+                this.moveCursor(-1, Screen.hasShiftDown());
             }
             case 264: {
                 //todo: down
-                this.moveCursor(1);
+                this.moveCursor(1, Screen.hasShiftDown());
             }
             case 259: {
-                if(this.cursorPos<=0) return true;
-                this.code = this.code.substring(0,this.cursorPos-1)+this.code.substring(this.cursorPos);
-                this.moveCursor(-1);
-                this.updateCode();
+                if(this.cursorPos!=this.selectionPos){
+                    var selection = this.getSelection();
+                    this.delete(selection.getLeft(),selection.getRight());
+                }else{
+                    this.delete(this.cursorPos-1,this.cursorPos);
+                }
                 return true;
             }
             case 261: {
-                if(this.cursorPos>=this.code.length()) return true;
-                this.code = this.code.substring(0,this.cursorPos)+this.code.substring(this.cursorPos+1);
-                this.updateCode();
+                if(this.cursorPos!=this.selectionPos){
+                    var selection = this.getSelection();
+                    this.delete(selection.getLeft(),selection.getRight());
+                }else{
+                    this.delete(this.cursorPos,this.cursorPos+1);
+                }
                 return true;
             }
             case 268: {
-                this.moveCursor(0);
+                this.moveCursor(0, Screen.hasShiftDown());
                 return true;
             }
             case 269: {
-                this.moveCursor(Integer.MAX_VALUE);
+                this.moveCursor(Integer.MAX_VALUE, Screen.hasShiftDown());
                 return true;
             }
         }
@@ -238,12 +273,12 @@ public class LuaBlockScreen extends Screen {
         int y = (int) (adjMouseY/this.textRenderer.fontHeight)+this.scroll;
         int end = Math.min(this.formattedCode.length,y);
         for(int i=0;i<end;i++) {
-            newPos += this.formattedCode[i].getString().length()+1;
+            newPos += this.formattedCode[i].length()+1;
         }
         if(y<this.formattedCode.length)
-            newPos+=this.textRenderer.trimToWidth(this.formattedCode[y],(int) adjMouseX).getString().length();
+            newPos+=this.textRenderer.trimToWidth(this.formattedCode[y],(int) adjMouseX).length();
 
-        this.setCursor(newPos);
+        this.setCursor(newPos, Screen.hasShiftDown());
 
         return true;
      }

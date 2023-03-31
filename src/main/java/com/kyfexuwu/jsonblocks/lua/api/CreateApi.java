@@ -55,7 +55,13 @@ public class CreateApi extends TwoArgFunction {
 
         @Override
         public LuaValue call(LuaValue arg) {
-            var str = arg.get("block").checkjstring();
+            var val=arg.get("block");
+            String str;
+            if(val.isnil()){
+                str="minecraft:air";
+            }else{
+                str=val.checkjstring();
+            }
             Identifier identifier;
             if(str.contains(":"))
                 identifier = new Identifier(str);

@@ -39,6 +39,10 @@ public class LuaBlockEntity extends BlockEntity {
         //todo: when error, stop executing
         if(world.isClient) {
             ScriptError.execute(() -> {
+                if(blockEntity.currRevision==blockEntity.script.revision&&blockEntity.errored){
+                    return;
+                }
+
                 var clientTick = blockEntity.script.runEnv.get("clientTick");
                 if(!clientTick.isnil())
                     clientTick.call(Utils.toLuaValue(blockEntity),Utils.toLuaValue(world));
@@ -56,6 +60,10 @@ public class LuaBlockEntity extends BlockEntity {
             });
         }else{
             ScriptError.execute(() -> {
+                if(blockEntity.currRevision==blockEntity.script.revision&&blockEntity.errored){
+                    return;
+                }
+
                 var serverTick = blockEntity.script.runEnv.get("serverTick");
                 if(!serverTick.isnil())
                     serverTick.call(Utils.toLuaValue(blockEntity),Utils.toLuaValue(world));
