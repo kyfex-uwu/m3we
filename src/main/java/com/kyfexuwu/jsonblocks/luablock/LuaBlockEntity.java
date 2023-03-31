@@ -29,9 +29,16 @@ public class LuaBlockEntity extends BlockEntity {
         this.markDirty();
     }
 
+    boolean loaded=false;
     boolean errored=false;
     int currRevision =-1;
     public static void tick(World world, BlockPos pos, BlockState state, LuaBlockEntity blockEntity){
+        if(!blockEntity.loaded){
+            blockEntity.script.setSelf(blockEntity);
+            blockEntity.script.updateScript(blockEntity.lua);
+            blockEntity.loaded=true;
+        }
+
         blockEntity.script.setSelf(blockEntity);
         if(blockEntity.currRevision==-1) blockEntity.currRevision=blockEntity.script.revision;
 
