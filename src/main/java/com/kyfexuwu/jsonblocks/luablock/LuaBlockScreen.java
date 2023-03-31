@@ -226,10 +226,12 @@ public class LuaBlockScreen extends Screen {
             case 265: {
                 //todo: up
                 this.moveCursor(-1, Screen.hasShiftDown());
+                return true;
             }
             case 264: {
                 //todo: down
                 this.moveCursor(1, Screen.hasShiftDown());
+                return true;
             }
             case 259: {
                 if(this.cursorPos!=this.selectionPos){
@@ -262,13 +264,7 @@ public class LuaBlockScreen extends Screen {
         return true;
     }
 
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        var adjMouseX = mouseX-(this.width-this.backgroundWidth)/2-8;
-        var adjMouseY = mouseY-(this.height-this.backgroundHeight)/2-18;
-
-        if(adjMouseX<0||adjMouseY<0||adjMouseX>this.backgroundWidth-16||adjMouseY>this.backgroundHeight-26) return false;
-
+    private int mouseEventPos(double adjMouseX, double adjMouseY){
         int newPos=0;
         int y = (int) (adjMouseY/this.textRenderer.fontHeight)+this.scroll;
         int end = Math.min(this.formattedCode.length,y);
@@ -278,10 +274,29 @@ public class LuaBlockScreen extends Screen {
         if(y<this.formattedCode.length)
             newPos+=this.textRenderer.trimToWidth(this.formattedCode[y],(int) adjMouseX).length();
 
-        this.setCursor(newPos, Screen.hasShiftDown());
+        return newPos;
+    }
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        var adjMouseX = mouseX-(this.width-this.backgroundWidth)/2-8;
+        var adjMouseY = mouseY-(this.height-this.backgroundHeight)/2-18;
 
+        if(adjMouseX<0||adjMouseY<0||adjMouseX>this.backgroundWidth-16||adjMouseY>this.backgroundHeight-26) return false;
+
+        this.setCursor(this.mouseEventPos(adjMouseX,adjMouseY), Screen.hasShiftDown());
         return true;
-     }
+    }
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        var adjMouseX = mouseX-(this.width-this.backgroundWidth)/2-8;
+        var adjMouseY = mouseY-(this.height-this.backgroundHeight)/2-18;
+
+        if(adjMouseX<0||adjMouseY<0||adjMouseX>this.backgroundWidth-16||adjMouseY>this.backgroundHeight-26) return false;
+
+        this.selectionPos = this.mouseEventPos(adjMouseX,adjMouseY);
+        return true;
+    }
+
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount){
         this.scroll-=amount;
