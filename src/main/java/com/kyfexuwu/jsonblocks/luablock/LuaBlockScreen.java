@@ -224,13 +224,33 @@ public class LuaBlockScreen extends Screen {
                 return true;
             }
             case 265: {
-                //todo: up
-                this.moveCursor(-1, Screen.hasShiftDown());
+                var pos = this.getXY(this.cursorPos);
+                if(pos.getRight()<=0){
+                    this.setCursor(0,Screen.hasShiftDown());
+                    return true;
+                }
+                var newPos=this.textRenderer.trimToWidth(
+                        this.formattedCode[pos.getRight()-1],
+                        this.textRenderer.getWidth(this.formattedCode[pos.getRight()].substring(0,pos.getLeft()))
+                ).length();
+                for(int i=0;i<pos.getRight()-1;i++)
+                    newPos+=this.formattedCode[i].length()+1;
+                this.setCursor(newPos,Screen.hasShiftDown());
                 return true;
             }
             case 264: {
-                //todo: down
-                this.moveCursor(1, Screen.hasShiftDown());
+                var pos = this.getXY(this.cursorPos);
+                if(pos.getRight()>=this.formattedCode.length-1){
+                    this.setCursor(Integer.MAX_VALUE,Screen.hasShiftDown());
+                    return true;
+                }
+                var newPos=this.textRenderer.trimToWidth(
+                        this.formattedCode[pos.getRight()+1],
+                        this.textRenderer.getWidth(this.formattedCode[pos.getRight()].substring(0,pos.getLeft()))
+                ).length();
+                for(int i=0;i<pos.getRight()+1;i++)
+                    newPos+=this.formattedCode[i].length()+1;
+                this.setCursor(newPos,Screen.hasShiftDown());
                 return true;
             }
             case 259: {
