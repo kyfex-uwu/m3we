@@ -109,6 +109,19 @@ public class JsonBlocks implements ModInitializer {
             System.out.println("something happened to the watcher");
             e.printStackTrace();
         }
+
+        //--
+
+        m3weResources.mkdir();
+        for (File packDir : m3weResources.listFiles()) {
+            if(packDir.isDirectory()&&
+                    Arrays.asList(packDir.list()).contains("assets")) {
+                for(File resourceDir : new File(packDir.getAbsolutePath()+"\\assets").listFiles()){
+                    crawlResources(resourceDir,"", resourceDir.getName(),
+                            packDir.getName()+"/assets/"+resourceDir.getName()+"/");
+                }
+            }
+        }
     }
 
     private static void initObjects(File folder,Function<File, Utils.SuccessAndIdentifier> func, String prefix){
@@ -131,7 +144,6 @@ public class JsonBlocks implements ModInitializer {
     }
 
     public static File m3weResources = new File(JBFolder.getAbsolutePath()+"\\resources");
-    static{ m3weResources.mkdir(); }
     public static final JsonObject packMetadata = JsonHelper.deserialize("{" +
         "\"pack\":{" +
             "\"pack_format\":9," +
@@ -146,18 +158,6 @@ public class JsonBlocks implements ModInitializer {
                 crawlResources(modFile, prefix+modFile.getName()+"/", namespace, origFilePath);
             }else{
                 packFiles.put(namespace+":"+prefix+modFile.getName(),origFilePath+prefix+modFile.getName());
-            }
-        }
-    }
-    static{
-        m3weResources.mkdir();
-        for (File packDir : m3weResources.listFiles()) {
-            if(packDir.isDirectory()&&
-                Arrays.asList(packDir.list()).contains("assets")) {
-                for(File resourceDir : new File(packDir.getAbsolutePath()+"\\assets").listFiles()){
-                    crawlResources(resourceDir,"", resourceDir.getName(),
-                            packDir.getName()+"/assets/"+resourceDir.getName()+"/");
-                }
             }
         }
     }
