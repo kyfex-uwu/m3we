@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -19,76 +18,94 @@ import net.minecraft.util.registry.Registry;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static com.kyfexuwu.jsonblocks.Utils.*;
 
 public class JBItemIniter {
 
-    private static final PropertyTranslator[] itemPropertyMap = {
-            new PropertyTranslator("maxCount","maxCount",IntTransformFunc),
-            new PropertyTranslator("maxDamage","maxDamage",IntTransformFunc),
-            new PropertyTranslator("recipeRemainder","recipeRemainder",(ScriptAndValue SAV) ->{
-                String id = SAV.value.getAsString();
-                if(!id.contains(":")) id = "minecraft:"+id;
-                return Registry.ITEM.get(new Identifier(id));
-            }),
-            new PropertyTranslator("itemGroup","group",(ScriptAndValue SAV) -> {
-                try {
-                    return ItemGroup.class.getField(SAV.value.getAsString());
-                } catch (NoSuchFieldException e) {
-                    return ItemGroup.MISC;
-                }
-            }),
-            new PropertyTranslator("rarity","rarity",(ScriptAndValue SAV) -> {
-                try {
-                    return Rarity.valueOf(SAV.value.getAsString());
-                }catch(IllegalArgumentException e){
-                    return Rarity.COMMON;
-                }
-            }),
-            new PropertyTranslator("foodComponent","foodComponent",(ScriptAndValue SAV) -> {
-                var thisObj = SAV.value.getAsJsonObject();
+    private static class ItemPropertyTranslator<T> extends PropertyTranslator<T, Item.Settings> {
+        public ItemPropertyTranslator(String jsonProp,
+                                       BiFunction<Item.Settings, T, Item.Settings> toJavaFunc,
+                                       Function<ScriptAndValue, T> transformFunc) {
+            super(jsonProp, toJavaFunc, transformFunc);
+        }
+    }
 
-                var toReturn = new FoodComponent.Builder()
-                        .hunger(thisObj.get("hunger").getAsInt())
-                        .saturationModifier(thisObj.get("saturation").getAsFloat());
-                if(thisObj.get("isMeat").getAsBoolean())
-                    toReturn = toReturn.meat();
-                if(thisObj.get("isAlwaysEdible").getAsBoolean())
-                    toReturn = toReturn.alwaysEdible();
-                if(thisObj.get("canEatFast").getAsBoolean())
-                    toReturn = toReturn.snack();
-                if(thisObj.get("statusEffects").isJsonArray()){
-                    var effects = thisObj.get("statusEffects").getAsJsonArray();
-                    int length = effects.size();
-                    for(int i=0;i<length;i++){
-                        var thisEffect = effects.get(i).getAsJsonObject();
-                        if(!thisEffect.has("effect"))
-                            continue;
-
+    private static final ItemPropertyTranslator<?>[] itemPropertyMap = {
+            new ItemPropertyTranslator<>("maxCount",Item.Settings::maxCount,IntTransformFunc),
+            new ItemPropertyTranslator<>("maxDamage",Item.Settings::maxDamage,IntTransformFunc),
+            new ItemPropertyTranslator<>("recipeRemainder",Item.Settings::recipeRemainder,
+                    (ScriptAndValue SAV) ->{
+                        String id = SAV.value.getAsString();
+                        if(!id.contains(":")) id = "minecraft:"+id;
+                        return Registry.ITEM.get(new Identifier(id));
+            }),
+            new ItemPropertyTranslator<>("itemGroup",Item.Settings::group,
+                    (ScriptAndValue SAV) -> {
                         try {
-                            var type = (StatusEffect) StatusEffects.class.getField(thisEffect.get("effect")
-                                    .getAsString()).get(null);
-                            int duration = thisEffect.has("duration")?thisEffect.get("duration").getAsInt():0;
-                            int amplifier = thisEffect.has("amplifier")?thisEffect.get("amplifier").getAsInt():0;
-                            boolean visible = thisEffect.has("visible")?thisEffect.get("visible").getAsBoolean():true;
-                            var effectToAdd = new StatusEffectInstance(
-                                    type,
-                                    duration,
-                                    amplifier,
-                                    false,
-                                    visible
-                            );
-
-                            float chance = thisEffect.has("chance")?thisEffect.get("chance").getAsFloat():1;
-                            toReturn = toReturn.statusEffect(effectToAdd,chance);
-                        }catch(NoSuchFieldException | IllegalAccessException ignored){}
-                    }
-                }
-
-                return toReturn.build();
+                            return (ItemGroup) ItemGroup.class.getField(SAV.value.getAsString()).get(null);
+                        } catch (Exception e) {
+                            return ItemGroup.MISC;
+                        }
             }),
-            new PropertyTranslator("isFireproof","fireproof",BoolTransformFunc),
+            new ItemPropertyTranslator<>("rarity",Item.Settings::rarity,
+                    (ScriptAndValue SAV) -> {
+                        try {
+                            return Rarity.valueOf(SAV.value.getAsString());
+                        }catch(IllegalArgumentException e){
+                            return Rarity.COMMON;
+                        }
+            }),
+            new ItemPropertyTranslator<>("foodComponent",Item.Settings::food,
+                    (ScriptAndValue SAV) -> {
+                        var thisObj = SAV.value.getAsJsonObject();
+
+                        var toReturn = new FoodComponent.Builder()
+                                .hunger(thisObj.get("hunger").getAsInt())
+                                .saturationModifier(thisObj.get("saturation").getAsFloat());
+                        if(thisObj.get("isMeat").getAsBoolean())
+                            toReturn = toReturn.meat();
+                        if(thisObj.get("isAlwaysEdible").getAsBoolean())
+                            toReturn = toReturn.alwaysEdible();
+                        if(thisObj.get("canEatFast").getAsBoolean())
+                            toReturn = toReturn.snack();
+                        if(thisObj.get("statusEffects").isJsonArray()){
+                            var effects = thisObj.get("statusEffects").getAsJsonArray();
+                            int length = effects.size();
+                            for(int i=0;i<length;i++){
+                                var thisEffect = effects.get(i).getAsJsonObject();
+                                if(!thisEffect.has("effect"))
+                                    continue;
+
+                                try {
+                                    var type = (StatusEffect) StatusEffects.class.getField(thisEffect.get("effect")
+                                            .getAsString()).get(null);
+                                    int duration = thisEffect.has("duration")?
+                                            thisEffect.get("duration").getAsInt():0;
+                                    int amplifier = thisEffect.has("amplifier")?
+                                            thisEffect.get("amplifier").getAsInt():0;
+                                    boolean visible = thisEffect.has("visible") ?
+                                            thisEffect.get("visible").getAsBoolean():true;
+                                    var effectToAdd = new StatusEffectInstance(
+                                            type,
+                                            duration,
+                                            amplifier,
+                                            false,
+                                            visible
+                                    );
+
+                                    float chance = thisEffect.has("chance")?thisEffect.get("chance").getAsFloat():1;
+                                    toReturn = toReturn.statusEffect(effectToAdd,chance);
+                                }catch(NoSuchFieldException | IllegalAccessException ignored){}
+                            }
+                        }
+
+                        return toReturn.build();
+            }),
+            new ItemPropertyTranslator<>("isFireproof", (settings, fireproof) ->
+                    fireproof ? settings.fireproof() : settings, BoolTransformFunc),
     };
 
     public static SuccessAndIdentifier itemFromFile(File file) {
@@ -108,16 +125,14 @@ public class JBItemIniter {
             itemName = itemJsonData.get("itemName").getAsString();
         }catch(UnsupportedOperationException ignored){}
 
-        FabricItemSettings settings = new FabricItemSettings();
+        Item.Settings settings = new Item.Settings();
         settings.group(JsonBlocks.m3weItems);
 
-        for(PropertyTranslator propToTranslate : JBItemIniter.itemPropertyMap){
-            try {
-                settings.getClass().getField(propToTranslate.javaProp)
-                        .set(settings, propToTranslate.transformFunc.apply(
-                                new ScriptAndValue(null,itemJsonData.get(propToTranslate.jsonProp))
-                        ));
-            }catch(Exception ignored){}//whatever goes on in there, i dont wanna know uwu
+        for (ItemPropertyTranslator<?> propToTranslate : JBItemIniter.itemPropertyMap) {
+            if (!itemJsonData.has(propToTranslate.jsonProp))
+                continue;
+
+            settings = propToTranslate.apply(settings, itemJsonData, CustomScript.NULL);
         }
 
         Item thisItem;

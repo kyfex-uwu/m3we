@@ -6,8 +6,6 @@ import com.google.gson.JsonSyntaxException;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.*;
-import net.minecraft.entity.EntityType;
-import net.minecraft.loot.LootTables;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -18,30 +16,41 @@ import static com.kyfexuwu.jsonblocks.Utils.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.ToIntFunction;
 
 
 public class JBBlockIniter {
 
-    private static final PropertyTranslator[] blockPropertyMap = {
-            new PropertyTranslator("hardness","hardness",FloatTransformFunc),
-            new PropertyTranslator("resistance","resistance",FloatTransformFunc),
-            new PropertyTranslator("slipperiness","slipperiness",FloatTransformFunc),
-            new PropertyTranslator("jumpMultiplier","jumpVelocityMultiplier",FloatTransformFunc),
-            new PropertyTranslator("speedMultiplier","velocityMultiplier",FloatTransformFunc),
-            new PropertyTranslator("sounds","soundGroup",(ScriptAndValue SAV) -> {
+    private static final Material starterMaterial = new Material.Builder(MapColor.CLEAR).build();
+
+    private static class BlockPropertyTranslator<T> extends PropertyTranslator<T, AbstractBlock.Settings> {
+        public BlockPropertyTranslator(String jsonProp,
+                                       BiFunction<AbstractBlock.Settings, T, AbstractBlock.Settings> toJavaFunc,
+                                       Function<ScriptAndValue, T> transformFunc) {
+            super(jsonProp, toJavaFunc, transformFunc);
+        }
+    }
+    private static final BlockPropertyTranslator<?>[] blockPropertyMap = {
+            new BlockPropertyTranslator<>("hardness", AbstractBlock.Settings::hardness, FloatTransformFunc),
+            new BlockPropertyTranslator<>("resistance",AbstractBlock.Settings::resistance,FloatTransformFunc),
+            new BlockPropertyTranslator<>("slipperiness",AbstractBlock.Settings::slipperiness,FloatTransformFunc),
+            new BlockPropertyTranslator<>("jumpMultiplier",AbstractBlock.Settings::jumpVelocityMultiplier,FloatTransformFunc),
+            new BlockPropertyTranslator<>("speedMultiplier",AbstractBlock.Settings::velocityMultiplier,FloatTransformFunc),
+            new BlockPropertyTranslator<>("sounds",AbstractBlock.Settings::sounds,(ScriptAndValue SAV) -> {
                 try {
-                    return BlockSoundGroup.class.getField(SAV.value.getAsString()).get(null);
+                    //todo
+                    return (BlockSoundGroup) BlockSoundGroup.class.getField(SAV.value.getAsString()).get(null);
                     //todo: custom sounds?
                 }catch(NoSuchFieldException | IllegalAccessException e){
                     return BlockSoundGroup.STONE;
                 }
             }),
-            new PropertyTranslator("isOpaque","opaque",BoolTransformFunc),
-            new PropertyTranslator("luminance","luminance",(ScriptAndValue SAV) -> {
+            new BlockPropertyTranslator<>("isOpaque",(settings, isOpaque) ->
+                    isOpaque ? settings : settings.nonOpaque(), BoolTransformFunc),
+            new BlockPropertyTranslator<>("luminance",AbstractBlock.Settings::luminance,(ScriptAndValue SAV) -> {
                 if(SAV.value.getAsString().startsWith("script:")){
-                    return (ToIntFunction<BlockState>) state -> tryAndExecute(
+                    return state -> tryAndExecute(
                             0,
                             SAV.script,
                             SAV.value.getAsString().substring(7),
@@ -49,19 +58,19 @@ public class JBBlockIniter {
                             LuaValue::checkint
                     );
                 }else{
-                    return (ToIntFunction<BlockState>) value -> SAV.value.getAsInt();
+                    return value -> SAV.value.getAsInt();
                 }
             }),
-            new PropertyTranslator("mapColor","mapColorProvider",(ScriptAndValue SAV) ->
-                (Function<BlockState, MapColor>) blockState -> {
-                    try {
-                        return (MapColor) MapColor.class.getField(SAV.value.getAsString()).get(null);
-                        //todo: custom colors?
-                    } catch (NoSuchFieldException | IllegalAccessException e) {
-                        return MapColor.CLEAR;
-                    }
+            new BlockPropertyTranslator<>("mapColor",AbstractBlock.Settings::mapColor,(ScriptAndValue SAV) -> {
+                try {
+                    return (MapColor) MapColor.class.getField(SAV.value.getAsString()).get(null);
+                    //todo: custom colors?
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    return MapColor.CLEAR;
+                }
             }),
-            new PropertyTranslator("drops","lootTableId",(ScriptAndValue SAV) -> {
+            /*
+            new PropertyTranslator("drops",AbstractBlock.Settings::,(ScriptAndValue SAV) -> {
                 try{
                     return LootTables.class.getField(SAV.value.getAsString()).get(null);
                     //todo: custom drops
@@ -69,36 +78,40 @@ public class JBBlockIniter {
                     return LootTables.EMPTY;
                 }
             }),
-            //dropsLike we gotta do manually
-            new PropertyTranslator("isToolRequired","toolRequired",BoolTransformFunc),
-            new PropertyTranslator("ticksRandomly","randomTicks",BoolTransformFunc),
-            new PropertyTranslator("isAir","isAir", BoolTransformFunc),
-            new PropertyTranslator("isCollidable","collidable",BoolTransformFunc),
-            new PropertyTranslator("blockCollisionCanResize","dynamicBounds",BoolTransformFunc),
-            new PropertyTranslator("isSolidWhen", "solidBlockPredicate",
-                    //kyfex remember these are the variable name not the setter name, dont freak out
+            */
+            new BlockPropertyTranslator<>("isToolRequired", (settings, toolRequired) ->
+                    toolRequired ? settings.requiresTool() : settings, BoolTransformFunc),
+            new BlockPropertyTranslator<>("ticksRandomly", (settings, randomlyTicks) ->
+                    randomlyTicks ? settings.ticksRandomly() : settings, BoolTransformFunc),
+            new BlockPropertyTranslator<>("isAir", (settings, isAir) ->
+                    isAir ? settings.air() : settings, BoolTransformFunc),
+            new BlockPropertyTranslator<>("isCollidable", (settings, collidable) ->
+                    collidable ? settings : settings.noCollision(), BoolTransformFunc),
+            new BlockPropertyTranslator<>("blockCollisionCanResize", (settings, dynBounds) ->
+                    dynBounds ? settings : settings.dynamicBounds(), BoolTransformFunc),
+            new BlockPropertyTranslator<>("isSolidWhen", AbstractBlock.Settings::solidBlock,
                     (ScriptAndValue SAV) -> PredTransformFunc(SAV,true)),
-            new PropertyTranslator("allowsSpawningWhen","allowsSpawningPredicate",(ScriptAndValue SAV) ->{
-                if(SAV.value.getAsString().startsWith("script:")){
-                    return (AbstractBlock.TypedContextPredicate<EntityType<?>>) (state, world, pos, type) -> tryAndExecute(
-                            true,
-                            SAV.script,
-                            SAV.value.getAsString().substring(7),
-                            new Object[]{state,world,pos,type},
-                            LuaValue::checkboolean
-                    );
-                }else{
-                    return (AbstractBlock.TypedContextPredicate<EntityType<?>>)
-                            (state, world, pos, type) -> SAV.value.getAsBoolean();
-                }
+            new BlockPropertyTranslator<>("allowsSpawningWhen",AbstractBlock.Settings::allowsSpawning,
+                    (ScriptAndValue SAV) ->{
+                        if(SAV.value.getAsString().startsWith("script:")){
+                            return (state, world, pos, type) -> tryAndExecute(
+                                    true,
+                                    SAV.script,
+                                    SAV.value.getAsString().substring(7),
+                                    new Object[]{state,world,pos,type},
+                                    LuaValue::checkboolean
+                            );
+                        }else{
+                            return (state, world, pos, type) -> SAV.value.getAsBoolean();
+                        }
             }),
-            new PropertyTranslator("visionBlockedWhen","blockVisionPredicate",
+            new BlockPropertyTranslator<>("visionBlockedWhen",AbstractBlock.Settings::blockVision,
                     (ScriptAndValue SAV) -> PredTransformFunc(SAV,false)),
-            new PropertyTranslator("suffocatesWhen","suffocationPredicate",
+            new BlockPropertyTranslator<>("suffocatesWhen",AbstractBlock.Settings::suffocates,
                     (ScriptAndValue SAV) -> PredTransformFunc(SAV,false)),
-            new PropertyTranslator("emissiveLightingWhen","emissiveLightingPredicate",
+            new BlockPropertyTranslator<>("emissiveLightingWhen",AbstractBlock.Settings::emissiveLighting,
                     (ScriptAndValue SAV) -> PredTransformFunc(SAV,false)),
-            new PropertyTranslator("postProcessWhen","postProcessPredicate",
+            new BlockPropertyTranslator<>("postProcessWhen",AbstractBlock.Settings::postProcess,
                     (ScriptAndValue SAV) -> PredTransformFunc(SAV,false)),
     };
 
@@ -124,34 +137,19 @@ public class JBBlockIniter {
             return new SuccessAndIdentifier(SuccessRate.BAD_JSON);
 
         //setting material
-        AbstractBlock.Settings settings;
-        try{
-            Object material = Material.class.getField(blockJsonData.get("material").getAsString()).get(null);
-            if(!(material instanceof Material)) material=Material.STONE;
-            settings = FabricBlockSettings.of((Material) material);
-        }catch (NoSuchFieldException | IllegalAccessException e){
-            settings = FabricBlockSettings.of(Material.STONE);
-        }
+        AbstractBlock.Settings settings = FabricBlockSettings.of(starterMaterial);
 
         //setting the properties of the block settings
         String scriptName = null;
-        try{ scriptName = blockJsonData.get("script").getAsString(); }catch(Exception ignored){}
+        try{
+            scriptName = blockJsonData.get("script").getAsString();
+        }catch(Exception ignored){}
         CustomScript tempScript = new CustomScript(scriptName);
-        for (PropertyTranslator propToTranslate : JBBlockIniter.blockPropertyMap) {
+        for (BlockPropertyTranslator<?> propToTranslate : JBBlockIniter.blockPropertyMap) {
             if (!blockJsonData.has(propToTranslate.jsonProp))
                 continue;
 
-            try {
-                //setting the specified java field to
-                //the json value put through the transform func
-                settings.getClass().getField(propToTranslate.javaProp)
-                        .set(settings, propToTranslate.transformFunc.apply(new ScriptAndValue(
-                                tempScript,
-                                blockJsonData.get(propToTranslate.jsonProp)
-                        )));
-            } catch (Exception e) {
-                System.out.println(propToTranslate.jsonProp + " failt");
-            }
+            settings = propToTranslate.apply(settings, blockJsonData, tempScript);
         }
         tempScript.remove();
 

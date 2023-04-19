@@ -14,8 +14,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.lang.reflect.Field;
-
 public class LuaBlock extends BlockWithEntity implements OperatorBlock {
 
     public LuaBlock(Settings settings) {
@@ -39,21 +37,12 @@ public class LuaBlock extends BlockWithEntity implements OperatorBlock {
         }
     }
 
-    public static Field widenedClient;
-    static{
-        try {
-            widenedClient = ClientPlayerEntity.class.getDeclaredField("client");
-            widenedClient.setAccessible(true);
-        }catch(Exception ignored){}
-    }
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.getBlockEntity(pos) instanceof LuaBlockEntity && player.isCreativeLevelTwoOp()) {
             if(player instanceof ClientPlayerEntity){
-                try{
-                    ((MinecraftClient)widenedClient.get(player)).setScreen(
-                            new LuaBlockScreen(pos,((LuaBlockEntity) world.getBlockEntity(pos)).getLua()));
-                }catch(Exception ignored){}
+                MinecraftClient.getInstance().setScreen(
+                        new LuaBlockScreen(pos,((LuaBlockEntity) world.getBlockEntity(pos)).getLua()));
             }
             return ActionResult.success(world.isClient);
         } else {

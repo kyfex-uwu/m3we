@@ -1,0 +1,7654 @@
+
+
+
+
+
+class_5 PathMinHeap
+class_6 BirdPathNodeMaker
+class_7 PathNodeType
+class_8 PathNodeMaker
+class_9 PathNode
+class_10 NavigationType
+class_11 Path
+class_12 WaterPathNodeMaker
+class_13 PathNodeNavigator
+class_14 LandPathNodeMaker
+class_15 AmphibiousPathNodeMaker
+
+class_17 MapBannerMarker
+class_18 PersistentState
+class_19 MapFrameMarker
+class_20 MapIcon
+class_21 Type
+class_22 MapState
+class_23 PlayerUpdateTracker
+
+
+class_26 PersistentStateManager
+class_27 UnmodifiableLevelProperties
+
+class_29 WorldSaveHandler
+
+class_31 LevelProperties
+class_32 LevelStorage
+class_33 LevelStorageException
+class_34 LevelSummary
+
+
+
+
+class_39 LootTables
+class_40 BinomialLootNumberProvider
+class_41 Serializer
+class_42 BoundedIntUnaryOperator
+
+class_44 ConstantLootNumberProvider
+
+class_46 LootContextAware
+class_47 LootContext
+class_48 Builder
+class_49 Dropper
+class_50 EntityTarget
+class_51 Serializer
+class_52 LootTable
+class_53 Builder
+class_54 Serializer
+class_55 LootPool
+class_56 Builder
+class_57 Serializer
+class_58 LootTableReporter
+
+class_60 LootManager
+
+class_62 Serializer
+
+class_64 EntryCombiner
+class_65 AlternativeEntry
+class_66 Builder
+class_67 DynamicEntry
+class_68 Serializer
+class_69 CombinedEntry
+class_70 Factory
+
+class_72 SequenceEntry
+class_73 EmptyEntry
+class_74 Serializer
+class_75 LootPoolEntryTypes
+
+class_77 ItemEntry
+class_78 Serializer
+class_79 LootPoolEntry
+class_80 Builder
+
+class_82 LootChoice
+class_83 LootTableEntry
+class_84 Serializer
+class_85 LeafEntry
+class_86 Builder
+class_87 BasicBuilder
+class_88 Choice
+class_89 Factory
+class_90 Serializer
+class_91 TagEntry
+class_92 Serializer
+class_93 GroupEntry
+class_94 ApplyBonusLootFunction
+class_95 BinomialWithBonusCount
+class_96 Formula
+class_97 FormulaFactory
+class_98 OreDrops
+class_99 Serializer
+class_100 UniformBonusCount
+class_101 CopyNameLootFunction
+class_102 Source
+class_103 Serializer
+class_104 ExplosionDecayLootFunction
+class_105 Serializer
+class_106 EnchantWithLevelsLootFunction
+class_107 Builder
+class_108 Serializer
+class_109 EnchantRandomlyLootFunction
+class_110 Serializer
+class_111 ExplorationMapLootFunction
+class_112 Builder
+class_113 Serializer
+class_114 LimitCountLootFunction
+class_115 Serializer
+class_116 LootFunctionConsumingBuilder
+class_117 LootFunction
+class_118 Builder
+
+class_120 ConditionalLootFunction
+class_121 Builder
+class_122 Joiner
+class_123 Serializer
+class_124 Formatting
+class_125 LootingEnchantLootFunction
+class_126 Builder
+class_127 Serializer
+class_128 CrashReport
+class_129 CrashReportSection
+class_130 Element
+class_131 LootFunctionTypes
+
+class_133 CrashCallable
+class_134 SetContentsLootFunction
+class_135 Builder
+class_136 Serializer
+class_137 SetAttributesLootFunction
+class_138 Attribute
+class_139 Serializer
+class_140 UncaughtExceptionLogger
+class_141 SetCountLootFunction
+class_142 Serializer
+class_143 UncaughtExceptionHandler
+class_144 SetLootTableLootFunction
+class_145 Serializer
+
+class_147 Serializer
+class_148 CrashException
+class_149 SetDamageLootFunction
+class_150 Serializer
+class_151 InvalidIdentifierException
+class_152 SetStewEffectLootFunction
+class_153 Builder
+class_154 Serializer
+class_155 SharedConstants
+class_156 Util
+class_157 IdentityHashStrategy
+class_158 OperatingSystem
+class_159 SetNbtLootFunction
+class_160 Serializer
+class_161 Advancement
+class_162 Builder
+class_163 AdvancementManager
+class_164 Listener
+class_165 FurnaceSmeltLootFunction
+
+class_167 AdvancementProgress
+class_168 Serializer
+class_169 LootContextParameter
+class_170 AdvancementRewards
+class_171 Builder
+
+class_173 LootContextTypes
+class_174 Criteria
+class_175 AdvancementCriterion
+class_176 LootContextType
+class_177 Builder
+class_178 CriterionProgress
+class_179 Criterion
+class_180 ConditionsContainer
+class_181 LootContextParameters
+class_182 TableBonusLootCondition
+class_183 Serializer
+class_184 CriterionConditions
+class_185 AdvancementDisplay
+class_186 AlternativeLootCondition
+class_187 Builder
+class_188 Serializer
+class_189 AdvancementFrame
+class_190 DamageSourcePropertiesLootCondition
+class_191 Serializer
+class_192 LootConditionConsumingBuilder
+class_193 CriterionMerger
+class_194 AdvancementPositioner
+class_195 AbstractCriterionConditions
+class_196 BredAnimalsCriterion
+
+class_198 Conditions
+class_199 EntityScoresLootCondition
+class_200 Serializer
+class_201 SurvivesExplosionLootCondition
+class_202 Serializer
+
+
+class_205 LocationCheckLootCondition
+class_206 Serializer
+class_207 InvertedLootCondition
+class_208 Serializer
+
+class_210 Builder
+
+class_212 BlockStatePropertyLootCondition
+class_213 Builder
+class_214 Serializer
+class_215 EntityPropertiesLootCondition
+class_216 Serializer
+class_217 LootConditionTypes
+
+class_219 RandomChanceLootCondition
+class_220 Serializer
+class_221 KilledByPlayerLootCondition
+class_222 Serializer
+class_223 MatchToolLootCondition
+class_224 Serializer
+class_225 RandomChanceWithLootingLootCondition
+class_226 Serializer
+class_227 WeatherCheckLootCondition
+class_228 Serializer
+class_229 FunctionTagTimerCallback
+class_230 Serializer
+class_231 FunctionTimerCallback
+class_232 Serializer
+class_233 TimerCallbackSerializer
+class_234 TimerCallback
+class_235 Serializer
+class_236 Timer
+class_237 Event
+class_238 Box
+class_239 HitResult
+class_240 Type
+class_241 Vec2f
+class_242 FluidHandling
+class_243 Vec3d
+class_244 BitSetVoxelSet
+class_245 ArrayVoxelShape
+class_246 FractionalDoubleList
+class_247 BooleanBiFunction
+class_248 FractionalPairList
+class_249 SimpleVoxelShape
+class_250 IdentityPairList
+class_251 VoxelSet
+class_252 PositionConsumer
+class_253 PositionBiConsumer
+class_254 SimplePairList
+class_255 PairList
+class_256 Consumer
+class_257 DisjointPairList
+
+class_259 VoxelShapes
+class_260 BoxConsumer
+class_261 OffsetDoubleList
+class_262 CroppedVoxelSet
+class_263 SlicedVoxelShape
+
+class_265 VoxelShape
+class_266 ScoreboardObjective
+class_267 ScoreboardPlayerScore
+class_268 Team
+class_269 Scoreboard
+class_270 AbstractTeam
+class_271 CollisionRule
+class_272 VisibilityRule
+class_273 ScoreboardState
+class_274 ScoreboardCriterion
+class_275 RenderType
+class_276 Framebuffer
+class_277 GlBlendState
+class_278 Uniform
+class_279 ShaderEffect
+class_280 JsonEffectGlShader
+class_281 Program
+class_282 Type
+class_283 PostProcessShader
+class_284 GlUniform
+class_285 GlProgramManager
+class_286 BufferRenderer
+class_287 BufferBuilder
+
+class_289 Tessellator
+class_290 VertexFormats
+class_291 VertexBuffer
+
+class_293 VertexFormat
+
+
+class_296 VertexFormatElement
+class_297 ComponentType
+class_298 Type
+class_299 ClientRecipeBook
+class_300 DataQueryHandler
+class_301 Untracker
+class_302 HotbarStorage
+class_303 ChatHudLine
+class_304 KeyBinding
+
+class_306 Key
+class_307 Type
+class_308 DiffuseLighting
+class_309 Keyboard
+class_310 MinecraftClient
+class_311 GlAllocationUtils
+class_312 Mouse
+class_313 Monitor
+class_314 RecipeBookGroup
+class_315 GameOptions
+
+class_317 RenderTickCounter
+class_318 ScreenshotRecorder
+class_319 VideoMode
+class_320 Session
+class_321 AccountType
+class_322 BlockColorProvider
+class_323 MonitorTracker
+class_324 BlockColors
+class_325 ItemColors
+class_326 ItemColorProvider
+class_327 TextRenderer
+class_328 Rectangle
+class_329 InGameHud
+class_330 MapRenderer
+class_331 MapTexture
+class_332 DrawableHelper
+class_333 NarratorManager
+
+
+
+class_337 BossBarHud
+class_338 ChatHud
+class_339 ClickableWidget
+class_340 DebugHud
+class_341 ChatMessages
+class_342 TextFieldWidget
+
+class_344 TexturedButtonWidget
+class_345 ClientBossBar
+
+class_347 LockButtonWidget
+class_348 IconLocation
+
+class_350 EntryListWidget
+class_351 Entry
+class_352 Entries
+class_353 ButtonListWidget
+class_354 ButtonEntry
+class_355 PlayerListHud
+class_356 EntryOrderComparator
+class_357 SliderWidget
+
+class_359 SubtitlesHud
+class_360 SubtitleEntry
+class_361 ToggleButtonWidget
+class_362 AbstractParentElement
+
+class_364 Element
+class_365 SpectatorHud
+class_366 RecipeToast
+class_367 AdvancementToast
+class_368 Toast
+class_369 Visibility
+class_370 SystemToast
+class_371 Type
+class_372 TutorialToast
+class_373 Type
+class_374 ToastManager
+class_375 Entry
+class_376 BlankFont
+class_377 FontStorage
+class_378 FontManager
+class_379 Glyph
+class_380 GlyphAtlasTexture
+class_381 Slot
+class_382 GlyphRenderer
+class_383 RenderableGlyph
+class_384 EmptyGlyphRenderer
+
+class_386 BitmapFont
+class_387 Loader
+class_388 BitmapFontGlyph
+class_389 FontLoader
+class_390 Font
+class_391 UnicodeTextureFont
+class_392 Loader
+class_393 UnicodeTextureGlyph
+class_394 FontType
+class_395 TrueTypeFont
+class_396 TrueTypeFontLoader
+class_397 TtfGlyph
+
+
+
+
+
+class_403 NoticeScreen
+class_404 ChatOptionsScreen
+class_405 BackupPromptScreen
+class_406 Callback
+class_407 ConfirmLinkScreen
+class_408 ChatScreen
+
+class_410 ConfirmScreen
+
+class_412 ConnectScreen
+class_413 CustomizeFlatLevelScreen
+
+class_415 CustomizeBuffetLevelScreen
+
+class_417 DemoScreen
+class_418 DeathScreen
+class_419 DisconnectedScreen
+class_420 DirectConnectScreen
+class_421 FatalErrorScreen
+class_422 AddServerScreen
+class_423 SleepingChatScreen
+class_424 MessageScreen
+class_425 SplashOverlay
+class_426 LanguageOptionsScreen
+
+class_428 OutOfMemoryScreen
+class_429 OptionsScreen
+class_430 PresetsScreen
+
+class_432 SuperflatPresetEntry
+class_433 GameMenuScreen
+class_434 DownloadingTerrainScreen
+class_435 ProgressScreen
+class_436 OpenToLanScreen
+class_437 Screen
+
+
+class_440 SkinOptionsScreen
+
+class_442 TitleScreen
+class_443 SoundOptionsScreen
+class_444 SoundSliderWidget
+class_445 CreditsScreen
+class_446 VideoOptionsScreen
+class_447 StatsScreen
+
+
+class_450 ItemComparator
+
+class_452 StatsListener
+class_453 AdvancementTabType
+class_454 AdvancementTab
+class_455 AdvancementObtainedStatus
+class_456 AdvancementWidget
+class_457 AdvancementsScreen
+class_458 ControlsOptionsScreen
+class_459 ControlsListWidget
+class_460 CategoryEntry
+class_461 Entry
+class_462 KeyBindingEntry
+class_463 AbstractCommandBlockScreen
+class_464 SuggestionWindow
+class_465 HandledScreen
+class_466 BeaconScreen
+class_467 CancelButtonWidget
+class_468 DoneButtonWidget
+class_469 EffectButtonWidget
+class_470 BaseButtonWidget
+class_471 AnvilScreen
+class_472 BrewingStandScreen
+class_473 BookEditScreen
+class_474 PageTurnWidget
+class_475 Line
+class_476 GenericContainerScreen
+class_477 CommandBlockScreen
+class_478 CreativeInventoryListener
+class_479 CraftingScreen
+class_480 Generic3x3ContainerScreen
+class_481 CreativeInventoryScreen
+class_482 LockableSlot
+class_483 CreativeScreenHandler
+class_484 CreativeSlot
+class_485 AbstractInventoryScreen
+class_486 EnchantmentScreen
+class_487 EnchantingPhrases
+class_488 HopperScreen
+class_489 AbstractFurnaceScreen
+class_490 InventoryScreen
+class_491 HorseScreen
+class_492 MerchantScreen
+class_493 WidgetButtonPage
+class_494 LoomScreen
+class_495 ShulkerBoxScreen
+class_496 MinecartCommandBlockScreen
+class_497 StructureBlockScreen
+class_498 SignEditScreen
+
+class_500 MultiplayerScreen
+
+
+
+class_504 Entry
+class_505 RecipeBookGhostSlots
+class_506 GhostInputSlot
+class_507 RecipeBookWidget
+class_508 RecipeAlternativesWidget
+class_509 AlternativeButtonWidget
+class_510 InputSlot
+class_511 FurnaceAlternativeButtonWidget
+class_512 RecipeGroupButtonWidget
+class_513 RecipeBookResults
+class_514 AnimatedResultButton
+class_515 RecipeDisplayListener
+class_516 RecipeResultCollection
+class_517 AbstractFurnaceRecipeBookScreen
+class_518 RecipeBookProvider
+
+
+class_521 PackListWidget
+
+
+class_524 EditWorldScreen
+class_525 CreateWorldScreen
+class_526 SelectWorldScreen
+class_527 OptimizeWorldScreen
+class_528 WorldListWidget
+
+class_530 TeleportToSpecificPlayerSpectatorCommand
+class_531 SpectatorMenu
+class_532 CloseSpectatorMenuCommand
+class_533 ChangePageSpectatorMenuCommand
+class_534 RootSpectatorCommandGroup
+class_535 SpectatorMenuCommandGroup
+class_536 SpectatorMenuCloseCallback
+class_537 SpectatorMenuCommand
+class_538 TeleportSpectatorMenu
+class_539 SpectatorMenuState
+class_540 TeamTeleportSpectatorMenu
+class_541 TeleportToSpecificTeamCommand
+class_542 RunArgs
+class_543 WindowSettings
+class_544 Directories
+class_545 Game
+class_546 AutoConnect
+class_547 Network
+class_548 ArmorStandArmorEntityModel
+class_549 HorseEntityModel
+
+class_551 ArmorStandEntityModel
+
+class_553 BatEntityModel
+class_554 BoatEntityModel
+class_555 BlazeEntityModel
+
+class_557 BookModel
+class_558 ChickenEntityModel
+class_559 DonkeyEntityModel
+class_560 CowEntityModel
+class_561 CodEntityModel
+class_562 CreeperEntityModel
+class_563 ElytraEntityModel
+class_564 DrownedEntityModel
+class_565 EndermiteEntityModel
+class_566 EndermanEntityModel
+class_567 GhastEntityModel
+class_568 EvokerFangsEntityModel
+
+class_570 GuardianEntityModel
+class_571 RavagerEntityModel
+class_572 BipedEntityModel
+class_573 ArmPose
+class_574 IronGolemEntityModel
+class_575 IllagerEntityModel
+class_576 MagmaCubeEntityModel
+
+class_578 LlamaEntityModel
+class_579 LeashKnotEntityModel
+class_580 MinecartEntityModel
+class_581 LlamaSpitEntityModel
+class_582 OcelotEntityModel
+class_583 EntityModel
+class_584 ParrotEntityModel
+class_585 Pose
+class_586 PandaEntityModel
+class_587 PigEntityModel
+class_588 PhantomEntityModel
+
+class_590 PolarBearEntityModel
+class_591 PlayerEntityModel
+class_592 LargePufferfishEntityModel
+class_593 Quad
+class_594 SmallPufferfishEntityModel
+class_595 MediumPufferfishEntityModel
+class_596 RabbitEntityModel
+class_597 QuadrupedEntityModel
+class_598 SheepWoolEntityModel
+class_599 SalmonEntityModel
+class_600 ShieldEntityModel
+class_601 SheepEntityModel
+class_602 ShulkerEntityModel
+class_603 ShulkerBulletEntityModel
+class_604 SilverfishEntityModel
+
+class_606 SkeletonEntityModel
+class_607 SkullEntityModel
+class_608 SnowGolemEntityModel
+class_609 SlimeEntityModel
+class_610 SquidEntityModel
+class_611 SpiderEntityModel
+class_612 SmallTropicalFishEntityModel
+class_613 TridentEntityModel
+class_614 TurtleEntityModel
+class_615 LargeTropicalFishEntityModel
+
+class_617 VexEntityModel
+class_618 Vertex
+class_619 ZombieVillagerEntityModel
+class_620 VillagerResemblingModel
+class_621 WitherEntityModel
+class_622 WitchEntityModel
+class_623 ZombieEntityModel
+class_624 WolfEntityModel
+class_625 DragonEntityModel
+class_626 DragonHeadEntityModel
+
+class_628 Cuboid
+
+class_630 ModelPart
+class_631 ClientChunkManager
+class_632 ClientAdvancementManager
+class_633 Listener
+class_634 ClientPlayNetworkHandler
+class_635 ClientLoginNetworkHandler
+class_636 ClientPlayerInteractionManager
+class_637 ClientCommandSource
+class_638 ClientWorld
+class_639 ServerAddress
+class_640 PlayerListEntry
+class_641 ServerList
+class_642 ServerInfo
+class_643 ResourcePackPolicy
+class_644 MultiplayerServerListPinger
+class_645 SweepAttackParticle
+class_646 Factory
+class_647 CrackParticle
+class_648 ItemFactory
+class_649 SlimeballFactory
+class_650 SnowballFactory
+
+
+class_653 BubbleColumnUpParticle
+class_654 Factory
+class_655 WaterBubbleParticle
+class_656 Factory
+class_657 DamageParticle
+class_658 DefaultFactory
+class_659 EnchantedHitFactory
+
+class_661 BubblePopParticle
+class_662 Factory
+class_663 BlockLeakParticle
+class_664 DrippingLavaFactory
+class_665 FallingWaterFactory
+class_666 DragonBreathParticle
+class_667 Factory
+class_668 EnchantGlyphParticle
+class_669 NautilusFactory
+class_670 EnchantFactory
+class_671 RedDustParticle
+class_672 Factory
+class_673 ExplosionSmokeParticle
+class_674 Factory
+class_675 EndRodParticle
+class_676 Factory
+class_677 FireworksSparkParticle
+class_678 Flash
+class_679 ExplosionFactory
+class_680 Explosion
+class_681 FireworkParticle
+class_682 BlockFallingDustParticle
+class_683 Factory
+class_684 EmotionParticle
+class_685 AngryVillagerFactory
+class_686 HeartFactory
+class_687 FlameParticle
+class_688 Factory
+class_689 ExplosionEmitterParticle
+class_690 Factory
+class_691 ExplosionLargeParticle
+class_692 Factory
+class_693 ItemPickupParticle
+class_694 LavaEmberParticle
+class_695 Factory
+class_696 LargeFireSmokeParticle
+class_697 Factory
+class_698 NoteParticle
+class_699 Factory
+class_700 ElderGuardianAppearanceParticle
+class_701 Factory
+class_702 ParticleManager
+class_703 Particle
+class_704 CloudParticle
+class_705 CloudFactory
+class_706 SneezeFactory
+class_707 ParticleFactory
+class_708 AnimatedParticle
+class_709 PortalParticle
+class_710 Factory
+class_711 SpellParticle
+class_712 EntityAmbientFactory
+class_713 InstantFactory
+class_714 EntityFactory
+class_715 DefaultFactory
+class_716 WitchFactory
+class_717 FireSmokeParticle
+class_718 Factory
+class_719 WaterSplashParticle
+class_720 SplashFactory
+class_721 SpitParticle
+class_722 Factory
+class_723 WaterSuspendParticle
+
+class_725 SquidInkParticle
+class_726 Factory
+class_727 BlockDustParticle
+class_728 Factory
+class_729 SuspendParticle
+class_730 DolphinFactory
+class_731 HappyVillagerFactory
+class_732 MyceliumFactory
+class_733 EmitterParticle
+class_734 TotemParticle
+class_735 Factory
+class_736 CurrentDownParticle
+class_737 Factory
+class_738 FishingParticle
+class_739 Factory
+class_740 RainSplashParticle
+class_741 Factory
+class_742 AbstractClientPlayerEntity
+class_743 KeyboardInput
+class_744 Input
+class_745 OtherClientPlayerEntity
+class_746 ClientPlayerEntity
+class_747 SimpleNamedScreenHandlerFactory
+class_748 HotbarStorageEntry
+
+class_750 BlockBufferBuilderStorage
+class_751 CubeMapRenderer
+
+class_753 CubeFace
+class_754 DirectionIds
+class_755 Corner
+class_756 BuiltinModelItemRenderer
+class_757 GameRenderer
+class_758 BackgroundRenderer
+class_759 HeldItemRenderer
+
+class_761 WorldRenderer
+class_762 ChunkInfo
+class_763 ItemModels
+
+class_765 LightmapTextureManager
+class_766 RotatingCubeMapRenderer
+
+class_768 Rect2i
+class_769 BuiltChunkStorage
+
+
+
+class_773 BlockModels
+
+class_775 FluidRenderer
+class_776 BlockRenderManager
+class_777 BakedQuad
+class_778 BlockModelRenderer
+class_779 NeighborData
+class_780 AmbientOcclusionCalculator
+class_781 Translation
+class_782 NeighborOrientation
+class_783 ModelElementFace
+class_784 Deserializer
+class_785 ModelElement
+class_786 Deserializer
+class_787 ModelElementTexture
+class_788 Deserializer
+class_789 ModelRotation
+class_790 ModelVariantMap
+class_791 DeserializationContext
+class_792 Deserializer
+class_793 JsonUnbakedModel
+
+class_795 Deserializer
+class_796 BakedQuadFactory
+
+
+class_799 ModelOverride
+class_800 Deserializer
+class_801 ItemModelGenerator
+class_802 Frame
+class_803 Side
+class_804 Transformation
+class_805 Deserializer
+class_806 ModelOverrideList
+class_807 WeightedUnbakedModel
+class_808 Deserializer
+class_809 ModelTransformation
+class_810 Deserializer
+class_811 Mode
+class_812 AndMultipartModelSelector
+class_813 ModelVariant
+class_814 Deserializer
+class_815 MultipartModelSelector
+class_816 MultipartUnbakedModel
+class_817 Deserializer
+class_818 SimpleMultipartModelSelector
+class_819 MultipartModelComponent
+class_820 Deserializer
+class_821 OrMultipartModelSelector
+class_822 BeaconBlockEntityRenderer
+class_823 BannerBlockEntityRenderer
+class_824 BlockEntityRenderDispatcher
+class_825 BedBlockEntityRenderer
+class_826 ChestBlockEntityRenderer
+class_827 BlockEntityRenderer
+class_828 EnchantingTableBlockEntityRenderer
+class_829 ConduitBlockEntityRenderer
+
+
+
+
+class_834 ShulkerBoxBlockEntityRenderer
+class_835 PistonBlockEntityRenderer
+class_836 SkullBlockEntityRenderer
+class_837 SignBlockEntityRenderer
+class_838 StructureBlockBlockEntityRenderer
+class_839 MobSpawnerBlockEntityRenderer
+class_840 EndPortalBlockEntityRenderer
+class_841 EndGatewayBlockEntityRenderer
+
+
+
+
+class_846 ChunkBuilder
+
+
+class_849 ChunkData
+
+class_851 BuiltChunk
+class_852 ChunkOcclusionDataBuilder
+class_853 ChunkRendererRegion
+class_854 ChunkOcclusionData
+
+
+
+
+
+class_860 ChunkLoadingDebugRenderer
+
+class_862 ChunkBorderDebugRenderer
+class_863 DebugRenderer
+class_864 Renderer
+class_865 CollisionDebugRenderer
+class_866 SkyLightDebugRenderer
+class_867 HeightmapDebugRenderer
+class_868 PathfindingDebugRenderer
+class_869 NeighborUpdateDebugRenderer
+class_870 StructureDebugRenderer
+class_871 BlockOutlineDebugRenderer
+class_872 WaterDebugRenderer
+class_873 WorldGenAttemptDebugRenderer
+
+class_875 AbstractHorseEntityRenderer
+class_876 ProjectileEntityRenderer
+class_877 ArmorStandEntityRenderer
+class_878 BlazeEntityRenderer
+class_879 BatEntityRenderer
+class_880 CaveSpiderEntityRenderer
+class_881 BoatEntityRenderer
+class_882 ChickenEntityRenderer
+class_883 DonkeyEntityRenderer
+class_884 CowEntityRenderer
+class_885 CodEntityRenderer
+
+class_887 CreeperEntityRenderer
+class_888 DolphinEntityRenderer
+class_889 DolphinEntityModel
+class_890 DrownedEntityRenderer
+class_891 DragonFireballEntityRenderer
+class_892 EndCrystalEntityRenderer
+class_893 ElderGuardianEntityRenderer
+class_894 EndermanEntityRenderer
+class_895 EnderDragonEntityRenderer
+class_896 EndermiteEntityRenderer
+class_897 EntityRenderer
+class_898 EntityRenderDispatcher
+class_899 EvokerEntityRenderer
+class_900 EvokerFangsEntityRenderer
+class_901 FallingBlockEntityRenderer
+class_902 ExperienceOrbEntityRenderer
+class_903 FireworkRocketEntityRenderer
+
+class_905 GhastEntityRenderer
+class_906 FishingBobberEntityRenderer
+class_907 GuardianEntityRenderer
+class_908 GiantEntityRenderer
+class_909 BipedEntityRenderer
+class_910 HorseEntityRenderer
+class_911 RavagerEntityRenderer
+class_912 HuskEntityRenderer
+class_913 IronGolemEntityRenderer
+class_914 IllusionerEntityRenderer
+class_915 ItemFrameEntityRenderer
+class_916 ItemEntityRenderer
+class_917 MagmaCubeEntityRenderer
+class_918 ItemRenderer
+class_919 LightningEntityRenderer
+class_920 LeashKnotEntityRenderer
+class_921 LlamaEntityRenderer
+class_922 LivingEntityRenderer
+class_923 LlamaSpitEntityRenderer
+
+class_925 MinecartEntityRenderer
+class_926 MooshroomEntityRenderer
+class_927 MobEntityRenderer
+class_928 PaintingEntityRenderer
+class_929 CatEntityRenderer
+class_930 ParrotEntityRenderer
+class_931 PandaEntityRenderer
+class_932 PigEntityRenderer
+class_933 PhantomEntityRenderer
+class_934 PillagerEntityRenderer
+
+class_936 PufferfishEntityRenderer
+class_937 PolarBearEntityRenderer
+class_938 SalmonEntityRenderer
+class_939 RabbitEntityRenderer
+class_940 ShulkerBulletEntityRenderer
+class_941 SheepEntityRenderer
+class_942 SilverfishEntityRenderer
+class_943 ShulkerEntityRenderer
+class_944 ShulkerHeadFeatureRenderer
+class_945 SlimeEntityRenderer
+class_946 SkeletonEntityRenderer
+class_947 SpectralArrowEntityRenderer
+class_948 SnowGolemEntityRenderer
+class_949 SpiderEntityRenderer
+class_950 StrayEntityRenderer
+class_951 SquidEntityRenderer
+
+class_953 FlyingItemEntityRenderer
+class_954 ArrowEntityRenderer
+class_955 TridentEntityRenderer
+class_956 TntEntityRenderer
+class_957 TntMinecartEntityRenderer
+class_958 TurtleEntityRenderer
+class_959 TropicalFishEntityRenderer
+class_960 VexEntityRenderer
+class_961 ZombieHorseEntityRenderer
+class_962 VindicatorEntityRenderer
+class_963 VillagerEntityRenderer
+class_964 WitherEntityRenderer
+class_965 WitchEntityRenderer
+class_966 WitherSkullEntityRenderer
+class_967 WitherSkeletonEntityRenderer
+class_968 ZombieBaseEntityRenderer
+class_969 WolfEntityRenderer
+class_970 ArmorFeatureRenderer
+class_971 ZombieVillagerEntityRenderer
+class_972 CapeFeatureRenderer
+class_973 StuckArrowsFeatureRenderer
+class_974 CreeperChargeFeatureRenderer
+class_975 EndermanBlockFeatureRenderer
+class_976 HeadFeatureRenderer
+class_977 DolphinHeldItemFeatureRenderer
+class_978 Deadmau5FeatureRenderer
+class_979 ElytraFeatureRenderer
+class_980 DrownedOverlayFeatureRenderer
+
+
+class_983 ShoulderParrotFeatureRenderer
+
+class_985 EndermanEyesFeatureRenderer
+class_986 IronGolemFlowerFeatureRenderer
+
+class_988 LlamaDecorFeatureRenderer
+class_989 HeldItemFeatureRenderer
+class_990 PandaHeldItemFeatureRenderer
+class_991 MooshroomMushroomFeatureRenderer
+class_992 SaddleFeatureRenderer
+class_993 PhantomEyesFeatureRenderer
+class_994 SheepWoolFeatureRenderer
+
+class_996 SnowmanPumpkinFeatureRenderer
+class_997 SlimeOverlayFeatureRenderer
+class_998 TridentRiptideFeatureRenderer
+
+class_1000 SpiderEyesFeatureRenderer
+class_1001 TropicalFishColorFeatureRenderer
+class_1002 StrayOverlayFeatureRenderer
+
+class_1004 WitherArmorFeatureRenderer
+class_1005 WitchHeldItemFeatureRenderer
+class_1006 WolfCollarFeatureRenderer
+class_1007 PlayerEntityRenderer
+class_1008 GlDebug
+
+
+class_1011 NativeImage
+class_1012 Format
+class_1013 InternalFormat
+class_1014 WriteCallback
+
+
+class_1017 BlendFuncState
+class_1018 CapabilityTracker
+
+
+class_1021 LogicOpState
+class_1022 ColorMask
+
+
+class_1025 CullFaceState
+class_1026 DepthTestState
+
+
+
+class_1030 LogicOp
+class_1031 PolygonOffsetState
+
+
+class_1034 StencilSubState
+class_1035 StencilState
+
+
+
+class_1039 Texture2DState
+class_1040 Viewport
+class_1041 Window
+
+class_1043 NativeImageBackedTexture
+class_1044 AbstractTexture
+
+class_1046 PlayerSkinTexture
+class_1047 MissingSprite
+
+class_1049 ResourceTexture
+class_1050 PngFile
+class_1051 Reader
+class_1052 ChannelReader
+class_1053 SeekableChannelReader
+class_1054 TextureStitcherCannotFitException
+class_1055 TextureStitcher
+class_1056 Holder
+class_1057 Slot
+class_1058 Sprite
+class_1059 SpriteAtlasTexture
+class_1060 TextureManager
+class_1061 TextureTickListener
+
+
+class_1064 ResourceIndex
+class_1065 DefaultClientResourcePack
+class_1066 ClientBuiltinResourcePackProvider
+class_1067 DirectResourceIndex
+class_1068 DefaultSkinHelper
+class_1069 GrassColormapResourceSupplier
+class_1070 FoliageColormapResourceSupplier
+class_1071 PlayerSkinProvider
+class_1072 SkinTextureAvailableCallback
+class_1073 Format3ResourcePack
+class_1074 I18n
+
+class_1076 LanguageManager
+class_1077 LanguageDefinition
+class_1078 TranslationStorage
+class_1079 AnimationResourceMetadata
+class_1080 AnimationFrameResourceMetadata
+class_1081 AnimationResourceMetadataReader
+class_1082 LanguageResourceMetadata
+class_1083 LanguageResourceMetadataReader
+class_1084 TextureResourceMetadata
+class_1085 TextureResourceMetadataReader
+class_1086 ModelRotation
+class_1087 BakedModel
+class_1088 ModelLoader
+class_1089 ModelLoaderException
+class_1090 BuiltinBakedModel
+class_1091 ModelIdentifier
+class_1092 BakedModelManager
+class_1093 BasicBakedModel
+class_1094 Builder
+class_1095 MultipartBakedModel
+class_1096 Builder
+class_1097 WeightedBakedModel
+class_1098 Builder
+
+class_1100 UnbakedModel
+class_1101 MovingSoundInstance
+class_1102 AbstractSoundInstance
+class_1103 ElytraSoundInstance
+class_1104 ClientPlayerTickable
+class_1105 GuardianAttackSoundInstance
+class_1106 EntityTrackingSoundInstance
+class_1107 MinecartInsideSoundInstance
+class_1108 MovingMinecartSoundInstance
+class_1109 PositionedSoundInstance
+class_1110 SoundEntry
+class_1111 Sound
+class_1112 RegistrationType
+class_1113 SoundInstance
+class_1114 AttenuationType
+class_1115 SoundEntryDeserializer
+class_1116 AmbientSoundPlayer
+class_1117 TickableSoundInstance
+class_1118 AmbientSoundLoops
+class_1119 MusicLoop
+class_1120 Underwater
+class_1121 IdentifierSearchProvider
+class_1122 IdentifierSearchableIterator
+class_1123 ReloadableSearchProvider
+class_1124 SearchManager
+class_1125 Key
+class_1126 TextSearchProvider
+class_1127 TextSearchableIterator
+class_1128 SuffixArray
+class_1129 SearchProvider
+class_1130 IntegratedPlayerManager
+class_1131 LanServerInfo
+class_1132 IntegratedServer
+class_1133 LanServerPinger
+class_1134 LanServerQueryManager
+class_1135 LanServerDetector
+class_1136 LanServerEntryList
+
+
+
+class_1140 SoundSystem
+
+class_1142 MusicTracker
+class_1143 MusicType
+class_1144 SoundManager
+class_1145 SoundInstanceListener
+class_1146 WeightedSoundSet
+
+class_1148 SoundContainer
+class_1149 CraftPlanksTutorialStepHandler
+class_1150 NoneTutorialStepHandler
+class_1151 MovementTutorialStepHandler
+class_1152 FindTreeTutorialStepHandler
+class_1153 PunchTreeTutorialStepHandler
+class_1154 OpenInventoryTutorialStepHandler
+class_1155 TutorialStepHandler
+class_1156 TutorialManager
+class_1157 TutorialStep
+class_1158 Quaternion
+class_1159 Matrix4f
+class_1160 Vec3f
+class_1161 Vector3d
+class_1162 Vector4f
+class_1163 BiomeColors
+
+class_1165 EntityRedundantChanceTagsFix
+class_1166 EntityRidingToPassengerFix
+class_1167 EntityTransformFix
+class_1168 EntitySkeletonSplitFix
+class_1169 EntityShulkerColorFix
+class_1170 EntityTheRenameningBlock
+class_1171 EntityStringUuidFix
+class_1172 EntityWolfColorFix
+class_1173 EntityTippedArrowFix
+class_1174 EntityZombieVillagerTypeFix
+class_1175 EntityZombieSplitFix
+class_1176 IglooMetadataRemovalFix
+class_1177 HeightmapRenamingFix
+class_1178 ItemCustomNameToComponentFix
+class_1179 ItemBannerColorFix
+class_1180 ItemLoreToTextFix
+class_1181 ItemIdFix
+class_1182 ItemNameFix
+class_1183 ItemPotionFix
+class_1184 ItemSpawnEggFix
+class_1185 ItemShulkerBoxColorFix
+class_1186 ItemInstanceMapIdFix
+class_1187 ItemStackEnchantmentFix
+class_1188 ItemInstanceTheFlatteningFix
+class_1189 ItemInstanceSpawnEggFix
+class_1190 ItemWaterPotionFix
+class_1191 LeavesFix
+class_1192 LeavesLogFixer
+class_1193 ListFixer
+class_1194 ItemWrittenBookPagesStrictJsonFix
+class_1195 LevelFlatGeneratorInfoFix
+class_1196 LevelDataGeneratorOptionsFix
+class_1197 ChoiceFix
+class_1198 MobSpawnerEntityIdentifiersFix
+class_1199 ObjectiveRenderTypeFix
+class_1200 ObjectiveDisplayNameFix
+class_1201 OptionsKeyLwjgl3Fix
+class_1202 OptionsForceVBOFix
+class_1203 OptionsLowerCaseLanguageFix
+class_1204 OptionsKeyTranslationFix
+class_1205 RecipeRenamingFix
+class_1206 RecipeFix
+class_1207 LegacyCoralFanBlockMapping
+class_1208 TypeReferences
+class_1209 SavedDataVillageCropFix
+class_1210 LegacyCoralBlockMapping
+class_1211 EntityRenameFix
+class_1212 EntitySimpleTransformFix
+class_1213 StatsRenameFix
+class_1214 StatsCounterFix
+class_1215 AddTrappedChestFix
+class_1216 ListFixer
+class_1217 TeamDisplayNameFix
+class_1218 WriteAndReadFix
+class_1219 VillagerTradeFix
+class_1220 IdentifierNormalizingSchema
+class_1221 Schema102
+class_1222 Schema100
+class_1223 Schema106
+class_1224 Schema1022
+class_1225 Schema1125
+class_1226 Schema107
+class_1227 Schema143
+class_1228 Schema135
+class_1229 Schema1451v1
+class_1230 Schema1451
+class_1231 Schema1451v3
+class_1232 Schema1451v2
+class_1233 Schema1451v5
+class_1234 Schema1451v4
+class_1235 Schema1451v7
+class_1236 Schema1451v6
+class_1237 Schema1466
+class_1238 Schema1460
+class_1239 Schema1481
+class_1240 Schema1470
+class_1241 Schema1486
+class_1242 Schema1483
+class_1243 Schema1510
+class_1244 Schema1801
+class_1245 Schema1800
+class_1246 Schema700
+class_1247 Schema501
+class_1248 Schema702
+class_1249 Schema701
+class_1250 Schema704
+class_1251 Schema703
+class_1252 Schema808
+class_1253 Schema705
+class_1254 Schema99
+class_1255 ThreadExecutor
+
+class_1257 WorldUpdater
+class_1258 DoubleInventory
+class_1259 BossBar
+class_1260 Color
+class_1261 Style
+class_1262 Inventories
+class_1263 Inventory
+class_1264 ItemScatterer
+class_1265 InventoryChangedListener
+class_1266 LocalDifficulty
+class_1267 Difficulty
+class_1268 Hand
+class_1269 ActionResult
+class_1270 ScreenHandlerFactory
+class_1271 TypedActionResult
+
+class_1273 ContainerLock
+
+class_1275 Nameable
+
+class_1277 SimpleInventory
+class_1278 SidedInventory
+
+class_1280 DamageUtil
+class_1281 DamageRecord
+class_1282 DamageSource
+class_1283 DamageTracker
+class_1284 ProjectileDamageSource
+class_1285 EntityDamageSource
+class_1286 BadRespawnPointDamageSource
+class_1287 DamageModifierStatusEffect
+class_1288 AbsorptionStatusEffect
+class_1289 InstantStatusEffect
+class_1290 HealthBoostStatusEffect
+class_1291 StatusEffect
+class_1292 StatusEffectUtil
+class_1293 StatusEffectInstance
+class_1294 StatusEffects
+class_1295 AreaEffectCloudEntity
+class_1296 PassiveEntity
+class_1297 Entity
+
+class_1299 EntityType
+class_1300 Builder
+class_1301 EntityPredicates
+class_1302 Equipable
+class_1303 ExperienceOrbEntity
+class_1304 EquipmentSlot
+class_1305 Type
+class_1306 Arm
+class_1307 FlyingEntity
+class_1308 MobEntity
+class_1309 LivingEntity
+class_1310 EntityGroup
+class_1311 SpawnGroup
+
+class_1313 MovementType
+class_1314 PathAwareEntity
+class_1315 EntityData
+class_1316 JumpingMount
+class_1317 SpawnRestriction
+class_1318 Entry
+class_1319 Location
+class_1320 EntityAttribute
+class_1321 TameableEntity
+class_1322 EntityAttributeModifier
+class_1323 Operation
+class_1324 EntityAttributeInstance
+
+
+
+
+class_1329 ClampedEntityAttribute
+class_1330 BodyControl
+class_1331 FlightMoveControl
+class_1332 YawAdjustingLookControl
+class_1333 LookControl
+class_1334 JumpControl
+class_1335 MoveControl
+class_1336 State
+class_1337 WolfBegGoal
+class_1338 FleeEntityGoal
+class_1339 BreakDoorGoal
+class_1340 ChaseBoatState
+class_1341 AnimalMateGoal
+class_1342 BreatheAirGoal
+class_1343 DoorInteractGoal
+class_1344 EscapeSunlightGoal
+class_1345 EatGrassGoal
+class_1346 ChaseBoatGoal
+class_1347 SwimGoal
+class_1348 FollowMobGoal
+class_1349 FollowGroupLeaderGoal
+class_1350 FollowOwnerGoal
+
+class_1352 Goal
+class_1353 FollowParentGoal
+
+class_1355 GoalSelector
+
+class_1357 DolphinJumpGoal
+class_1358 StopAndLookAtEntityGoal
+class_1359 PounceAtTargetGoal
+class_1360 SitOnOwnerShoulderGoal
+class_1361 LookAtEntityGoal
+class_1362 FormCaravanGoal
+
+class_1364 LookAtCustomerGoal
+
+class_1366 MeleeAttackGoal
+class_1367 MoveToTargetPosGoal
+class_1368 MoveThroughVillageGoal
+class_1369 WanderNearTargetGoal
+class_1370 GoToWalkTargetGoal
+class_1371 AttackGoal
+class_1372 IronGolemLookGoal
+class_1373 CatSitOnBlockGoal
+class_1374 EscapeDangerGoal
+
+class_1376 LookAroundGoal
+
+class_1378 SwimAroundGoal
+class_1379 WanderAroundGoal
+class_1380 BowAttackGoal
+class_1381 ProjectileAttackGoal
+class_1382 StepAndDestroyBlockGoal
+class_1383 CrossbowAttackGoal
+class_1384 AvoidSunlightGoal
+
+class_1386 SitGoal
+class_1387 HorseBondWithPlayerGoal
+
+class_1389 CreeperIgniteGoal
+class_1390 StopFollowingCustomerGoal
+class_1391 TemptGoal
+
+class_1393 MoveIntoWaterGoal
+class_1394 WanderAroundFarGoal
+class_1395 FlyGoal
+class_1396 ZombieAttackGoal
+class_1397 TrackIronGolemTargetGoal
+
+class_1399 RevengeGoal
+class_1400 ActiveTargetGoal
+
+
+class_1403 TrackOwnerAttackerGoal
+class_1404 UntamedActiveTargetGoal
+class_1405 TrackTargetGoal
+class_1406 AttackWithOwnerGoal
+class_1407 BirdNavigation
+class_1408 EntityNavigation
+class_1409 MobNavigation
+class_1410 SpiderNavigation
+
+class_1412 SwimNavigation
+class_1413 MobVisibilityCache
+
+
+
+
+
+class_1419 ZombieSiegeManager
+class_1420 BatEntity
+class_1421 AmbientEntity
+class_1422 FishEntity
+class_1423 FishMoveControl
+class_1424 SwimToRandomPlaceGoal
+class_1425 SchoolingFishEntity
+class_1426 FishData
+class_1427 GolemEntity
+class_1428 ChickenEntity
+class_1429 AnimalEntity
+class_1430 CowEntity
+class_1431 CodEntity
+class_1432 Flutterer
+class_1433 DolphinEntity
+
+class_1435 LeadToNearbyTreasureGoal
+class_1436 SwimWithPlayerGoal
+class_1437 PlayWithItemsGoal
+class_1438 MooshroomEntity
+class_1439 IronGolemEntity
+class_1440 PandaEntity
+class_1441 PandaFleeGoal
+class_1442 PandaMateGoal
+class_1443 Gene
+class_1444 PandaRevengeGoal
+class_1445 LieOnBackGoal
+class_1446 PandaMoveControl
+class_1447 PandaEscapeDangerGoal
+class_1448 PlayGoal
+class_1449 PickUpFoodGoal
+class_1450 SneezeGoal
+class_1451 CatEntity
+class_1452 PigEntity
+class_1453 ParrotEntity
+class_1454 PufferfishEntity
+class_1455 InflateGoal
+class_1456 PolarBearEntity
+class_1457 ProtectBabiesGoal
+
+class_1459 PolarBearRevengeGoal
+class_1460 AttackGoal
+class_1461 PolarBearEscapeDangerGoal
+class_1462 SalmonEntity
+class_1463 RabbitEntity
+class_1464 RabbitAttackGoal
+class_1465 FleeGoal
+class_1466 RabbitData
+
+class_1468 RabbitMoveControl
+class_1469 EscapeDangerGoal
+class_1470 EatCarrotCropGoal
+class_1471 TameableShoulderEntity
+class_1472 SheepEntity
+class_1473 SnowGolemEntity
+class_1474 TropicalFishEntity
+class_1475 Variety
+class_1476 TropicalFishData
+class_1477 SquidEntity
+class_1478 EscapeAttackerGoal
+class_1479 SwimGoal
+class_1480 WaterCreatureEntity
+class_1481 TurtleEntity
+class_1482 MateGoal
+class_1483 GoHomeGoal
+class_1484 WanderInWaterGoal
+class_1485 LayEggGoal
+class_1486 TurtleMoveControl
+class_1487 TurtleEscapeDangerGoal
+class_1488 TurtleSwimNavigation
+class_1489 WanderOnLandGoal
+
+class_1491 TravelGoal
+class_1492 AbstractDonkeyEntity
+class_1493 WolfEntity
+class_1494 AvoidLlamaGoal
+class_1495 DonkeyEntity
+class_1496 AbstractHorseEntity
+
+class_1498 HorseEntity
+class_1499 HorseData
+class_1500 MuleEntity
+class_1501 LlamaEntity
+class_1502 ChaseWolvesGoal
+class_1503 LlamaData
+class_1504 SpitRevengeGoal
+class_1505 SkeletonHorseTrapTriggerGoal
+class_1506 SkeletonHorseEntity
+class_1507 ZombieHorseEntity
+class_1508 EnderDragonPart
+
+class_1510 EnderDragonEntity
+class_1511 EndCrystalEntity
+class_1512 AbstractPhase
+class_1513 ChargingPlayerPhase
+class_1514 AbstractSittingPhase
+class_1515 DyingPhase
+class_1516 HoverPhase
+class_1517 HoldingPatternPhase
+class_1518 LandingPhase
+class_1519 LandingApproachPhase
+class_1520 SittingAttackingPhase
+class_1521 Phase
+class_1522 SittingScanningPhase
+class_1523 SittingFlamingPhase
+class_1524 TakeoffPhase
+class_1525 StrafePlayerPhase
+class_1526 PhaseManager
+class_1527 PhaseType
+class_1528 WitherEntity
+class_1529 DescendAtHalfHealthGoal
+class_1530 AbstractDecorationEntity
+class_1531 ArmorStandEntity
+class_1532 LeashKnotEntity
+class_1533 ItemFrameEntity
+class_1534 PaintingEntity
+class_1535 PaintingVariant
+class_1536 FishingBobberEntity
+class_1537 State
+class_1538 LightningEntity
+
+class_1540 FallingBlockEntity
+class_1541 TntEntity
+class_1542 ItemEntity
+class_1543 IllagerEntity
+class_1544 State
+class_1545 BlazeEntity
+class_1546 ShootFireballGoal
+class_1547 AbstractSkeletonEntity
+class_1548 CreeperEntity
+class_1549 CaveSpiderEntity
+class_1550 ElderGuardianEntity
+class_1551 DrownedEntity
+class_1552 DrownedAttackGoal
+
+class_1554 LeaveWaterGoal
+class_1555 WanderAroundOnSurfaceGoal
+class_1556 DrownedMoveControl
+class_1557 TargetAboveWaterGoal
+class_1558 TridentAttackGoal
+class_1559 EndermiteEntity
+class_1560 EndermanEntity
+class_1561 PlaceBlockGoal
+class_1562 TeleportTowardsPlayerGoal
+class_1563 PickUpBlockGoal
+class_1564 EvokerEntity
+class_1565 ConjureFangsGoal
+class_1566 LookAtTargetOrWololoTarget
+class_1567 SummonVexGoal
+class_1568 WololoGoal
+class_1569 Monster
+class_1570 GiantEntity
+class_1571 GhastEntity
+class_1572 LookAtTargetGoal
+class_1573 GhastMoveControl
+class_1574 ShootFireballGoal
+class_1575 FlyRandomlyGoal
+class_1576 HuskEntity
+class_1577 GuardianEntity
+class_1578 FireBeamGoal
+class_1579 GuardianTargetPredicate
+class_1580 GuardianMoveControl
+class_1581 IllusionerEntity
+class_1582 BlindTargetGoal
+class_1583 GiveInvisibilityGoal
+class_1584 RavagerEntity
+class_1585 AttackGoal
+class_1586 Navigation
+class_1587 PathNodeMaker
+class_1588 HostileEntity
+class_1589 MagmaCubeEntity
+class_1590 ZombifiedPiglinEntity
+
+
+class_1593 PhantomEntity
+class_1594 PhantomMovementType
+class_1595 FindTargetGoal
+class_1596 StartAttackGoal
+class_1597 PhantomBodyControl
+class_1598 CircleMovementGoal
+class_1599 PhantomLookControl
+class_1600 PhantomMoveControl
+class_1601 MovementGoal
+class_1602 SwoopMovementGoal
+class_1603 RangedAttackMob
+class_1604 PillagerEntity
+
+class_1606 ShulkerEntity
+class_1607 ShootBulletGoal
+class_1608 ShulkerBodyControl
+class_1609 TargetOtherTeamGoal
+class_1610 TargetPlayerGoal
+class_1611 PeekGoal
+
+class_1613 SkeletonEntity
+class_1614 SilverfishEntity
+class_1615 WanderAndInfestGoal
+class_1616 CallForHelpGoal
+class_1617 SpellcastingIllagerEntity
+class_1618 Spell
+class_1619 LookAtTargetGoal
+class_1620 CastSpellGoal
+class_1621 SlimeEntity
+class_1622 FaceTowardTargetGoal
+class_1623 SwimmingGoal
+class_1624 MoveGoal
+class_1625 SlimeMoveControl
+class_1626 RandomLookGoal
+class_1627 StrayEntity
+class_1628 SpiderEntity
+class_1629 AttackGoal
+class_1630 SpiderData
+class_1631 TargetGoal
+class_1632 VindicatorEntity
+class_1633 TargetGoal
+class_1634 VexEntity
+class_1635 ChargeTargetGoal
+class_1636 TrackOwnerTargetGoal
+class_1637 VexMoveControl
+class_1638 LookAtTargetGoal
+class_1639 WitherSkeletonEntity
+class_1640 WitchEntity
+class_1641 ZombieVillagerEntity
+class_1642 ZombieEntity
+class_1643 DestroyEggGoal
+class_1644 ZombieData
+class_1645 SimpleMerchant
+class_1646 VillagerEntity
+
+class_1648 EnchantBookFactory
+
+
+
+class_1652 Factory
+
+class_1654 SellMapFactory
+class_1655 Npc
+class_1656 PlayerAbilities
+class_1657 PlayerEntity
+class_1658 SleepFailureReason
+class_1659 ChatVisibility
+
+class_1661 PlayerInventory
+class_1662 RecipeMatcher
+class_1663 Matcher
+class_1664 PlayerModelPart
+class_1665 PersistentProjectileEntity
+class_1666 PickupPermission
+class_1667 ArrowEntity
+class_1668 ExplosiveProjectileEntity
+class_1669 EvokerFangsEntity
+class_1670 DragonFireballEntity
+class_1671 FireworkRocketEntity
+class_1672 EyeOfEnderEntity
+class_1673 LlamaSpitEntity
+class_1674 FireballEntity
+class_1675 ProjectileUtil
+class_1676 ProjectileEntity
+class_1677 SmallFireballEntity
+class_1678 ShulkerBulletEntity
+class_1679 SpectralArrowEntity
+class_1680 SnowballEntity
+class_1681 EggEntity
+class_1682 ThrownEntity
+class_1683 ExperienceBottleEntity
+class_1684 EnderPearlEntity
+class_1685 TridentEntity
+class_1686 PotionEntity
+class_1687 WitherSkullEntity
+class_1688 AbstractMinecartEntity
+class_1689 Type
+class_1690 BoatEntity
+class_1691 Location
+class_1692 Type
+class_1693 StorageMinecartEntity
+class_1694 ChestMinecartEntity
+class_1695 MinecartEntity
+class_1696 FurnaceMinecartEntity
+class_1697 CommandBlockMinecartEntity
+class_1698 CommandExecutor
+class_1699 SpawnerMinecartEntity
+class_1700 HopperMinecartEntity
+class_1701 TntMinecartEntity
+class_1702 HungerManager
+class_1703 ScreenHandler
+class_1704 BeaconScreenHandler
+class_1705 PaymentSlot
+class_1706 AnvilScreenHandler
+class_1707 GenericContainerScreenHandler
+class_1708 BrewingStandScreenHandler
+class_1709 FuelSlot
+class_1710 IngredientSlot
+class_1711 PotionSlot
+class_1712 ScreenHandlerListener
+class_1713 SlotActionType
+class_1714 CraftingScreenHandler
+class_1715 CraftingInventory
+class_1716 Generic3x3ContainerScreenHandler
+class_1717 FurnaceFuelSlot
+class_1718 EnchantmentScreenHandler
+class_1719 FurnaceOutputSlot
+class_1720 AbstractFurnaceScreenHandler
+
+class_1722 HopperScreenHandler
+class_1723 PlayerScreenHandler
+class_1724 HorseScreenHandler
+class_1725 MerchantInventory
+class_1726 LoomScreenHandler
+class_1727 TradeOutputSlot
+class_1728 MerchantScreenHandler
+class_1729 AbstractRecipeScreenHandler
+class_1730 EnderChestInventory
+class_1731 CraftingResultInventory
+class_1732 RecipeUnlocker
+class_1733 ShulkerBoxScreenHandler
+class_1734 CraftingResultSlot
+class_1735 Slot
+class_1736 ShulkerBoxSlot
+class_1737 RecipeInputProvider
+class_1738 ArmorItem
+class_1739 AirBlockItem
+class_1740 ArmorMaterials
+class_1741 ArmorMaterial
+class_1742 ArmorStandItem
+class_1743 AxeItem
+class_1744 ArrowItem
+class_1745 BannerPatternItem
+class_1746 BannerItem
+class_1747 BlockItem
+class_1748 BedItem
+class_1749 BoatItem
+class_1750 ItemPlacementContext
+class_1751 BookItem
+class_1752 BoneMealItem
+class_1753 BowItem
+class_1754 GlassBottleItem
+class_1755 BucketItem
+class_1756 StewItem
+class_1757 ChorusFruitItem
+class_1758 OnAStickItem
+class_1759 CompassItem
+
+class_1761 ItemGroup
+class_1762 NetworkSyncedItem
+class_1763 DebugStickItem
+class_1764 CrossbowItem
+class_1765 TallBlockItem
+class_1766 MiningToolItem
+class_1767 DyeColor
+class_1768 DyeableItem
+class_1769 DyeItem
+class_1770 ElytraItem
+class_1771 EggItem
+class_1772 EnchantedBookItem
+class_1773 EmptyMapItem
+class_1774 EndCrystalItem
+class_1775 EnchantedGoldenAppleItem
+class_1776 EnderPearlItem
+class_1777 EnderEyeItem
+class_1778 FireChargeItem
+class_1779 ExperienceBottleItem
+class_1780 FireworkStarItem
+class_1781 FireworkRocketItem
+class_1782 Type
+
+
+class_1785 EntityBucketItem
+class_1786 FlintAndSteelItem
+class_1787 FishingRodItem
+class_1788 CommandBlockItem
+
+class_1790 DecorationItem
+
+class_1792 Item
+class_1793 Settings
+class_1794 HoeItem
+class_1795 ItemFrameItem
+class_1796 ItemCooldownManager
+class_1797 Entry
+class_1798 AliasedBlockItem
+class_1799 ItemStack
+class_1800 ModelPredicateProvider
+class_1801 KnowledgeBookItem
+class_1802 Items
+class_1803 LingeringPotionItem
+class_1804 LeadItem
+class_1805 MilkBucketItem
+class_1806 FilledMapItem
+class_1807 NameTagItem
+class_1808 MinecartItem
+class_1809 SkullItem
+class_1810 PickaxeItem
+class_1811 RangedWeaponItem
+class_1812 PotionItem
+class_1813 MusicDiscItem
+class_1814 Rarity
+
+class_1816 SaddleItem
+class_1817 ServerItemCooldownManager
+
+class_1819 ShieldItem
+class_1820 ShearsItem
+class_1821 ShovelItem
+class_1822 SignItem
+class_1823 SnowballItem
+class_1824 NetherStarItem
+class_1825 SpectralArrowItem
+class_1826 SpawnEggItem
+class_1827 WallStandingBlockItem
+class_1828 SplashPotionItem
+class_1829 SwordItem
+class_1830 SuspiciousStewItem
+class_1831 ToolItem
+class_1832 ToolMaterial
+class_1833 TippedArrowItem
+class_1834 ToolMaterials
+class_1835 TridentItem
+class_1836 TooltipContext
+class_1837 Default
+class_1838 ItemUsageContext
+class_1839 UseAction
+class_1840 WritableBookItem
+class_1841 PlaceableOnWaterItem
+class_1842 Potion
+class_1843 WrittenBookItem
+class_1844 PotionUtil
+class_1845 BrewingRecipeRegistry
+class_1846 Recipe
+class_1847 Potions
+class_1848 BannerDuplicateRecipe
+class_1849 ArmorDyeRecipe
+class_1850 BookCloningRecipe
+class_1851 FireworkRocketRecipe
+class_1852 SpecialCraftingRecipe
+class_1853 FireworkStarRecipe
+class_1854 FireworkStarFadeRecipe
+class_1855 MapCloningRecipe
+class_1856 Ingredient
+class_1857 StackEntry
+class_1858 TagEntry
+class_1859 Entry
+class_1860 Recipe
+class_1861 MapExtendingRecipe
+
+class_1863 RecipeManager
+
+class_1865 RecipeSerializer
+class_1866 SpecialRecipeSerializer
+class_1867 ShapelessRecipe
+class_1868 Serializer
+class_1869 ShapedRecipe
+class_1870 Serializer
+class_1871 ShulkerBoxColoringRecipe
+class_1872 ShieldDecorationRecipe
+class_1873 SuspiciousStewRecipe
+class_1874 AbstractCookingRecipe
+
+class_1876 TippedArrowRecipe
+class_1877 FlameEnchantment
+class_1878 PowerEnchantment
+class_1879 PunchEnchantment
+class_1880 InfinityEnchantment
+class_1881 PiercingEnchantment
+class_1882 DamageEnchantment
+class_1883 BindingCurseEnchantment
+class_1884 EfficiencyEnchantment
+class_1885 UnbreakingEnchantment
+class_1886 EnchantmentTarget
+class_1887 Enchantment
+class_1888 Rarity
+class_1889 EnchantmentLevelEntry
+class_1890 EnchantmentHelper
+class_1891 Consumer
+class_1892 FireAspectEnchantment
+class_1893 Enchantments
+class_1894 FrostWalkerEnchantment
+class_1895 LureEnchantment
+class_1896 LuckEnchantment
+class_1897 KnockbackEnchantment
+class_1898 MultishotEnchantment
+class_1899 MendingEnchantment
+class_1900 ProtectionEnchantment
+class_1901 Type
+class_1902 RespirationEnchantment
+class_1903 SweepingEnchantment
+class_1904 QuickChargeEnchantment
+class_1905 ChannelingEnchantment
+class_1906 ThornsEnchantment
+class_1907 LoyaltyEnchantment
+class_1908 ImpalingEnchantment
+class_1909 SilkTouchEnchantment
+class_1910 RiptideEnchantment
+class_1911 VanishingCurseEnchantment
+class_1912 AquaAffinityEnchantment
+class_1913 DepthStriderEnchantment
+class_1914 TradeOffer
+class_1915 Merchant
+class_1916 TradeOfferList
+class_1917 MobSpawnerLogic
+class_1918 CommandBlockExecutor
+class_1919 BlockEvent
+class_1920 BlockRenderView
+class_1921 RenderLayer
+class_1922 BlockView
+class_1923 ChunkPos
+class_1924 EntityView
+
+class_1926 FoliageColors
+class_1927 Explosion
+class_1928 GameRules
+
+
+
+class_1932 ForcedChunkState
+class_1933 GrassColors
+class_1934 GameMode
+class_1935 ItemConvertible
+class_1936 WorldAccess
+class_1937 World
+
+
+class_1940 LevelInfo
+class_1941 CollisionView
+
+
+class_1944 LightType
+class_1945 ModifiableWorld
+class_1946 PortalForcer
+
+class_1948 SpawnHelper
+
+class_1950 ChunkCache
+
+class_1952 MobSpawnerEntry
+class_1953 TickPriority
+
+
+
+
+
+class_1959 Biome
+class_1960 Builder
+
+
+class_1963 Precipitation
+class_1964 SpawnEntry
+
+class_1966 BiomeSource
+
+
+
+
+
+class_1972 BiomeKeys
+class_1973 CheckerboardBiomeSource
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class_1992 FixedBiomeSource
+
+
+
+class_1996 BrewedPotionCriterion
+
+class_1998 Conditions
+class_1999 ChangedDimensionCriterion
+
+class_2001 Conditions
+class_2002 ChanneledLightningCriterion
+
+class_2004 Conditions
+
+class_2006 ConstructBeaconCriterion
+
+class_2008 Conditions
+
+class_2010 ConsumeItemCriterion
+
+class_2012 Conditions
+
+class_2014 CuredZombieVillagerCriterion
+
+class_2016 Conditions
+
+
+class_2019 DamagePredicate
+class_2020 Builder
+
+class_2022 DamageSourcePredicate
+class_2023 Builder
+
+class_2025 DistancePredicate
+
+class_2027 EffectsChangedCriterion
+
+class_2029 Conditions
+class_2030 EnchantedItemCriterion
+
+class_2032 Conditions
+
+
+class_2035 EnchantmentPredicate
+
+class_2037 EnterBlockCriterion
+
+class_2039 Conditions
+class_2040 EntityFlagsPredicate
+class_2041 Builder
+
+
+class_2044 EntityHurtPlayerCriterion
+
+class_2046 Conditions
+
+class_2048 EntityPredicate
+class_2049 Builder
+class_2050 EntityTypePredicate
+class_2051 Tagged
+class_2052 Single
+
+class_2054 FilledBucketCriterion
+
+class_2056 Conditions
+
+class_2058 FishingRodHookedCriterion
+
+class_2060 Conditions
+
+class_2062 ImpossibleCriterion
+class_2063 Conditions
+
+
+class_2066 InventoryChangedCriterion
+
+class_2068 Conditions
+class_2069 ItemDurabilityChangedCriterion
+
+class_2071 Conditions
+
+class_2073 ItemPredicate
+class_2074 Builder
+
+class_2076 KilledByCrossbowCriterion
+
+class_2078 Conditions
+
+class_2080 OnKilledCriterion
+
+
+class_2083 Conditions
+
+class_2085 LevitationCriterion
+
+class_2087 Conditions
+
+
+class_2090 LocationPredicate
+class_2091 Builder
+
+
+
+
+class_2096 NumberRange
+class_2097 Factory
+class_2098 CommandFactory
+class_2099 FloatRange
+class_2100 IntRange
+
+class_2102 EntityEffectPredicate
+class_2103 EffectData
+
+class_2105 NbtPredicate
+
+
+class_2108 TravelCriterion
+
+class_2110 Conditions
+class_2111 PlacedBlockCriterion
+
+class_2113 Conditions
+
+class_2115 PlayerHurtEntityCriterion
+
+class_2117 Conditions
+
+class_2119 RecipeUnlockedCriterion
+
+class_2121 Conditions
+
+class_2123 ShotCrossbowCriterion
+
+class_2125 Conditions
+
+
+class_2128 SummonedEntityCriterion
+
+class_2130 Conditions
+class_2131 TameAnimalCriterion
+
+class_2133 Conditions
+
+class_2135 TickCriterion
+
+class_2137 Conditions
+
+
+class_2140 VillagerTradeCriterion
+
+class_2142 Conditions
+class_2143 UsedEnderEyeCriterion
+
+class_2145 Conditions
+
+
+class_2148 UsedTotemCriterion
+
+class_2150 Conditions
+
+class_2152 FloatRangeArgument
+
+
+
+class_2156 TranslatableBuiltInExceptions
+
+class_2158 CommandFunction
+class_2159 LazyContainer
+class_2160 CommandElement
+class_2161 Element
+class_2162 FunctionElement
+
+class_2164 CommandException
+class_2165 CommandOutput
+
+
+class_2168 ServerCommandSource
+class_2169 TheEndBiomeSource
+class_2170 CommandManager
+class_2171 CommandParser
+class_2172 CommandSource
+class_2173 RelativePosition
+
+
+
+class_2177 ColorArgumentType
+class_2178 TextArgumentType
+class_2179 NbtCompoundArgumentType
+
+class_2181 DimensionArgumentType
+
+class_2183 EntityAnchorArgumentType
+class_2184 EntityAnchor
+class_2185 AbstractBannerBlock
+class_2186 EntityArgumentType
+class_2187 Serializer
+class_2188 EntitySummonArgumentType
+class_2189 AirBlock
+class_2190 AbstractSkullBlock
+class_2191 GameProfileArgumentType
+class_2192 GameProfileArgument
+class_2193 SelectorBacked
+class_2194 EnchantmentArgumentType
+class_2195 AttachedStemBlock
+class_2196 MessageArgumentType
+class_2197 MessageFormat
+class_2198 MessageSelector
+class_2199 AnvilBlock
+
+class_2201 StatusEffectArgumentType
+class_2202 BambooSaplingBlock
+class_2203 NbtPathArgumentType
+class_2204 AllListElementNode
+class_2205 NamedNode
+class_2206 IndexedListElementNode
+class_2207 FilteredListElementNode
+class_2208 FilteredNamedNode
+class_2209 NbtPath
+class_2210 PathNode
+class_2211 BambooBlock
+class_2212 NbtElementArgumentType
+class_2213 BarrierBlock
+class_2214 ScoreboardObjectiveArgumentType
+class_2215 BannerBlock
+class_2216 ScoreboardCriterionArgumentType
+class_2217 DeadCoralBlock
+class_2218 OperationArgumentType
+class_2219 Operation
+class_2220 IntOperator
+class_2221 DeadCoralFanBlock
+class_2222 DeadCoralWallFanBlock
+class_2223 ParticleEffectArgumentType
+class_2224 NumberRangeArgumentType
+class_2225 FloatRangeArgumentType
+
+class_2227 IntRangeArgumentType
+
+
+class_2230 CoralParentBlock
+class_2231 AbstractPressurePlateBlock
+class_2232 IdentifierArgumentType
+class_2233 ScoreHolderArgumentType
+class_2234 ScoreHolder
+class_2235 SelectorScoreHolder
+class_2236 Serializer
+class_2237 BlockWithEntity
+class_2238 BeaconBlock
+class_2239 ScoreboardSlotArgumentType
+class_2240 ItemSlotArgumentType
+class_2241 AbstractRailBlock
+class_2242 BeetrootsBlock
+class_2243 TeamArgumentType
+class_2244 BedBlock
+class_2245 TimeArgumentType
+class_2246 Blocks
+class_2247 BlockStateArgument
+class_2248 Block
+class_2249 NeighborGroup
+class_2250 OffsetType
+class_2251 Settings
+class_2252 BlockPredicateArgumentType
+class_2253 StatePredicate
+class_2254 BlockPredicate
+class_2255 TagPredicate
+class_2256 Fertilizable
+class_2257 BlockStateArgumentType
+class_2258 BubbleColumnBlock
+class_2259 BlockArgumentParser
+class_2260 BrewingStandBlock
+class_2261 PlantBlock
+class_2262 BlockPosArgumentType
+class_2263 FluidDrainable
+class_2264 ColumnPosArgumentType
+class_2265 ColumnPos
+class_2266 CactusBlock
+class_2267 PosArgument
+class_2268 LookingPosArgument
+class_2269 AbstractButtonBlock
+class_2270 RotationArgumentType
+class_2271 CarrotsBlock
+class_2272 CakeBlock
+class_2273 SwizzleArgumentType
+class_2274 Vec2ArgumentType
+class_2275 AbstractCauldronBlock
+class_2276 CarvedPumpkinBlock
+class_2277 Vec3ArgumentType
+class_2278 CoordinateArgument
+class_2279 ChorusFlowerBlock
+class_2280 DefaultPosArgument
+class_2281 ChestBlock
+class_2282 CocoaBlock
+class_2283 ChorusPlantBlock
+class_2284 CommandFunctionArgumentType
+class_2285 FunctionArgument
+class_2286 ComparatorBlock
+class_2287 ItemStackArgumentType
+class_2288 CommandBlock
+class_2289 ConduitBlock
+class_2290 ItemStackArgument
+class_2291 ItemStringReader
+class_2292 ConcretePowderBlock
+class_2293 ItemPredicateArgumentType
+
+class_2295 ItemStackPredicateArgument
+
+class_2297 CoralFanBlock
+class_2298 CoralBlockBlock
+class_2299 CoralWallFanBlock
+class_2300 EntitySelector
+class_2301 CoralBlock
+class_2302 CropBlock
+class_2303 EntitySelectorReader
+class_2304 CraftingTableBlock
+
+class_2306 EntitySelectorOptions
+class_2307 SelectorHandler
+class_2308 SelectorOption
+class_2309 DaylightDetectorBlock
+class_2310 HorizontalConnectingBlock
+class_2311 DeadBushBlock
+class_2312 AbstractRedstoneGateBlock
+class_2313 DetectorRailBlock
+class_2314 ArgumentSerializer
+class_2315 DispenserBlock
+class_2316 ArgumentTypes
+
+class_2318 FacingBlock
+class_2319 ConstantArgumentSerializer
+class_2320 TallPlantBlock
+class_2321 SuggestionProviders
+class_2322 LocalProvider
+class_2323 DoorBlock
+
+class_2325 DropperBlock
+class_2326 DoubleArgumentSerializer
+class_2327 FloatArgumentSerializer
+class_2328 DragonEggBlock
+class_2329 EndGatewayBlock
+class_2330 IntegerArgumentSerializer
+class_2331 EnchantingTableBlock
+class_2332 StringArgumentSerializer
+class_2333 EndPortalFrameBlock
+class_2334 EndPortalBlock
+class_2335 AxisCycleDirection
+class_2336 EnderChestBlock
+class_2337 RodBlock
+class_2338 BlockPos
+class_2339 Mutable
+
+class_2341 WallMountedBlock
+class_2342 BlockPointer
+class_2343 BlockEntityProvider
+class_2344 FarmlandBlock
+class_2345 BlockPointerImpl
+class_2346 FallingBlock
+class_2347 ItemDispenserBehavior
+class_2348 DefaultedRegistry
+class_2349 FenceGateBlock
+class_2350 Direction
+class_2351 Axis
+class_2352 AxisDirection
+class_2353 Type
+class_2354 FenceBlock
+class_2355 EightWayDirection
+class_2356 FlowerBlock
+class_2357 DispenserBehavior
+class_2358 FireBlock
+class_2359 IndexedIterable
+class_2360 FrostedIceBlock
+class_2361 IdList
+class_2362 FlowerPotBlock
+class_2363 AbstractFurnaceBlock
+
+
+class_2366 GlazedTerracottaBlock
+
+class_2368 GlassBlock
+class_2369 DirtPathBlock
+class_2370 SimpleRegistry
+class_2371 DefaultedList
+class_2372 GrassBlock
+class_2373 TransparentBlock
+class_2374 Position
+class_2375 GravelBlock
+class_2376 PositionImpl
+class_2377 HopperBlock
+class_2378 Registry
+class_2379 EulerAngle
+class_2380 HayBlock
+class_2381 MushroomBlock
+class_2382 Vec3i
+class_2383 HorizontalFacingBlock
+class_2384 InfestedBlock
+class_2385 MutableRegistry
+class_2386 IceBlock
+class_2387 JukeboxBlock
+class_2388 BlockStateParticleEffect
+class_2389 PaneBlock
+class_2390 DustParticleEffect
+class_2391 KelpPlantBlock
+class_2392 ItemStackParticleEffect
+class_2393 KelpBlock
+class_2394 ParticleEffect
+class_2395 Factory
+class_2396 ParticleType
+class_2397 LeavesBlock
+class_2398 ParticleTypes
+class_2399 LadderBlock
+class_2400 DefaultParticleType
+class_2401 LeverBlock
+class_2402 FluidFillable
+class_2403 DataGenerator
+class_2404 FluidBlock
+class_2405 DataProvider
+class_2406 LoomBlock
+
+class_2408 DataCache
+class_2409 AdvancementProvider
+
+class_2411 MelonBlock
+class_2412 AdventureTabAdvancementGenerator
+class_2413 MagmaBlock
+class_2414 HusbandryTabAdvancementGenerator
+class_2415 BlockMirror
+class_2416 NetherTabAdvancementGenerator
+class_2417 StoryTabAdvancementGenerator
+class_2418 MyceliumBlock
+class_2419 EndTabAdvancementGenerator
+class_2420 MushroomPlantBlock
+class_2421 NetherWartBlock
+class_2422 BlockListProvider
+class_2423 NetherPortalBlock
+class_2424 AreaHelper
+class_2425 CommandSyntaxProvider
+class_2426 ObserverBlock
+class_2427 RegistryDumpProvider
+class_2428 NoteBlock
+class_2429 ConnectingBlock
+class_2430 BlockLootTableGenerator
+class_2431 OreBlock
+class_2432 ChestLootTableGenerator
+class_2433 WallPlayerSkullBlock
+class_2434 EntityLootTableGenerator
+class_2435 PlayerSkullBlock
+class_2436 RedstoneBlock
+class_2437 FishingLootTableGenerator
+class_2438 LootTableProvider
+class_2439 PotatoesBlock
+class_2440 PressurePlateBlock
+class_2441 ActivationRule
+class_2442 PoweredRailBlock
+class_2443 RailBlock
+class_2444 RecipeJsonProvider
+class_2445 PumpkinBlock
+class_2446 RecipeProvider
+class_2447 ShapedRecipeJsonBuilder
+class_2448 ShapedRecipeJsonProvider
+class_2449 RedstoneOreBlock
+class_2450 ShapelessRecipeJsonBuilder
+class_2451 ShapelessRecipeJsonProvider
+class_2452 RailPlacementHelper
+class_2453 RedstoneLampBlock
+class_2454 CookingRecipeJsonBuilder
+class_2455 CookingRecipeJsonProvider
+class_2456 ComplexRecipeJsonBuilder
+class_2457 RedstoneWireBlock
+class_2458 WallRedstoneTorchBlock
+class_2459 RedstoneTorchBlock
+class_2460 BurnoutEntry
+class_2461 NbtProvider
+class_2462 RepeaterBlock
+class_2463 SnbtProvider
+class_2464 BlockRenderType
+class_2465 PillarBlock
+class_2466 BlockTagProvider
+class_2467 EntityTypeTagProvider
+class_2468 SandBlock
+class_2469 FluidTagProvider
+class_2470 BlockRotation
+class_2471 ItemTagProvider
+class_2472 SeaPickleBlock
+class_2473 SaplingBlock
+class_2474 AbstractTagProvider
+
+class_2476 SeagrassBlock
+class_2477 Language
+class_2478 AbstractSignBlock
+class_2479 NbtByteArray
+class_2480 ShulkerBoxBlock
+class_2481 NbtByte
+class_2482 SlabBlock
+class_2483 AbstractNbtList
+class_2484 SkullBlock
+class_2485 SkullType
+class_2486 Type
+class_2487 NbtCompound
+class_2488 SnowBlock
+class_2489 NbtDouble
+class_2490 SlimeBlock
+class_2491 NbtEnd
+class_2492 SoulSandBlock
+class_2493 SnowyBlock
+class_2494 NbtFloat
+class_2495 NbtIntArray
+class_2496 SpawnerBlock
+class_2497 NbtInt
+class_2498 BlockSoundGroup
+class_2499 NbtList
+class_2500 SpreadableBlock
+class_2501 NbtLongArray
+class_2502 SpongeBlock
+class_2503 NbtLong
+class_2504 StainedGlassPaneBlock
+class_2505 NbtTagSizeTracker
+class_2506 StainedGlassBlock
+class_2507 NbtIo
+class_2508 SignBlock
+class_2509 NbtOps
+class_2510 StairsBlock
+class_2511 GourdBlock
+class_2512 NbtHelper
+class_2513 StemBlock
+class_2514 AbstractNbtNumber
+class_2515 StructureBlock
+class_2516 NbtShort
+class_2517 StoneButtonBlock
+class_2518 StructureVoidBlock
+class_2519 NbtString
+class_2520 NbtElement
+class_2521 TallFlowerBlock
+class_2522 StringNbtReader
+class_2523 SugarCaneBlock
+class_2524 PacketEncryptionManager
+class_2525 TallSeagrassBlock
+class_2526 FernBlock
+class_2527 TorchBlock
+class_2528 PacketDecryptor
+class_2529 PacketEncryptor
+class_2530 TntBlock
+class_2531 TrappedChestBlock
+class_2532 PacketInflater
+class_2533 TrapdoorBlock
+class_2534 PacketDeflater
+class_2535 ClientConnection
+class_2536 QueuedPacket
+class_2537 TripwireHookBlock
+class_2538 TripwireBlock
+class_2539 NetworkState
+class_2540 PacketByteBuf
+class_2541 VineBlock
+class_2542 TurtleEggBlock
+class_2543 DecoderHandler
+class_2544 WallBlock
+class_2545 PacketEncoder
+class_2546 WallBannerBlock
+class_2547 PacketListener
+class_2548 PacketEncoderException
+class_2549 WallSkullBlock
+class_2550 SplitterHandler
+class_2551 WallSignBlock
+class_2552 SizePrepender
+class_2553 LilyPadBlock
+
+class_2555 WallTorchBlock
+class_2556 MessageType
+class_2557 WeightedPressurePlateBlock
+class_2558 ClickEvent
+class_2559 Action
+class_2560 CobwebBlock
+class_2561 Text
+class_2562 Serializer
+class_2563 WitherRoseBlock
+class_2564 Texts
+class_2565 WetSpongeBlock
+
+class_2567 WallWitherSkullBlock
+class_2568 HoverEvent
+
+class_2570 WitherSkullBlock
+class_2571 WoodenButtonBlock
+class_2572 KeybindTextContent
+class_2573 BannerBlockEntity
+class_2574 NbtTextContent
+class_2575 BlockNbtDataSource
+class_2576 EntityNbtDataSource
+class_2577 CarpetBlock
+class_2578 ScoreTextContent
+class_2579 SelectorTextContent
+class_2580 BeaconBlockEntity
+class_2581 BeamSegment
+class_2582 BannerPattern
+class_2583 Style
+class_2584 Serializer
+class_2585 LiteralTextContent
+class_2586 BlockEntity
+class_2587 BedBlockEntity
+class_2588 TranslatableTextContent
+class_2589 BrewingStandBlockEntity
+class_2590 TranslationException
+class_2591 BlockEntityType
+class_2592 Builder
+class_2593 CommandBlockBlockEntity
+class_2594 Type
+class_2595 ChestBlockEntity
+class_2596 Packet
+class_2597 ConduitBlockEntity
+class_2598 NetworkSide
+class_2599 ComparatorBlockEntity
+class_2600 NetworkThreadUtils
+class_2601 DispenserBlockEntity
+class_2602 ClientPlayPacketListener
+class_2603 DaylightDetectorBlockEntity
+class_2604 EntitySpawnS2CPacket
+class_2605 EnchantingTableBlockEntity
+class_2606 ExperienceOrbSpawnS2CPacket
+
+class_2608 DropperBlockEntity
+class_2609 AbstractFurnaceBlockEntity
+
+class_2611 EnderChestBlockEntity
+
+class_2613 PlayerSpawnS2CPacket
+class_2614 HopperBlockEntity
+class_2615 Hopper
+class_2616 EntityAnimationS2CPacket
+class_2617 StatisticsS2CPacket
+class_2618 LidOpenable
+class_2619 JukeboxBlockEntity
+class_2620 BlockBreakingProgressS2CPacket
+class_2621 LootableContainerBlockEntity
+class_2622 BlockEntityUpdateS2CPacket
+class_2623 BlockEventS2CPacket
+class_2624 LockableContainerBlockEntity
+class_2625 SignBlockEntity
+class_2626 BlockUpdateS2CPacket
+class_2627 ShulkerBoxBlockEntity
+class_2628 AnimationStage
+class_2629 BossBarS2CPacket
+
+class_2631 SkullBlockEntity
+class_2632 DifficultyS2CPacket
+class_2633 StructureBlockBlockEntity
+class_2634 Action
+
+class_2636 MobSpawnerBlockEntity
+class_2637 ChunkDeltaUpdateS2CPacket
+
+class_2639 CommandSuggestionsS2CPacket
+class_2640 EndPortalBlockEntity
+class_2641 CommandTreeS2CPacket
+class_2642 CommandNodeData
+class_2643 EndGatewayBlockEntity
+
+class_2645 CloseScreenS2CPacket
+class_2646 TrappedChestBlockEntity
+class_2647 SaplingGenerator
+class_2648 OpenHorseScreenS2CPacket
+class_2649 InventoryS2CPacket
+class_2650 LargeTreeSaplingGenerator
+class_2651 ScreenHandlerPropertyUpdateS2CPacket
+class_2652 BirchSaplingGenerator
+class_2653 ScreenHandlerSlotUpdateS2CPacket
+class_2654 AcaciaSaplingGenerator
+class_2655 JungleSaplingGenerator
+class_2656 CooldownUpdateS2CPacket
+class_2657 DarkOakSaplingGenerator
+class_2658 CustomPayloadS2CPacket
+class_2659 SpruceSaplingGenerator
+class_2660 PlaySoundIdS2CPacket
+class_2661 DisconnectS2CPacket
+class_2662 OakSaplingGenerator
+class_2663 EntityStatusS2CPacket
+class_2664 ExplosionS2CPacket
+class_2665 PistonBlock
+class_2666 UnloadChunkS2CPacket
+class_2667 PistonExtensionBlock
+class_2668 GameStateChangeS2CPacket
+class_2669 PistonBlockEntity
+class_2670 KeepAliveS2CPacket
+class_2671 PistonHeadBlock
+class_2672 ChunkDataS2CPacket
+class_2673 WorldEventS2CPacket
+class_2674 PistonHandler
+class_2675 ParticleS2CPacket
+class_2676 LightUpdateS2CPacket
+
+class_2678 GameJoinS2CPacket
+
+class_2680 BlockState
+
+class_2682 EmptyBlockView
+class_2683 MapUpdateS2CPacket
+class_2684 EntityS2CPacket
+class_2685 MoveRelative
+class_2686 RotateAndMoveRelative
+class_2687 Rotate
+class_2688 State
+class_2689 StateManager
+class_2690 Builder
+class_2691 Factory
+class_2692 VehicleMoveS2CPacket
+class_2693 SignEditorOpenS2CPacket
+class_2694 CachedBlockPosition
+class_2695 CraftFailedResponseS2CPacket
+class_2696 PlayerAbilitiesS2CPacket
+class_2697 BlockPatternBuilder
+
+
+class_2700 BlockPattern
+class_2701 BlockStateCacheLoader
+class_2702 Result
+class_2703 PlayerListS2CPacket
+
+class_2705 Entry
+
+class_2707 LookAtS2CPacket
+class_2708 PlayerPositionLookS2CPacket
+class_2709 Flag
+class_2710 MaterialPredicate
+
+
+class_2713 UnlockRecipesS2CPacket
+class_2714 Action
+class_2715 BlockStatePredicate
+class_2716 EntitiesDestroyS2CPacket
+class_2717 BlockPredicate
+class_2718 RemoveEntityStatusEffectS2CPacket
+
+class_2720 ResourcePackSendS2CPacket
+
+
+
+class_2724 PlayerRespawnS2CPacket
+
+class_2726 EntitySetHeadYawS2CPacket
+
+
+class_2729 SelectAdvancementTabS2CPacket
+
+
+
+
+class_2734 SetCameraEntityS2CPacket
+class_2735 UpdateSelectedSlotS2CPacket
+class_2736 ScoreboardDisplayS2CPacket
+class_2737 BambooLeaves
+class_2738 WallMountLocation
+class_2739 EntityTrackerUpdateS2CPacket
+class_2740 EntityAttachS2CPacket
+class_2741 Properties
+class_2742 BedPart
+class_2743 EntityVelocityUpdateS2CPacket
+class_2744 EntityEquipmentUpdateS2CPacket
+class_2745 ChestType
+class_2746 BooleanProperty
+class_2747 ComparatorMode
+class_2748 ExperienceBarUpdateS2CPacket
+class_2749 HealthUpdateS2CPacket
+class_2750 DoorHinge
+class_2751 ScoreboardObjectiveUpdateS2CPacket
+class_2752 EntityPassengersSetS2CPacket
+class_2753 DirectionProperty
+class_2754 EnumProperty
+
+class_2756 DoubleBlockHalf
+class_2757 ScoreboardPlayerUpdateS2CPacket
+class_2758 IntProperty
+class_2759 PlayerSpawnPositionS2CPacket
+class_2760 BlockHalf
+class_2761 WorldTimeUpdateS2CPacket
+
+
+class_2764 PistonType
+class_2765 PlaySoundFromEntityS2CPacket
+class_2766 Instrument
+class_2767 PlaySoundS2CPacket
+class_2768 RailShape
+class_2769 Property
+class_2770 StopSoundS2CPacket
+class_2771 SlabType
+class_2772 PlayerListHeaderS2CPacket
+class_2773 WireConnection
+class_2774 NbtQueryResponseS2CPacket
+class_2775 ItemPickupAnimationS2CPacket
+class_2776 StructureBlockMode
+class_2777 EntityPositionS2CPacket
+class_2778 StairShape
+class_2779 AdvancementUpdateS2CPacket
+class_2780 WorldBorderListener
+class_2781 EntityAttributesS2CPacket
+class_2782 Entry
+class_2783 EntityStatusEffectS2CPacket
+class_2784 WorldBorder
+class_2785 Area
+class_2786 MovingArea
+class_2787 StaticArea
+class_2788 SynchronizeRecipesS2CPacket
+class_2789 WorldBorderStage
+class_2790 SynchronizeTagsS2CPacket
+class_2791 Chunk
+class_2792 ServerPlayPacketListener
+class_2793 TeleportConfirmC2SPacket
+class_2794 ChunkGenerator
+class_2795 QueryBlockNbtC2SPacket
+
+class_2797 ChatMessageC2SPacket
+
+class_2799 ClientStatusC2SPacket
+class_2800 Mode
+
+class_2802 ChunkManager
+class_2803 ClientSettingsC2SPacket
+class_2804 ChunkNibbleArray
+class_2805 RequestCommandCompletionsC2SPacket
+class_2806 ChunkStatus
+class_2807 GenerationTask
+class_2808 ChunkType
+
+class_2810 StructureHolder
+class_2811 ButtonClickC2SPacket
+class_2812 EmptyChunk
+class_2813 ClickSlotC2SPacket
+class_2814 BiMapPalette
+class_2815 CloseHandledScreenC2SPacket
+class_2816 IdListPalette
+class_2817 CustomPayloadC2SPacket
+class_2818 WorldChunk
+class_2819 CreationType
+class_2820 BookUpdateC2SPacket
+class_2821 ReadOnlyChunk
+class_2822 QueryEntityNbtC2SPacket
+class_2823 ChunkProvider
+class_2824 PlayerInteractEntityC2SPacket
+
+class_2826 ChunkSection
+class_2827 KeepAliveC2SPacket
+class_2828 PlayerMoveC2SPacket
+class_2829 PositionAndOnGround
+class_2830 Full
+class_2831 LookAndOnGround
+
+class_2833 VehicleMoveC2SPacket
+class_2834 ArrayPalette
+class_2835 PaletteResizeListener
+class_2836 BoatPaddleStateC2SPacket
+class_2837 Palette
+class_2838 PickFromInventoryC2SPacket
+class_2839 ProtoChunk
+class_2840 CraftRequestC2SPacket
+class_2841 PalettedContainer
+class_2842 UpdatePlayerAbilitiesC2SPacket
+class_2843 UpgradeData
+class_2844 Logic
+class_2845 BuiltinLogic
+class_2846 PlayerActionC2SPacket
+class_2847 Action
+class_2848 ClientCommandC2SPacket
+class_2849 Mode
+
+class_2851 PlayerInputC2SPacket
+class_2852 ChunkSerializer
+class_2853 RecipeBookDataC2SPacket
+
+class_2855 RenameItemC2SPacket
+class_2856 ResourcePackStatusC2SPacket
+class_2857 Status
+
+class_2859 AdvancementTabC2SPacket
+class_2860 Action
+class_2861 RegionFile
+class_2862 ChunkBuffer
+class_2863 SelectMerchantTradeC2SPacket
+
+
+class_2866 UpdateBeaconC2SPacket
+class_2867 RegionBasedStorage
+class_2868 UpdateSelectedSlotC2SPacket
+
+class_2870 UpdateCommandBlockC2SPacket
+class_2871 UpdateCommandBlockMinecartC2SPacket
+
+class_2873 CreativeInventoryActionC2SPacket
+class_2874 DimensionType
+class_2875 UpdateStructureBlockC2SPacket
+class_2876 EnderDragonSpawnState
+class_2877 UpdateSignC2SPacket
+
+class_2879 HandSwingC2SPacket
+
+class_2881 EnderDragonFight
+
+
+class_2884 SpectatorTeleportC2SPacket
+class_2885 PlayerInteractBlockC2SPacket
+class_2886 PlayerInteractItemC2SPacket
+
+
+class_2889 HandshakeC2SPacket
+class_2890 ServerHandshakePacketListener
+class_2891 DebugChunkGenerator
+
+class_2893 GenerationStep
+class_2894 Carver
+class_2895 Feature
+class_2896 ClientLoginPacketListener
+class_2897 FlatChunkGenerator
+
+class_2899 LoginQueryRequestS2CPacket
+
+class_2901 LoginSuccessS2CPacket
+class_2902 Heightmap
+class_2903 Type
+class_2904 Purpose
+class_2905 LoginHelloS2CPacket
+
+class_2907 LoginCompressionS2CPacket
+
+class_2909 LoginDisconnectS2CPacket
+class_2910 PhantomSpawner
+class_2911 ServerLoginPacketListener
+
+class_2913 LoginQueryResponseC2SPacket
+
+class_2915 LoginHelloC2SPacket
+
+class_2917 LoginKeyC2SPacket
+
+class_2919 ChunkRandom
+
+class_2921 ClientQueryPacketListener
+class_2922 ConfiguredCarver
+class_2923 QueryPongS2CPacket
+class_2924 QueryResponseS2CPacket
+class_2925 CaveCarver
+class_2926 ServerMetadata
+class_2927 Players
+class_2928 Deserializer
+class_2929 Deserializer
+class_2930 Version
+class_2931 Serializer
+
+class_2933 ServerQueryPacketListener
+class_2934 NetherCaveCarver
+class_2935 QueryPingC2SPacket
+
+class_2937 QueryRequestC2SPacket
+
+class_2939 Carver
+class_2940 TrackedData
+class_2941 TrackedDataHandler
+class_2942 BambooFeature
+class_2943 TrackedDataHandlerRegistry
+class_2944 TreeFeature
+class_2945 DataTracker
+class_2946 Entry
+
+
+
+class_2950 ForestRockFeature
+
+class_2952 RecipeGridAligner
+class_2953 BonusChestFeature
+class_2954 BlueIceFeature
+class_2955 InputSlotFiller
+class_2956 BuriedTreasureStructure
+
+
+
+class_2960 Identifier
+class_2961 Serializer
+
+class_2963 SingleStateFeatureConfig
+class_2964 ChorusPlantFeature
+class_2965 ProjectileDispenserBehavior
+class_2966 Bootstrap
+class_2967 BoatDispenserBehavior
+class_2968 AutomaticItemPlacementContext
+class_2969 FallibleItemDispenserBehavior
+class_2970 BlockPlacementDispenserBehavior
+
+class_2972 CoralClawFeature
+class_2973 ShaderParseException
+class_2974 JsonStackTrace
+class_2975 ConfiguredFeature
+class_2976 PendingServerCommand
+class_2977 CoralMushroomFeature
+class_2978 CoralFeature
+class_2979 CoralTreeFeature
+class_2980 DebugLoggerPrintStream
+class_2981 EulaReader
+
+class_2983 LoggerPrintStream
+class_2984 CountConfig
+class_2985 PlayerAdvancementTracker
+
+class_2987 OffThreadException
+
+class_2989 ServerAdvancementLoader
+
+class_2991 CommandFunctionManager
+class_2992 Entry
+
+class_2994 DedicatedServer
+class_2995 ServerScoreboard
+class_2996 UpdateMode
+
+
+
+
+
+class_3002 CommandBossBar
+class_3003 NoiseThresholdCountPlacementModifier
+class_3004 BossBarManager
+class_3005 DesertWellFeature
+class_3006 DesertPyramidStructure
+
+class_3008 AdvancementCommand
+class_3009 Operation
+class_3010 Selection
+class_3011 DiskFeature
+class_3012 BanIpCommand
+
+class_3014 BanListCommand
+
+class_3016 BanCommand
+
+class_3018 EndGatewayFeatureConfig
+class_3019 BossBarCommand
+class_3020 ClearCommand
+class_3021 EndCityStructure
+
+class_3023 CloneCommand
+class_3024 BlockInfo
+class_3025 Mode
+class_3026 EndIslandFeature
+class_3027 DatapackCommand
+class_3028 PackAdder
+class_3029 EndGatewayFeature
+class_3030 DeOpCommand
+class_3031 Feature
+class_3032 DebugCommand
+class_3033 EndPortalFeature
+
+class_3035 DefaultGameModeCommand
+class_3036 DifficultyCommand
+class_3037 FeatureConfig
+
+class_3039 LootCommand
+class_3040 FeedbackMessage
+class_3041 Target
+class_3042 SourceConstructor
+class_3043 EffectCommand
+class_3044 FossilFeature
+class_3045 MeCommand
+
+class_3047 GlowstoneBlobFeature
+class_3048 EnchantCommand
+
+class_3050 ExecuteCommand
+class_3051 ExistsCondition
+class_3052 Condition
+
+class_3054 ExperienceCommand
+class_3055 Component
+
+class_3057 FillCommand
+class_3058 Mode
+class_3059 HugeBrownMushroomFeature
+class_3060 ForceLoadCommand
+
+class_3062 FunctionCommand
+
+class_3064 GameModeCommand
+class_3065 GameRuleCommand
+class_3066 HugeRedMushroomFeature
+
+class_3068 GiveCommand
+class_3069 HelpCommand
+class_3070 IceSpikeFeature
+class_3071 IglooStructure
+
+class_3073 KickCommand
+class_3074 IcebergFeature
+class_3075 KillCommand
+class_3076 JungleTempleStructure
+
+class_3078 ListCommand
+class_3079 LocateCommand
+
+class_3081 KelpFeature
+class_3082 MessageCommand
+class_3083 OpCommand
+
+class_3085 LakeFeature
+class_3086 PardonCommand
+
+class_3088 PardonIpCommand
+class_3089 ParticleCommand
+
+class_3091 PlaySoundCommand
+
+class_3093 PublishCommand
+
+class_3095 RecipeCommand
+
+class_3097 ReloadCommand
+class_3098 MineshaftStructure
+
+class_3100 Type
+
+
+class_3103 DungeonFeature
+class_3104 SaveAllCommand
+
+class_3106 SaveOffCommand
+class_3107 SaveOnCommand
+class_3108 NetherFortressStructure
+
+class_3110 SayCommand
+class_3111 DefaultFeatureConfig
+class_3112 ScheduleCommand
+
+
+class_3115 ScoreboardCommand
+class_3116 OceanMonumentStructure
+
+class_3118 SeedCommand
+class_3119 SetBlockCommand
+class_3120 Filter
+class_3121 Mode
+class_3122 OreFeature
+class_3123 SetIdleTimeoutCommand
+class_3124 OreFeatureConfig
+
+
+class_3127 SpawnPointCommand
+class_3128 SetWorldSpawnCommand
+
+
+class_3131 SpreadPlayersCommand
+class_3132 Pile
+class_3133 ProbabilityConfig
+class_3134 StopCommand
+class_3135 RandomBooleanFeature
+class_3136 StopSoundCommand
+class_3137 RandomBooleanFeatureConfig
+class_3138 SummonCommand
+
+class_3140 TagCommand
+class_3141 RandomFeatureConfig
+class_3142 TeamCommand
+class_3143 TeleportCommand
+class_3144 LookTarget
+
+class_3146 TellRawCommand
+
+
+class_3149 TimeCommand
+class_3150 RandomFeature
+class_3151 TitleCommand
+class_3152 EmeraldOreFeature
+class_3153 TriggerCommand
+class_3154 EmeraldOreFeatureConfig
+class_3155 WeatherCommand
+class_3156 WhitelistCommand
+
+class_3158 WorldBorderCommand
+
+class_3160 SeaPickleFeature
+class_3161 BlockDataObject
+class_3162 DataCommandObject
+
+class_3164 DataCommand
+class_3165 ModifyOperation
+class_3166 ModifyArgumentCreator
+class_3167 ObjectType
+class_3168 SeagrassFeature
+class_3169 EntityDataObject
+class_3170 ShipwreckStructure
+
+
+class_3173 SimpleBlockFeature
+class_3174 DedicatedPlayerManager
+class_3175 SimpleBlockFeatureConfig
+class_3176 MinecraftDedicatedServer
+class_3177 SimpleRandomFeature
+class_3178 DedicatedServerWatchdog
+class_3179 SimpleRandomFeatureConfig
+
+class_3181 Spike
+class_3182 DedicatedServerGui
+class_3183 FreezeTopLayerFeature
+class_3184 PlayerListGui
+class_3185 SpringFeature
+class_3186 PlayerStatsGui
+
+class_3188 StrongholdStructure
+
+
+class_3191 BlockBreakingInfo
+
+class_3193 ChunkHolder
+class_3194 LevelType
+class_3195 Structure
+class_3196 ChunkPosDistanceLevelPropagator
+class_3197 SwampHutStructure
+
+
+
+class_3201 DemoServerPlayerInteractionManager
+
+
+class_3204 ChunkTicketManager
+class_3205 DistanceFromNearestPlayerTracker
+
+
+class_3208 EntityTracker
+
+class_3210 PlayerChunkWatchingManager
+
+
+class_3213 ServerBossBar
+
+class_3215 ServerChunkManager
+class_3216 TicketManager
+class_3217 VoidStartPlatformFeature
+class_3218 ServerWorld
+class_3219 VinesFeature
+
+
+class_3222 ServerPlayerEntity
+class_3223 WoodlandMansionStructure
+
+class_3225 ServerPlayerInteractionManager
+class_3226 RandomFeatureEntry
+class_3227 ServerLightingProvider
+class_3228 ChunkTicket
+class_3229 FlatChunkGeneratorLayer
+class_3230 ChunkTicketType
+class_3231 EntityTrackerEntry
+class_3232 FlatChunkGeneratorConfig
+class_3233 ChunkRegion
+
+class_3235 MultiTickScheduler
+
+
+class_3238 LegacyQueryHandler
+
+class_3240 LocalServerHandshakeNetworkHandler
+
+class_3242 ServerNetworkIo
+
+class_3244 ServerPlayNetworkHandler
+
+class_3246 ServerHandshakeNetworkHandler
+
+class_3248 ServerLoginNetworkHandler
+class_3249 State
+
+class_3251 ServerQueryNetworkHandler
+
+
+
+class_3255 AbstractFileResourcePack
+
+
+class_3258 ZipResourcePack
+class_3259 DirectoryResourcePack
+
+
+class_3262 ResourcePack
+
+class_3264 ResourceType
+
+class_3266 ResourceNotFoundException
+
+class_3268 DefaultResourcePack
+
+class_3270 ResourceMetadataReader
+
+class_3272 PackResourceMetadata
+
+class_3274 PackResourceMetadataReader
+class_3275 NoiseBasedCountPlacementModifier
+
+
+
+class_3279 FileResourcePackProvider
+
+class_3281 ResourcePackCompatibility
+
+class_3283 ResourcePackManager
+
+class_3285 ResourcePackProvider
+class_3286 VanillaDataPackProvider
+
+class_3288 ResourcePackProfile
+class_3289 InsertionPosition
+
+
+
+
+class_3294 NamespaceResourceManager
+class_3295 DebugInputStream
+
+
+class_3298 Resource
+
+class_3300 ResourceManager
+
+class_3302 ResourceReloader
+
+class_3304 ReloadableResourceManagerImpl
+
+
+
+
+class_3309 BanEntry
+class_3310 EndSpikeFeature
+class_3311 SpikeCache
+class_3312 UserCache
+class_3313 Entry
+
+
+
+class_3317 BannedIpList
+
+
+class_3320 BannedIpEntry
+class_3321 ServerConfigHandler
+class_3322 ServerConfigException
+
+class_3324 PlayerManager
+
+class_3326 OperatorList
+class_3327 OperatorEntry
+
+
+class_3330 ServerConfigEntry
+class_3331 ServerConfigList
+
+
+
+class_3335 BannedPlayerList
+class_3336 BannedPlayerEntry
+class_3337 Whitelist
+
+class_3339 Piece
+class_3340 WhitelistEntry
+class_3341 BlockBox
+class_3342 EndCityGenerator
+class_3343 Piece
+class_3344 Part
+class_3345 DataStreamHelper
+class_3346 DesertTempleGenerator
+class_3347 BufferHelper
+class_3348 JungleTempleGenerator
+class_3349 CobblestoneRandomizer
+class_3350 RconCommandOutput
+class_3351 IglooGenerator
+class_3352 Piece
+class_3353 MineshaftGenerator
+class_3354 MineshaftCorridor
+class_3355 MineshaftCrossing
+class_3356 MineshaftPart
+class_3357 MineshaftRoom
+class_3358 MineshaftStairs
+class_3359 RconBase
+class_3360 FeatureUpdater
+
+
+
+class_3364 QueryResponseHandler
+class_3365 Query
+class_3366 OceanMonumentGenerator
+class_3367 DoubleXRoomFactory
+class_3368 DoubleXYRoomFactory
+class_3369 DoubleYRoomFactory
+class_3370 DoubleYZRoomFactory
+class_3371 DoubleZRoomFactory
+class_3372 SimpleRoomFactory
+class_3373 SimpleRoomTopFactory
+class_3374 Base
+class_3375 PieceFactory
+class_3376 CoreRoom
+class_3377 DoubleXRoom
+class_3378 DoubleXYRoom
+class_3379 DoubleYRoom
+class_3380 DoubleYZRoom
+class_3381 DoubleZRoom
+class_3382 Entry
+class_3383 Penthouse
+class_3384 Piece
+class_3385 SimpleRoom
+class_3386 SimpleRoomTop
+class_3387 WingRoom
+class_3388 PieceSetting
+class_3389 RconClient
+class_3390 NetherFortressGenerator
+class_3391 BridgeCrossing
+class_3392 BridgeEnd
+class_3393 Bridge
+class_3394 CorridorStairs
+class_3395 CorridorBalcony
+class_3396 CorridorExit
+class_3397 CorridorCrossing
+class_3398 CorridorLeftTurn
+class_3399 SmallCorridor
+class_3400 CorridorRightTurn
+class_3401 CorridorNetherWartsRoom
+class_3402 BridgePlatform
+class_3403 Piece
+class_3404 PieceData
+class_3405 BridgeSmallCrossing
+class_3406 BridgeStairs
+class_3407 Start
+class_3408 RconListener
+class_3409 OceanRuinGenerator
+class_3410 Piece
+class_3411 OceanRuinStructure
+
+class_3413 BiomeTemperature
+class_3414 SoundEvent
+class_3415 ShipwreckGenerator
+class_3416 Piece
+class_3417 SoundEvents
+class_3418 ShiftableStructurePiece
+class_3419 SoundCategory
+
+class_3421 StrongholdGenerator
+class_3422 ChestCorridor
+class_3423 SmallCorridor
+class_3424 FiveWayCrossing
+class_3425 LeftTurn
+class_3426 Library
+class_3427 PieceData
+class_3428 PortalRoom
+class_3429 PrisonHall
+class_3430 RightTurn
+class_3431 SquareRoom
+class_3432 StoneBrickRandomizer
+class_3433 SpiralStaircase
+class_3434 Start
+class_3435 Corridor
+class_3436 Stairs
+class_3437 Piece
+class_3438 EntranceType
+class_3439 RecipeBook
+class_3440 ChunkUpdateState
+class_3441 ServerRecipeBook
+class_3442 ServerStatHandler
+class_3443 StructurePiece
+class_3444 BlockRandomizer
+class_3445 Stat
+class_3446 StatFormatter
+class_3447 SwampHutGenerator
+class_3448 StatType
+class_3449 StructureStart
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class_3466 Turn
+
+class_3468 Stats
+class_3469 StatHandler
+class_3470 SimpleStructurePiece
+class_3471 WoodlandMansionGenerator
+class_3472 FirstFloorRoomPool
+class_3473 RoomPool
+class_3474 MansionParameters
+class_3475 LayoutGenerator
+class_3476 GenerationPiece
+class_3477 SecondFloorRoomPool
+class_3478 FlagMatrix
+class_3479 ThirdFloorRoomPool
+class_3480 Piece
+class_3481 BlockTags
+
+class_3483 EntityTypeTags
+
+class_3485 StructureTemplateManager
+class_3486 FluidTags
+
+class_3488 BlockRotStructureProcessor
+class_3489 ItemTags
+
+class_3491 StructureProcessor
+class_3492 StructurePlacementData
+
+
+class_3495 TagBuilder
+
+class_3497 TagEntry
+
+class_3499 StructureTemplate
+class_3500 Palette
+class_3501 StructureBlockInfo
+class_3502 StructureEntityInfo
+class_3503 TagGroupLoader
+
+class_3505 TagManagerLoader
+
+
+class_3508 PackedIntegerArray
+class_3509 TypeFilterableList
+
+
+
+class_3513 Int2ObjectBiMap
+
+class_3515 NetworkEncryptionUtils
+
+class_3517 MetricsData
+class_3518 JsonHelper
+
+
+class_3521 NetworkUtils
+
+
+
+
+
+
+class_3528 Lazy
+
+class_3530 LowercaseEnumTypeAdapterFactory
+
+class_3532 MathHelper
+class_3533 ProfilerSystem
+class_3534 ProfilerTiming
+
+class_3536 ProgressListener
+class_3537 OctavePerlinNoiseSampler
+
+
+class_3540 SmoothUtil
+class_3541 SimplexNoiseSampler
+class_3542 StringIdentifiable
+class_3543 OctaveSimplexNoiseSampler
+class_3544 StringHelper
+class_3545 Pair
+
+class_3547 BlockLightStorage
+class_3548 Data
+
+
+class_3551 Schemas
+class_3552 ChunkBlockLightProvider
+class_3553 ChoiceTypesFix
+class_3554 LevelPropagator
+class_3555 AdvancementsFix
+class_3556 ChunkToNibbleArrayMap
+class_3557 BedBlockEntityFix
+class_3558 ChunkLightProvider
+class_3559 BedItemColorFix
+class_3560 LightStorage
+class_3561 BiomesFix
+class_3562 ChunkLightingView
+class_3563 Empty
+class_3564 BlockEntityBannerColorFix
+class_3565 LightingView
+class_3566 BlockEntityBlockStateFix
+class_3567 BlockEntityCustomNameToTextFix
+class_3568 LightingProvider
+class_3569 SkyLightStorage
+class_3570 Data
+class_3571 BlockEntityIdFix
+class_3572 ChunkSkyLightProvider
+class_3573 BlockEntityJukeboxFix
+class_3574 BlockEntityKeepPacked
+class_3575 BlockEntityShulkerBoxColorFix
+class_3576 EmptyFluid
+class_3577 BlockEntitySignTextStrictJsonFix
+class_3578 BlockNameFlatteningFix
+class_3579 BlockNameFix
+class_3580 BlockStateFlattening
+class_3581 BlockStateStructureTemplateFix
+class_3582 ChunkPalettedStorageFix
+class_3583 ChunkNibbleArray
+class_3584 Facing
+class_3585 Axis
+class_3586 Direction
+class_3587 Section
+class_3588 Level
+class_3589 ChunkStatusFix
+class_3590 ChunkStructuresTemplateRenameFix
+class_3591 ChunkToProtoChunkFix
+class_3592 ColorlessShulkerEntityFix
+class_3593 LegacyDyeItemMapping
+class_3594 EntityArmorStandSilentFix
+class_3595 EntityBlockStateFix
+class_3596 EntityCodSalmonFix
+class_3597 EntityCustomNameToTextFix
+class_3598 EntityElderGuardianSplitFix
+class_3599 EntityEquipmentToArmorAndHandFix
+class_3600 EntityHealthFix
+class_3601 EntityHorseSaddleFix
+class_3602 EntityHorseSplitFix
+class_3603 EntityIdFix
+class_3604 EntityItemFrameDirectionFix
+class_3605 EntityMinecartIdentifiersFix
+class_3606 HangingEntityFix
+class_3607 EntityPaintingMotiveFix
+class_3608 EntityPufferfishRenameFix
+class_3609 FlowableFluid
+class_3610 FluidState
+class_3611 Fluid
+class_3612 Fluids
+
+class_3614 Material
+class_3615 Builder
+class_3616 LavaFluid
+class_3617 Flowing
+class_3618 Still
+class_3619 PistonBehavior
+class_3620 MapColor
+class_3621 WaterFluid
+class_3622 Flowing
+class_3623 Still
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class_3665 ModelBakeSettings
+class_3666 EndSpikeFeatureConfig
+
+class_3668 FillPlayerHeadLootFunction
+class_3669 Serializer
+class_3670 SetNameLootFunction
+class_3671 SetLoreLootFunction
+class_3672 Serializer
+class_3673 GlfwUtil
+class_3674 Clipboard
+class_3675 InputUtil
+class_3676 MonitorFactory
+
+class_3678 WindowEventHandler
+class_3679 GlShader
+class_3680 CatEntityModel
+class_3681 ClientChunkMap
+class_3682 WindowProvider
+class_3683 OcelotEntityRenderer
+class_3684 CatCollarFeatureRenderer
+class_3685 RawTextureDataLoader
+class_3686 Schema1904
+class_3687 Schema1906
+class_3688 EmptyProfileResult
+
+
+
+class_3692 ProfileResultImpl
+class_3693 ReadableProfiler
+class_3694 DummyProfiler
+class_3695 Profiler
+class_3696 ProfileResult
+class_3697 GoToBedAndSleepGoal
+class_3698 CatFleeGoal
+class_3699 SleepWithOwnerGoal
+class_3700 TemptGoal
+class_3701 OcelotEntity
+class_3702 FleeGoal
+class_3703 OcelotTemptGoal
+
+class_3705 BlastFurnaceScreenHandler
+class_3706 SmokerScreenHandler
+class_3707 FilteredRootNode
+class_3708 BarrelBlock
+class_3709 BellBlock
+class_3710 BlastFurnaceBlock
+class_3711 CartographyTableBlock
+class_3712 FletchingTableBlock
+class_3713 GrindstoneBlock
+class_3714 GiftLootTableGenerator
+class_3715 LecternBlock
+class_3716 SmokerBlock
+class_3717 SmithingTableBlock
+class_3718 StonecutterBlock
+class_3719 BarrelBlockEntity
+class_3720 BlastFurnaceBlockEntity
+class_3721 BellBlockEntity
+class_3722 LecternBlockEntity
+class_3723 SmokerBlockEntity
+class_3724 Unloaded
+class_3725 EntityCatSplitFix
+class_3726 ShapeContext
+class_3727 EntityShapeContext
+class_3728 SelectionManager
+class_3729 IllagerEntityRenderer
+class_3730 SpawnReason
+
+class_3732 PatrolEntity
+class_3733 PatrolGoal
+class_3734 ScaffoldingItem
+class_3735 EntityEquipmentPredicate
+class_3736 ScaffoldingBlock
+class_3737 Waterloggable
+class_3738 ServerTask
+
+
+
+class_3742 JigsawBlockScreen
+class_3743 Schema1909
+class_3744 Stage
+class_3745 CrossbowUser
+class_3746 TestableWorld
+class_3747 ModifiableTestableWorld
+class_3748 JigsawBlock
+class_3749 LanternBlock
+class_3750 Patterns
+class_3751 JigsawBlockEntity
+class_3752 ShapeCache
+class_3753 UpdateJigsawC2SPacket
+class_3754 NoiseChunkGenerator
+class_3755 ChunkLightRemoveFix
+class_3756 PerlinNoiseSampler
+
+
+class_3759 MoveToRaidCenterGoal
+class_3760 DisableableFollowTargetGoal
+class_3761 BreakDoorGoal
+
+class_3763 RaiderEntity
+class_3764 PickupBannerAsLeaderGoal
+class_3765 Raid
+class_3766 Member
+class_3767 RaidManager
+class_3768 SimpleGenerationTask
+class_3769 PatrolSpawner
+
+
+
+class_3773 StructurePieceType
+
+
+class_3776 FeaturePoolElement
+class_3777 EmptyPoolElement
+class_3778 StructurePoolBasedGenerator
+
+class_3780 JigsawJunction
+class_3781 SinglePoolElement
+class_3782 ListPoolElement
+
+class_3784 StructurePoolElement
+class_3785 StructurePool
+class_3786 Projection
+
+class_3788 ChunkStatusFix2
+class_3789 BuriedTreasureGenerator
+class_3790 PoolStructurePiece
+class_3791 PillagerOutpostGenerator
+
+class_3793 BlockIgnoreStructureProcessor
+class_3794 JigsawReplacementStructureProcessor
+class_3795 GravityStructureProcessor
+
+class_3797 MinecraftVersion
+class_3798 TagMatchRuleTest
+class_3799 MinecraftClientGame
+class_3800 PerformanceMetricsImpl
+class_3801 ClientGameSession
+class_3802 GrindstoneScreen
+class_3803 GrindstoneScreenHandler
+
+class_3805 BlockPileFeature
+class_3806 ServerPropertiesHandler
+class_3807 ServerPropertiesLoader
+class_3808 AbstractPropertiesHandler
+class_3809 PropertyAccessor
+
+
+
+class_3813 VillageGenerator
+
+class_3815 PlainsVillageData
+class_3816 StructurePoolElementType
+
+class_3818 AlwaysTrueRuleTest
+class_3819 BlockMatchRuleTest
+class_3820 BlockStateMatchRuleTest
+class_3821 StructureProcessorRule
+class_3822 NopStructureProcessor
+class_3823 RandomBlockStateMatchRuleTest
+class_3824 RandomBlockMatchRuleTest
+class_3825 RuleTest
+class_3826 RuleStructureProcessor
+class_3827 RuleTestType
+class_3828 StructureProcessorType
+class_3829 Clearable
+class_3830 SweetBerryBushBlock
+
+
+
+class_3834 SavannaVillageData
+
+class_3836 SnowyVillageData
+class_3837 CopyNbtLootFunction
+class_3838 Builder
+class_3839 Operation
+
+class_3841 Operator
+class_3842 Serializer
+class_3843 StructureValidatorProvider
+
+class_3845 VillagerProfessionFix
+class_3846 TaskExecutor
+class_3847 TaskQueue
+class_3848 Prioritized
+class_3849 Simple
+class_3850 VillagerData
+class_3851 VillagerDataContainer
+class_3852 VillagerProfession
+class_3853 TradeOffers
+class_3854 VillagerType
+class_3855 AbstractFireballEntity
+class_3856 FlyingItemEntity
+class_3857 ThrownItemEntity
+class_3858 FurnaceScreenHandler
+class_3859 BlastingRecipe
+
+class_3861 SmeltingRecipe
+class_3862 SmokingRecipe
+
+class_3864 DefaultBiomeFeatures
+class_3865 FurnaceBlock
+class_3866 FurnaceBlockEntity
+class_3867 Attachment
+class_3868 DesertVillageData
+
+class_3870 TaigaVillageData
+class_3871 BlastFurnaceScreen
+class_3872 BookScreen
+class_3873 FurnaceScreen
+class_3874 SmokerScreen
+class_3875 BlastFurnaceRecipeBookScreen
+class_3876 FurnaceRecipeBookScreen
+class_3877 SmokerRecipeBookScreen
+
+class_3879 Model
+class_3880 BellBlockEntityRenderer
+class_3881 ModelWithArms
+class_3882 ModelWithHead
+class_3883 FeatureRendererContext
+class_3884 ModelWithHat
+class_3885 VillagerClothingFeatureRenderer
+class_3886 ZombieEntityRenderer
+class_3887 FeatureRenderer
+class_3888 VillagerResourceMetadata
+class_3889 HatType
+class_3890 VillagerResourceMetadataReader
+
+
+
+
+class_3895 OpenWrittenBookS2CPacket
+class_3896 LevelUpdateListener
+class_3897 PlayersWatchingChunkProvider
+class_3898 ThreadedAnvilChunkStorage
+class_3899 LevelPrioritizedQueue
+class_3900 ChunkTaskPrioritySystem
+class_3901 Stage
+class_3902 Unit
+class_3903 CatTypeFix
+class_3904 NewVillageFix
+class_3905 Schema1920
+class_3906 MessageListener
+class_3907 PrioritizedTask
+class_3908 NamedScreenHandlerFactory
+class_3909 RaidGoal
+class_3910 CartographyTableScreenHandler
+
+
+class_3913 PropertyDelegate
+class_3914 ScreenHandlerContext
+class_3915 Property
+class_3916 LecternScreenHandler
+class_3917 ScreenHandlerType
+class_3918 Factory
+class_3919 ArrayPropertyDelegate
+class_3920 CampfireCookingRecipe
+
+class_3922 CampfireBlock
+class_3923 PropertyRetriever
+class_3924 CampfireBlockEntity
+class_3925 DummyInventory
+
+
+class_3928 LevelLoadingScreen
+class_3929 HandledScreens
+class_3930 Provider
+class_3931 Contents
+class_3932 WritableBookContents
+class_3933 WrittenBookContents
+class_3934 CartographyTableScreen
+class_3935 LecternScreen
+class_3936 ScreenHandlerProvider
+class_3937 CampfireSmokeParticle
+class_3938 CosySmokeFactory
+class_3939 Factory
+class_3940 BillboardParticle
+class_3941 CampfireBlockEntityRenderer
+class_3942 LecternBlockEntityRenderer
+class_3943 SetTradeOffersS2CPacket
+class_3944 OpenScreenS2CPacket
+class_3945 TeamMsgCommand
+class_3946 Task
+class_3947 UnblockingMessage
+class_3948 NearbyChunkTicketUpdater
+class_3949 WorldGenerationProgressListener
+class_3950 WorldGenerationProgressListenerFactory
+class_3951 WorldGenerationProgressLogger
+class_3952 QueueingWorldGenerationProgressListener
+class_3953 WorldGenerationProgressTracker
+class_3954 InventoryProvider
+class_3955 CraftingRecipe
+class_3956 RecipeType
+class_3957 CookingRecipeSerializer
+class_3958 RecipeFactory
+class_3959 RaycastContext
+class_3960 ShapeType
+class_3961 ShapeProvider
+class_3962 ComposterBlock
+class_3963 ComposterInventory
+class_3964 FullComposterInventory
+class_3965 BlockHitResult
+class_3966 EntityHitResult
+
+class_3968 AbstractZombieModel
+class_3969 GiantEntityModel
+class_3970 MapIdFix
+class_3971 StonecutterScreenHandler
+class_3972 CuttingRecipe
+class_3973 Serializer
+class_3974 RecipeFactory
+class_3975 StonecuttingRecipe
+class_3976 WorldBorderSyncer
+class_3977 VersionedChunkStorage
+class_3978 IdCountsState
+class_3979 StonecutterScreen
+class_3980 CuboidBlockIterator
+class_3981 SingleItemRecipeJsonBuilder
+class_3982 SingleItemRecipeJsonProvider
+class_3983 EntityRavagerRenameFix
+class_3984 Schema1928
+class_3985 Schema1929
+class_3986 TraderLlamaEntity
+class_3987 DefendTraderGoal
+class_3988 MerchantEntity
+class_3989 WanderingTraderEntity
+class_3990 WanderingTraderManager
+class_3991 Factory
+class_3992 WanderingTraderEntityRenderer
+class_3993 HoldInHandsGoal
+class_3994 WanderToTargetGoal
+class_3995 SignalSmokeFactory
+
+class_3997 FlashFactory
+class_3998 NoRenderParticle
+class_3999 ParticleTextureSheet
+
+
+class_4002 SpriteProvider
+class_4003 SpriteBillboardParticle
+class_4004 VillagerHeldItemFeatureRenderer
+class_4005 AsyncTexture
+class_4006 TextureData
+class_4007 Data
+class_4008 SplashTextResourceSupplier
+class_4009 SoundList
+class_4010 ProfiledResourceReload
+class_4011 ResourceReload
+
+class_4013 SynchronousResourceReloader
+class_4014 SimpleResourceReload
+
+class_4016 Schema1931
+class_4017 DiveJumpingGoal
+class_4018 GoToVillageGoal
+class_4019 FoxEntity
+class_4020 DefendFriendGoal
+class_4021 StopWanderingGoal
+class_4022 WorriableEntityFilter
+class_4023 CalmDownGoal
+class_4024 MateGoal
+class_4025 EatBerriesGoal
+class_4026 FoxSwimGoal
+class_4027 FoxData
+class_4028 FoxLookControl
+class_4029 AttackGoal
+class_4030 FoxMoveControl
+class_4031 GoToVillageGoal
+class_4032 EscapeWhenNotAggressiveGoal
+class_4033 JumpChasingGoal
+class_4034 PickupItemGoal
+class_4035 SitDownAndLookAroundGoal
+class_4036 AvoidDaylightGoal
+class_4037 DelayedCalmDownGoal
+class_4038 MoveToHuntGoal
+class_4039 Type
+
+class_4041 FoxEntityModel
+class_4042 FoxEntityRenderer
+class_4043 FoxHeldItemFeatureRenderer
+class_4044 PaintingManager
+class_4045 Synchronizer
+class_4046 Summary
+class_4047 Factory
+class_4048 EntityDimensions
+class_4049 EntityFactory
+class_4050 EntityPose
+class_4051 TargetPredicate
+class_4052 FollowParentGoal
+class_4053 Type
+class_4054 AttackGoal
+
+class_4056 LookAtEntityGoal
+class_4057 DyeableArmorItem
+class_4058 DyeableHorseArmorItem
+class_4059 HorseArmorItem
+class_4060 AoMode
+class_4061 AttackIndicator
+
+class_4063 CloudRenderMode
+
+class_4065 NarratorMode
+class_4066 ParticlesMode
+
+class_4068 Drawable
+class_4069 ParentElement
+class_4070 LogoTexture
+class_4071 Overlay
+class_4072 IconButtonWidget
+class_4073 HorseArmorFeatureRenderer
+class_4074 StatusEffectSpriteManager
+class_4075 SpriteAtlasHolder
+class_4076 ChunkSectionPos
+class_4077 TicketDistanceLevelPropagator
+
+class_4079 SectionDistanceLevelPropagator
+class_4080 SinglePreparationResourceReloader
+class_4081 StatusEffectCategory
+class_4082 DrippingLava
+class_4083 ContinuousFalling
+class_4084 Dripping
+class_4085 Landing
+class_4086 FallingLavaFactory
+class_4087 LandingLavaFactory
+class_4088 DrippingWaterFactory
+class_4089 ParticleTextureData
+class_4090 SimpleSpriteProvider
+class_4091 SpriteAwareFactory
+class_4092 OptionsAddTextBackgroundFix
+class_4093 ReentrantThreadExecutor
+class_4094 InteractionObserver
+class_4095 Brain
+class_4096 FindPointOfInterestTask
+class_4097 Task
+class_4098 Status
+class_4099 BlockPosLookTarget
+class_4100 StopPanickingTask
+class_4101 WaitTask
+class_4102 EntityLookTarget
+class_4103 CompositeTask
+class_4104 Order
+class_4105 RunMode
+class_4106 FindEntityTask
+class_4107 OpenDoorsTask
+class_4108 FollowCustomerTask
+class_4109 FindInteractionTargetTask
+class_4110 LookAroundTask
+class_4111 VillagerBreedTask
+class_4112 WanderAroundTask
+class_4113 PanicTask
+class_4114 GoToWorkTask
+class_4115 LookTarget
+class_4116 GoToIfNearbyTask
+class_4117 FindWalkTargetTask
+class_4118 RandomTask
+class_4119 FollowMobTask
+class_4120 GoTowardsLookTarget
+class_4121 GoToRememberedPositionTask
+class_4122 VillagerWalkTowardsTask
+class_4123 SleepTask
+class_4124 MeetVillagerTask
+class_4125 StayAboveWaterTask
+class_4126 GatherItemsVillagerTask
+class_4127 ScheduleActivityTask
+class_4128 ForgetCompletedPointOfInterestTask
+class_4129 VillagerTaskListProvider
+class_4130 HoldTradeOffersTask
+
+
+class_4133 VillagerWorkTask
+class_4134 Control
+class_4135 PrioritizedGoal
+class_4136 VillagerGossips
+class_4137 Reputation
+class_4138 GossipEntry
+class_4139 VillageGossipType
+class_4140 MemoryModuleType
+class_4141 MemoryModuleState
+class_4142 WalkTarget
+class_4143 DummySensor
+class_4144 HurtBySensor
+
+class_4146 NearestLivingEntitiesSensor
+class_4147 NearestPlayersSensor
+class_4148 Sensor
+class_4149 SensorType
+class_4150 VillagerHostilesSensor
+class_4151 EntityInteraction
+class_4152 State
+class_4153 PointOfInterestStorage
+class_4154 PointOfInterestDistanceTracker
+class_4155 OccupationStatus
+class_4156 PointOfInterest
+class_4157 PointOfInterestSet
+class_4158 PointOfInterestType
+class_4159 ChasePlayerGoal
+class_4160 SellDyedArmorFactory
+class_4161 BuyForOneEmeraldFactory
+class_4162 TypeAwareBuyForOneEmeraldFactory
+class_4163 SellEnchantedToolFactory
+class_4164 ProcessItemFactory
+class_4165 SellItemFactory
+class_4166 SellSuspiciousStewFactory
+class_4167 SellPotionHoldingItemFactory
+class_4168 Activity
+class_4169 ScheduleRuleEntry
+class_4170 Schedule
+class_4171 ScheduleBuilder
+class_4172 ActivityEntry
+class_4173 ScheduleRule
+class_4174 FoodComponent
+class_4175 Builder
+class_4176 FoodComponents
+
+
+class_4179 DestructionType
+class_4180 SerializingRegionBasedStorage
+class_4181 ShapedPoolStructurePiece
+class_4182 StructurePoolGenerator
+
+class_4184 Camera
+class_4185 ButtonWidget
+
+
+
+class_4189 AccessibilityOptionsScreen
+class_4190 BuffetBiomesListWidget
+class_4191 BuffetBiomeItem
+class_4192 SuperflatLayersListWidget
+class_4193 SuperflatLayerEntry
+class_4194 LanguageEntry
+class_4195 LanguageSelectionListWidget
+class_4196 SuperflatPresetsListWidget
+class_4197 Entry
+class_4198 GeneralStatsListWidget
+class_4199 Entry
+class_4200 ItemStatsListWidget
+class_4201 Entry
+class_4202 EntityStatsListWidget
+
+
+class_4205 GoalSelectorDebugRenderer
+class_4206 GoalSelector
+class_4207 VillageDebugRenderer
+class_4208 GlobalPos
+class_4209 DebugInfoSender
+class_4210 UpdateDifficultyC2SPacket
+class_4211 UpdateDifficultyLockC2SPacket
+class_4212 MainThreadExecutor
+
+class_4214 WakeUpTask
+class_4215 LookTargetUtil
+class_4216 RunMode
+class_4217 FarmerVillagerTask
+class_4218 PlayWithVillagerBabiesTask
+class_4219 GoToNearbyPositionTask
+class_4220 GoToSecondaryPositionTask
+class_4221 SecondaryPointsOfInterestSensor
+
+class_4223 PatrolApproachGoal
+class_4224 Source
+class_4225 SoundEngine
+class_4226 SourceSetImpl
+class_4227 SoundListener
+class_4228 OggAudioStream
+class_4229 ChannelList
+class_4230 AlUtil
+class_4231 StaticSound
+class_4232 Brain
+class_4233 PointOfInterest
+class_4234 AudioStream
+class_4235 Channel
+class_4236 SourceManager
+class_4237 SoundLoader
+class_4238 SoundExecutor
+class_4239 FileNameUtil
+
+class_4241 PressAction
+class_4242 CelebrateRaidWinTask
+class_4243 GiveGiftsToHeroTask
+class_4244 SeekSkyAfterRaidWinTask
+class_4245 JumpInBedTask
+class_4246 HideInHomeTask
+class_4247 HideInHomeDuringRaidTask
+class_4248 SeekSkyTask
+class_4249 HideWhenBellRingsTask
+class_4250 EndRaidTask
+class_4251 RingBellTask
+class_4252 ForgetBellRingTask
+class_4253 StartRaidTask
+class_4254 RunAroundAfterRaidTask
+class_4255 LongDoorInteractGoal
+class_4256 NearestBedSensor
+class_4257 VillagerBabiesSensor
+class_4258 LongDoorInteractGoal
+class_4259 Status
+class_4260 CelebrateGoal
+class_4261 AttackHomeGoal
+class_4262 AbstractGlassBlock
+
+class_4264 PressableWidget
+class_4265 ElementListWidget
+class_4266 Entry
+class_4267 MultiplayerServerListWidget
+class_4268 ScanningEntry
+class_4269 LanServerEntry
+class_4270 ServerEntry
+class_4271 ResourcePackEntry
+class_4272 WorldEntry
+class_4273 ChunkLoadDistanceS2CPacket
+class_4274 CatSpawner
+class_4275 Stainable
+class_4276 SourceSet
+class_4277 BubbleColumnSoundPlayer
+class_4278 FillLayerFeature
+class_4279 FillLayerFeatureConfig
+class_4280 AlwaysSelectedEntryListWidget
+class_4281 Entry
+class_4282 ChunkRenderDistanceCenterS2CPacket
+
+class_4284 DataFixTypes
+class_4285 PointOfInterestReorganizationFix
+class_4286 CheckboxWidget
+
+class_4288 MouseOptionsScreen
+class_4289 WanderIndoorsTask
+class_4290 WalkHomeTask
+class_4291 WanderAroundPointOfInterestGoal
+class_4292 LookAtEntityGoal
+class_4293 AttackGoal
+class_4294 OminousBannerItemRenameFix
+class_4295 LoseJobOnSiteLossTask
+class_4296 SimpleTickScheduler
+
+
+class_4299 OminousBannerBlockEntityRenameFix
+class_4300 VillagerXpRebuildFix
+class_4301 ZombieVillagerXpRebuildFix
+
+class_4303 BrightnessCache
+class_4304 RaidCenterDebugRenderer
+class_4305 LoadTask
+class_4306 SpawnPredicate
+class_4307 GolemLastSeenSensor
+
+class_4309 JsonDataLoader
+class_4310 BooleanRule
+class_4311 Visitor
+class_4312 IntRule
+class_4313 Key
+class_4314 Type
+class_4315 Rule
+
+class_4317 RepairItemRecipe
+
+class_4319 McoServerComparator
+class_4320 State
+class_4321 WorldType
+class_4322 SubscriptionType
+class_4323 WorldTemplateType
+class_4324 KeyCombo
+class_4325 RealmsMainScreen
+class_4326 CloseButton
+class_4327 NewsButton
+class_4328 PendingInvitesButton
+class_4329 RealmSelectionList
+class_4330 RealmSelectionListEntry
+class_4331 RealmSelectionListTrialEntry
+
+class_4333 FileDownload
+class_4334 DownloadCountingOutputStream
+class_4335 ProgressListener
+class_4336 ResourcePackProgressListener
+class_4337 FileUpload
+class_4338 CustomInputStreamEntity
+class_4339 Ping
+class_4340 Region
+class_4341 RealmsClient
+class_4342 CompatibleVersionResponse
+class_4343 Environment
+class_4344 RealmsClientConfig
+class_4345 RealmsError
+class_4346 Request
+class_4347 Delete
+class_4348 Get
+class_4349 Post
+class_4350 Put
+class_4351 UploadStatus
+class_4352 ValueObject
+class_4353 RealmsDefaultUncaughtExceptionHandler
+class_4354 RealmsHttpException
+class_4355 RealmsServiceException
+class_4356 RetryCallException
+
+class_4358 LongRunningTask
+
+
+
+
+
+
+
+
+class_4367 RealmsWorldSlotButton
+class_4368 Action
+
+class_4370 State
+class_4371 RealmsAcceptRejectButton
+
+
+
+
+
+
+
+class_4379 RealmsBackupInfoScreen
+class_4380 BackupInfoList
+class_4381 RealmsBackupScreen
+class_4382 BackupObjectSelectionList
+class_4383 BackupObjectSelectionListEntry
+class_4384 RealmsBrokenWorldScreen
+
+
+class_4387 RealmsClientOutdatedScreen
+class_4388 RealmsConfigureWorldScreen
+class_4389 RealmsConfirmScreen
+class_4390 RealmsCreateRealmScreen
+
+class_4392 RealmsDownloadLatestWorldScreen
+class_4393 DownloadStatus
+class_4394 RealmsGenericErrorScreen
+class_4395 RealmsInviteScreen
+class_4396 RealmsLongConfirmationScreen
+class_4397 Type
+class_4398 RealmsLongRunningMcoTaskScreen
+class_4399 RealmsNotificationsScreen
+class_4400 RealmsParentalConsentScreen
+class_4401 RealmsPendingInvitesScreen
+class_4402 PendingInvitationSelectionList
+class_4403 PendingInvitationSelectionListEntry
+class_4404 AcceptButton
+class_4405 RejectButton
+class_4406 RealmsPlayerScreen
+class_4407 InvitedObjectSelectionList
+class_4408 InvitedObjectSelectionListEntry
+class_4409 RealmsResetNormalWorldScreen
+class_4410 RealmsResetWorldScreen
+class_4411 FrameButton
+
+class_4413 ResetWorldInfo
+
+
+class_4416 RealmsSelectFileToUploadScreen
+class_4417 WorldListEntry
+class_4418 WorldSelectionList
+class_4419 RealmsSelectWorldTemplateScreen
+class_4420 WorldTemplateObjectSelectionList
+class_4421 WorldTemplateObjectSelectionListEntry
+class_4422 RealmsSettingsScreen
+class_4423 RealmsSlotOptionsScreen
+class_4424 SettingsSlider
+class_4425 RealmsSubscriptionInfoScreen
+class_4426 RealmsTermsScreen
+class_4427 RealmsUploadScreen
+class_4428 SizeUnit
+class_4429 UploadResult
+class_4430 Builder
+class_4431 JsonUtils
+class_4432 RealmsPersistence
+class_4433 RealmsPersistenceData
+
+class_4435 CloseServerTask
+class_4436 DownloadTask
+class_4437 OpenServerTask
+class_4438 RealmsConnectTask
+class_4439 RealmsGetServerDetailsTask
+class_4440 ResettingWorldTask
+class_4441 RestoreTask
+class_4442 SwitchMinigameTask
+class_4443 SwitchSlotTask
+
+class_4445 WorldCreationTask
+class_4446 RealmsTextureManager
+class_4447 RealmsTexture
+class_4448 RealmsUtil
+class_4449 SkinProcessor
+class_4450 TextRenderingUtils
+class_4451 Line
+class_4452 LineSegment
+class_4453 UploadTokenCache
+
+class_4455 ModelDefinition
+class_4456 CsvWriter
+class_4457 Header
+class_4458 GoToPointOfInterestTask
+class_4459 TargetPathNode
+class_4460 Tweaker
+class_4461 LongArgumentSerializer
+
+class_4463 PlayerActionResponseS2CPacket
+class_4464 Counter
+class_4465 Schema2100
+class_4466 BeeEntity
+class_4467 NotAngryGoal
+class_4468 StingGoal
+class_4469 StingTargetGoal
+class_4470 EnterHiveGoal
+
+class_4472 MoveToHiveGoal
+class_4473 MoveToFlowerGoal
+class_4474 GrowCropsGoal
+class_4475 BeeRevengeGoal
+class_4476 FindHiveGoal
+class_4477 BeeLookControl
+class_4478 PollinateGoal
+class_4479 BeeWanderAroundGoal
+class_4480 HoneyBottleItem
+class_4481 BeehiveBlock
+class_4482 BeehiveBlockEntity
+class_4483 Bee
+class_4484 BeeState
+class_4485 SectorMap
+class_4486 ChunkStreamVersion
+class_4487 Wrapper
+class_4488 CopyStateFunction
+class_4489 Builder
+class_4490 Serializer
+class_4491 RenderCallStorage
+
+
+class_4494 GlDebugInfo
+class_4495 BeeEntityModel
+class_4496 ModelUtil
+class_4497 Falling
+class_4498 FallingHoney
+class_4499 FallingHoneyFactory
+class_4500 DrippingHoneyFactory
+class_4501 LandingHoneyFactory
+class_4502 FallingNectarFactory
+class_4503 GameTestDebugRenderer
+class_4504 Marker
+class_4505 BeeEntityRenderer
+class_4506 StuckStingersFeatureRenderer
+class_4507 StuckObjectsFeatureRenderer
+class_4508 AggressiveBeeSoundInstance
+class_4509 PassiveBeeSoundInstance
+class_4510 AbstractBeeSoundInstance
+class_4511 CompressedData
+class_4512 GameTestException
+class_4513 PositionedException
+class_4514 GameTestBatch
+class_4515 TestRunner
+class_4516 TestContext
+class_4517 GameTestState
+class_4518 TestListener
+class_4519 TestFunctions
+class_4520 TestUtil
+class_4521 TestManager
+class_4522 TickLimitExceededException
+class_4523 FailureLoggingTestCompletionListener
+class_4524 TestSet
+class_4525 StructureTestUtil
+class_4526 TestClassArgumentType
+class_4527 TestCommand
+class_4528 Listener
+class_4529 TestFunction
+class_4530 TestFunctionArgumentType
+class_4531 TestCompletionListener
+class_4532 PacketHandler
+class_4533 PacketHandlerInitializer
+class_4534 DstFactor
+class_4535 SrcFactor
+
+class_4537 ThrowablePotionItem
+class_4538 WorldView
+class_4539 Mode
+class_4540 SeedMixer
+class_4541 BiomeFormatFix
+
+class_4543 BiomeAccess
+class_4544 Storage
+
+
+
+
+class_4549 OutputAction
+class_4550 BlockPredicate
+class_4551 FluidPredicate
+class_4552 LightPredicate
+class_4553 PlayerPredicate
+class_4554 AdvancementCriteriaPredicate
+class_4555 CompletedAdvancementPredicate
+class_4556 AdvancementPredicate
+class_4557 Builder
+class_4558 AbstractCriterion
+class_4559 StatePredicate
+class_4560 Builder
+class_4561 ExactValueCondition
+class_4562 Condition
+class_4563 RangedValueCondition
+
+class_4565 DataCommandStorage
+class_4566 PersistentState
+class_4567 LootConditionManager
+class_4568 ReferenceLootCondition
+class_4569 Serializer
+
+class_4571 TimeCheckLootCondition
+class_4572 Serializer
+class_4573 RenderCall
+class_4574 DrawArrayParameters
+class_4575 SetupTask
+
+class_4577 Task
+class_4578 RebuildTask
+class_4579 SortTask
+class_4580 StorageDataObject
+class_4581 Matrix3f
+class_4582 SkinOverlayOwner
+class_4583 OverlayVertexConsumer
+class_4584 BufferVertexConsumer
+class_4585 FixedColorVertexConsumer
+class_4586 OutlineVertexConsumer
+class_4587 MatrixStack
+class_4588 VertexConsumer
+class_4589 Dual
+class_4590 AffineTransformation
+
+class_4592 AnimalModel
+class_4593 TintableAnimalModel
+class_4594 TintableCompositeModel
+class_4595 CompositeEntityModel
+class_4596 FogType
+class_4597 VertexConsumerProvider
+class_4598 Immediate
+class_4599 BufferBuilderStorage
+
+
+
+class_4603 InGameOverlayRenderer
+class_4604 Frustum
+class_4605 ChunkLoadingStatus
+class_4606 EyesFeatureRenderer
+class_4607 EnergySwirlOverlayFeatureRenderer
+class_4608 OverlayTexture
+class_4609 AffineTransformations
+class_4610 Cache
+class_4611 Cache
+class_4612 Cache
+class_4613 Cache
+class_4614 NbtType
+class_4615 NbtTypes
+class_4616 StorageNbtDataSource
+class_4617 NameGenerator
+class_4618 OutlineVertexConsumerProvider
+
+class_4620 PointOfInterestFix
+class_4621 Crack
+class_4622 HoneyBlock
+class_4623 Boxes
+
+class_4625 HugeMushroomFeature
+
+
+class_4628 RandomPatchFeature
+
+
+
+
+
+class_4634 BlockPileFeatureConfig
+class_4635 HugeMushroomFeatureConfig
+
+
+class_4638 RandomPatchFeatureConfig
+
+
+
+class_4642 SpringFeatureConfig
+class_4643 TreeFeatureConfig
+class_4644 Builder
+class_4645 AcaciaFoliagePlacer
+class_4646 BlobFoliagePlacer
+class_4647 FoliagePlacer
+class_4648 FoliagePlacerType
+class_4649 PineFoliagePlacer
+class_4650 SpruceFoliagePlacer
+class_4651 BlockStateProvider
+class_4652 BlockStateProviderType
+
+
+class_4655 PillarBlockStateProvider
+class_4656 SimpleBlockStateProvider
+class_4657 WeightedBlockStateProvider
+class_4658 AlterGroundTreeDecorator
+class_4659 BeehiveTreeDecorator
+class_4660 CocoaBeansTreeDecorator
+class_4661 LeavesVineTreeDecorator
+class_4662 TreeDecorator
+class_4663 TreeDecoratorType
+class_4664 TrunkVineTreeDecorator
+class_4665 Entry
+class_4666 StickyKeyBinding
+class_4667 GameOptionsScreen
+class_4668 RenderPhase
+
+class_4670 Toggleable
+class_4671 Cull
+class_4672 DepthTest
+
+
+class_4675 Layering
+class_4676 Lightmap
+class_4677 LineWidth
+class_4678 Target
+class_4679 Overlay
+
+
+class_4682 OffsetTexturing
+class_4683 Texture
+class_4684 Texturing
+class_4685 Transparency
+class_4686 WriteMaskState
+class_4687 MultiPhase
+class_4688 MultiPhaseParameters
+class_4689 Builder
+class_4690 Result
+class_4691 IronGolemCrackFeatureRenderer
+class_4692 TimedTask
+class_4693 TimedTaskRunner
+class_4694 SpectateCommand
+class_4695 StructureReferenceFix
+class_4696 RenderLayers
+class_4697 PassiveData
+class_4698 StorageIoWorker
+class_4699 Result
+class_4700 BiomeColorCache
+class_4701 Last
+class_4702 SignModel
+class_4703 BeeDebugRenderer
+
+class_4705 Hive
+class_4706 SortedArraySet
+class_4707 SetIterator
+class_4708 BeeNestDestroyedCriterion
+class_4709 Conditions
+class_4710 Builder
+class_4711 ItemCriterion
+class_4712 Conditions
+class_4713 SlideDownBlockCriterion
+class_4714 Conditions
+class_4715 NoOpFeature
+class_4716 GlErroredException
+class_4717 ChatInputSuggestor
+class_4718 GlException
+class_4719 SignType
+class_4720 VertexConsumers
+
+class_4722 TexturedRenderLayers
+class_4723 SpriteTexturedVertexConsumer
+class_4724 SpriteAtlasManager
+class_4725 MipmapHelper
+class_4726 SpriteConsumer
+class_4727 Info
+class_4728 Interpolation
+class_4729 Format4ResourcePack
+class_4730 SpriteIdentifier
+class_4731 RemovePoiValidTagFix
+class_4732 DoubleBlockProperties
+class_4733 Type
+class_4734 PropertySource
+class_4735 Pair
+class_4736 Single
+class_4737 LightmapCoordinatesRetriever
+class_4738 PositionUpdater
+class_4739 AbstractChestBlock
+class_4740 FpsSmoother
+
+
+
+class_4744 AdvancementRenameFix
+class_4745 RecipeRenameFix
+class_4746 LocatedInfo
+class_4747 CounterInfo
+class_4748 ProfileLocationInfo
+class_4749 MultiplayerWarningScreen
+class_4750 OutlineMode
+class_4751 GuiLight
+class_4752 FurnaceRecipesFix
+class_4753 BiomeRenameFix
+class_4754 WallPropertyFix
+class_4755 Schema2501
+class_4756 Schema2502
+class_4757 TickTimeTracker
+class_4758 TickDurationMonitor
+
+class_4760 HoglinEntity
+class_4761 BiomeParticleConfig
+class_4762 NoiseHypercube
+class_4763 BiomeEffects
+class_4764 Builder
+
+class_4766 MultiNoiseBiomeSource
+
+
+
+class_4770 AbstractFireBlock
+class_4771 FungusBlock
+class_4772 SproutsBlock
+class_4773 NetherrackBlock
+class_4774 RootsBlock
+class_4775 SoulFireBlock
+class_4776 WeepingVinesBlock
+class_4777 TwistingVinesBlock
+class_4778 WallShape
+class_4779 BasaltPillarFeature
+class_4780 HugeFungusFeatureConfig
+class_4781 HugeFungusFeature
+class_4782 NetherForestVegetationFeature
+
+class_4784 WeepingVinesFeature
+class_4785 NetherFossilStructure
+
+class_4787 NetherFossilGenerator
+class_4788 Piece
+
+
+class_4791 HoglinEntityModel
+class_4792 AshParticle
+class_4793 Factory
+class_4794 AscendingParticle
+class_4795 CrimsonSporeFactory
+class_4796 UnderwaterFactory
+class_4797 WarpedSporeFactory
+class_4798 HoglinEntityRenderer
+
+
+
+class_4802 TimeHelper
+class_4803 MemoryExpiryDataFix
+class_4804 Schema2505
+
+class_4806 BreedTask
+class_4807 AttackTask
+class_4808 PacifyTask
+class_4809 MemoryTransferTask
+class_4810 CrossbowAttackTask
+class_4811 CrossbowState
+class_4812 RidingTask
+class_4813 ForgetTask
+class_4814 GoToCelebrateTask
+class_4815 WalkToNearestVisibleWantedItemTask
+class_4816 MeleeAttackTask
+class_4817 StartRidingTask
+class_4818 StrollTask
+class_4819 HuntFinishTask
+class_4820 ConditionalTask
+class_4821 TimeLimitedTask
+class_4822 RangedApproachTask
+class_4823 AdmireItemTask
+class_4824 UpdateAttackTargetTask
+class_4825 DefeatTargetTask
+class_4826 HuntHoglinTask
+class_4827 WantNewItemTask
+class_4828 ForgetAttackTargetTask
+class_4829 ForgetAngryAtTargetTask
+class_4830 RemoveOffHandItemTask
+class_4831 Memory
+class_4832 HoglinSpecificSensor
+class_4833 NearestItemsSensor
+class_4834 PiglinSpecificSensor
+class_4835 HoglinBrain
+class_4836 PiglinEntity
+class_4837 PiglinActivity
+class_4838 PiglinBrain
+
+class_4840 PiglinEntityModel
+class_4841 VillageSectionsDebugRenderer
+class_4842 PiglinEntityRenderer
+
+class_4844 DynamicSerializableUuid
+class_4845 BarterLootTableGenerator
+class_4846 EntityZombifiedPiglinRenameFix
+class_4847 Schema2509
+class_4848 CryingObsidianBlock
+class_4849 NyliumBlock
+class_4850 TargetBlock
+class_4851 TargetHitCriterion
+class_4852 Conditions
+class_4853 FallingObsidianTearFactory
+class_4854 DrippingObsidianTearFactory
+class_4855 LandingObsidianTearFactory
+class_4856 RepeatingAudioStream
+class_4857 DelegateFactory
+class_4858 ReusableInputStream
+class_4859 RgbFetcher
+class_4860 EntityProjectileOwnerFix
+class_4861 ForgingScreenHandler
+class_4862 SmithingScreenHandler
+class_4863 AbstractPlantPartBlock
+class_4864 AbstractPlantBlock
+class_4865 AbstractPlantStemBlock
+class_4866 Entry
+class_4867 Backup
+class_4868 BackupList
+class_4869 CheckedGson
+class_4870 Ops
+class_4871 PendingInvite
+class_4872 PendingInvitesList
+class_4873 PingResult
+class_4874 PlayerInfo
+class_4875 RealmsDescriptionDto
+class_4876 RealmsNews
+class_4877 RealmsServer
+class_4878 RealmsServerAddress
+class_4879 RealmsServerList
+class_4880 RealmsServerPing
+class_4881 RealmsServerPlayerList
+class_4882 RealmsServerPlayerLists
+class_4883 RealmsWorldOptions
+class_4884 RealmsWorldResetDto
+class_4885 RealmsSerializable
+class_4886 RegionPingResult
+class_4887 Subscription
+class_4888 UploadInfo
+class_4889 WorldDownload
+class_4890 WorldTemplate
+class_4891 WorldTemplatePaginatedList
+class_4892 OptionSliderWidget
+
+class_4894 ForgingScreen
+class_4895 SmithingScreen
+class_4896 CrossbowPosing
+class_4897 BiomeEffectSoundPlayer
+class_4898 MusicLoop
+class_4899 DisconnectedRealmsScreen
+
+
+class_4902 RealmsConnection
+class_4903 RealmsLabel
+class_4904 RealmsObjectSelectionList
+class_4905 RealmsScreen
+
+class_4907 RepeatedNarrator
+class_4908 Parameters
+
+class_4910 BlockStateModelGenerator
+class_4911 BuiltinModelPool
+class_4912 BlockTexturePool
+class_4913 TintType
+class_4914 LogTexturePool
+class_4915 ItemModelGenerator
+class_4916 ModelProvider
+class_4917 BlockStateSupplier
+class_4918 When
+class_4919 LogicalCondition
+class_4920 LogicalOperator
+class_4921 PropertyCondition
+class_4922 MultipartBlockStateSupplier
+class_4923 ConditionalMultipart
+class_4924 Multipart
+class_4925 VariantsBlockStateSupplier
+class_4926 BlockStateVariantMap
+class_4927 SingleProperty
+class_4928 DoubleProperty
+class_4929 TripleProperty
+class_4930 QuadrupleProperty
+class_4931 QuintupleProperty
+class_4932 TriFunction
+class_4933 Value
+class_4934 PropertiesMap
+class_4935 BlockStateVariant
+class_4936 VariantSettings
+class_4937 Rotation
+class_4938 VariantSetting
+class_4939 Value
+class_4940 SimpleModelSupplier
+class_4941 ModelIds
+class_4942 Model
+class_4943 Models
+class_4944 TextureMap
+class_4945 TextureKey
+class_4946 TexturedModel
+class_4947 Factory
+class_4948 SoulSpeedEnchantment
+class_4949 VineLogic
+class_4950 TwistingVinesPlantBlock
+class_4951 WeepingVinesPlantBlock
+
+class_4953 TwistingVinesFeature
+class_4954 Builder
+class_4955 AbstractSlowingParticle
+class_4956 SoulParticle
+class_4957 Factory
+class_4958 AbstractUuidFix
+class_4959 BlockEntityUuidFix
+class_4960 EntityUuidFix
+class_4961 ItemStackUuidFix
+class_4962 WorldUuidFix
+class_4963 PlayerUuidFix
+class_4964 PersistentStateUuidFix
+class_4965 FishingHookPredicate
+class_4966 VerticalBlockSample
+class_4967 BiomeAdditionsSound
+class_4968 BiomeMoodSound
+class_4969 RespawnAnchorBlock
+class_4970 AbstractBlock
+class_4971 AbstractBlockState
+class_4972 TypedContextPredicate
+class_4973 ContextPredicate
+class_4974 ReversePortalParticle
+class_4975 Factory
+class_4976 VillagerGossipFix
+class_4977 JigsawPropertiesFix
+class_4978 JigsawRotationFix
+class_4979 Schema2519
+class_4980 SaddledComponent
+class_4981 ItemSteerable
+class_4982 BoneMealTask
+class_4983 FarmerWorkTask
+class_4984 PositionType
+class_4985 StriderEntity
+
+
+class_4988 Navigation
+
+class_4990 DirectionTransformation
+class_4991 Joint
+class_4992 AxisAlignedLinearPosRuleTest
+class_4993 LinearPosRuleTest
+class_4994 AlwaysTruePosRuleTest
+class_4995 PosRuleTest
+class_4996 PosRuleTestType
+class_4997 StriderEntityModel
+class_4998 AxisTransformation
+class_4999 StriderEntityRenderer
+class_5000 JigsawOrientation
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class_5124 ObjectBuilder
+class_5125 SessionLock
+class_5126 AlreadyLockedException
+class_5127 ThrowableDeliverer
+
+class_5129 RenameItemStackAttributesFix
+class_5130 Schema2522
+class_5131 AttributeContainer
+class_5132 DefaultAttributeContainer
+class_5133 Builder
+class_5134 EntityAttributes
+class_5135 DefaultAttributeRegistry
+class_5136 ZoglinEntity
+class_5137 Hoglin
+class_5138 StructureAccessor
+class_5139 ForkingTrunkPlacer
+class_5140 StraightTrunkPlacer
+class_5141 TrunkPlacer
+class_5142 TrunkPlacerType
+class_5143 Session
+class_5144 ZoglinEntityRenderer
+class_5145 TrackedEntry
+class_5146 Saddleable
+class_5147 Shearable
+class_5148 HorseMarking
+class_5149 HorseColor
+class_5150 Vanishable
+class_5151 Wearable
+
+class_5153 BasaltColumnsFeature
+class_5154 DeltaFeature
+class_5155 ReplaceBlobsFeature
+class_5156 BasaltColumnsFeatureConfig
+
+class_5158 DeltaFeatureConfig
+
+
+
+class_5162 PalettedBlockInfoList
+
+
+class_5165 WhiteAshParticle
+class_5166 Factory
+class_5167 HorseMarkingFeatureRenderer
+class_5168 ShearsDispenserBehavior
+class_5169 ServerMBean
+class_5170 Entry
+class_5171 AngleInterpolator
+class_5172 ChainBlock
+
+class_5174 BastionBridgeData
+
+
+class_5177 HoglinStableData
+class_5178 BastionUnitsData
+class_5179 BastionRemnantGenerator
+
+class_5181 BastionData
+class_5182 BastionTreasureData
+class_5183 RuinedPortalStructure
+
+
+
+
+class_5188 LegacySinglePoolElement
+class_5189 RuinedPortalStructurePiece
+class_5190 Properties
+class_5191 VerticalPlacement
+class_5192 BlackstoneReplacementStructureProcessor
+class_5193 BlockAgeStructureProcessor
+class_5194 JigsawGeneratingC2SPacket
+class_5195 MusicSound
+class_5196 BitStorageAlignFix
+class_5197 RabbitJumpControl
+class_5198 Category
+class_5199 Acceptor
+class_5200 Properties
+class_5201 FeatureSize
+class_5202 FeatureSizeType
+class_5203 ThreeLayersFeatureSize
+class_5204 TwoLayersFeatureSize
+class_5205 BushFoliagePlacer
+class_5206 DarkOakFoliagePlacer
+class_5207 LargeOakFoliagePlacer
+class_5208 TreeNode
+class_5209 JungleFoliagePlacer
+class_5210 MegaPineFoliagePlacer
+class_5211 DarkOakTrunkPlacer
+class_5212 LargeOakTrunkPlacer
+class_5213 BranchPosition
+class_5214 GiantTrunkPlacer
+class_5215 MegaJungleTrunkPlacer
+class_5216 DoublePerlinNoiseSampler
+class_5217 WorldProperties
+class_5218 WorldSavePath
+class_5219 SaveProperties
+class_5220 HoverState
+class_5221 Errable
+class_5222 TextCollector
+class_5223 TextVisitFactory
+class_5224 CharacterVisitor
+class_5225 TextHandler
+class_5226 LineWrappingCollector
+class_5227 LineBreakingVisitor
+
+class_5229 LineWrappingConsumer
+class_5230 WidthLimitingVisitor
+class_5231 WidthRetriever
+class_5232 Drawer
+class_5233 PageContent
+class_5234 Position
+class_5235 EditGameRulesScreen
+class_5236 BooleanRuleWidget
+class_5237 RuleCategoryWidget
+class_5238 RuleWidgetFactory
+class_5239 IntRuleWidget
+class_5240 AbstractRuleWidget
+class_5241 RuleListWidget
+class_5242 UuidArgumentType
+class_5243 Bee
+class_5244 ScreenTexts
+class_5245 Visitor
+class_5246 StyledVisitor
+class_5247 Action
+class_5248 EntityContent
+class_5249 ItemStackContent
+class_5250 MutableText
+class_5251 TextColor
+class_5252 AttributeCommand
+class_5253 ColorHelper
+class_5254 Argb
+class_5255 RedstoneConnectionsFix
+class_5256 StriderGravityFix
+class_5257 AdvancementEntityPredicateDeserializer
+class_5258 Extended
+class_5259 Runner
+class_5260 ChunkSource
+class_5261 Checker
+class_5262 Info
+class_5263 GravityField
+class_5264 Point
+class_5265 SpawnDensity
+
+class_5267 AdvancementEntityPredicateSerializer
+class_5268 ServerWorldProperties
+class_5269 MutableWorldProperties
+class_5270 LootGsons
+class_5271 Properties
+class_5272 ModelPredicateProviderRegistry
+class_5273 VillagerFollowRangeFix
+class_5274 IronGolemWanderAroundGoal
+class_5275 Dismounting
+class_5276 Priority
+class_5277 EntityShulkerRotationFix
+class_5278 Builder
+class_5279 ThrownItemPickedUpByEntityCriterion
+class_5280 Conditions
+class_5281 StructureWorldAccess
+class_5282 PlayerGeneratesContainerLootCriterion
+class_5283 Conditions
+class_5284 ChunkGeneratorSettings
+class_5285 GeneratorOptions
+
+
+
+class_5289 GameModeSelectionScreen
+class_5290 GameModeSelection
+class_5291 ButtonWidget
+class_5292 MoreOptionsDialog
+class_5293 LevelScreenProvider
+class_5294 DimensionEffects
+class_5295 End
+class_5296 Nether
+class_5297 Overworld
+class_5298 WordPackedArray
+class_5299 StructureSeparationDataFix
+class_5300 Information
+class_5301 Schema2551
+class_5302 MemoryEntry
+class_5303 Profile
+class_5304 Spawner
+class_5305 Preset
+
+
+
+class_5309 GenerationShapeConfig
+
+
+
+
+
+class_5315 SaveVersionInfo
+class_5316 TooltipSupplier
+class_5317 WorldPresets
+
+
+class_5320 MapBuilder
+class_5321 RegistryKey
+class_5322 SpawnLocating
+
+
+class_5325 WalkTowardJobSiteTask
+class_5326 WorkStationCompetitionTask
+class_5327 TakeJobSiteTask
+class_5328 ItemUsage
+class_5329 BlockCollisionSpliterator
+class_5330 JsonSerializing
+class_5331 SerializerBuilder
+class_5332 ElementSerializer
+class_5333 GsonSerializer
+class_5334 AndCondition
+class_5335 JsonSerializer
+class_5336 JsonSerializableType
+class_5337 Serializer
+class_5338 LootPoolEntryType
+class_5339 LootFunctionType
+class_5340 Serializer
+class_5341 LootCondition
+class_5342 LootConditionType
+
+class_5344 BackupInfoListEntry
+class_5345 StyledString
+class_5346 DatapackFailureScreen
+class_5347 ShaderException
+class_5348 StringVisitable
+class_5349 FunctionLoader
+class_5350 DataPackContents
+class_5351 Factory
+class_5352 ResourcePackSource
+class_5353 Empty
+class_5354 Angerable
+class_5355 WalkTowardClosestAdultTask
+class_5356 NearestVisibleAdultSensor
+class_5357 SmithingRecipe
+class_5358 Serializer
+class_5359 DataPackSettings
+
+class_5361 EntityExplosionBehavior
+class_5362 ExplosionBehavior
+class_5363 DimensionOptions
+class_5364 RegistrationEnvironment
+class_5365 GraphicsMode
+
+
+
+class_5369 ResourcePackOrganizer
+
+class_5371 Pack
+class_5372 AbstractPack
+class_5373 EnabledPack
+class_5374 DisabledPack
+class_5375 PackScreen
+
+class_5377 SmithingRecipeJsonBuilder
+class_5378 SmithingRecipeJsonProvider
+class_5379 ForwardingDynamicOps
+
+class_5381 RegistryElementCodec
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class_5396 MissingDimensionFix
+class_5397 RetryMarker
+class_5398 UniversalAngerGoal
+class_5399 LavaSubmergedBlockStructureProcessor
+class_5400 NamedRuleWidget
+class_5401 SkyType
+class_5402 Reason
+class_5403 MoveDirection
+class_5404 OptionFix
+class_5405 DialogScreen
+class_5406 ChoiceButton
+class_5407 VideoWarningManager
+class_5408 WarningPatternLoader
+class_5409 PlayerInteractedWithEntityCriterion
+class_5410 Conditions
+class_5411 RecipeBookOptions
+class_5412 CategoryOption
+
+
+
+class_5416 Schema2568
+class_5417 PiglinBruteSpecificSensor
+class_5418 AbstractPiglinEntity
+class_5419 PiglinBruteEntity
+class_5420 PiglinBruteBrain
+class_5421 RecipeBookCategory
+class_5422 TooltipSection
+class_5423 RegistryWorldView
+class_5424 LunarWorldView
+class_5425 ServerWorldAccess
+class_5426 DirectoryWatcher
+class_5427 RecipeCategoryOptionsC2SPacket
+
+class_5429 RemoveGolemGossipFix
+class_5430 AdmireItemTimeLimitTask
+class_5431 SideShapeType
+
+
+class_5434 JigsawStructure
+
+
+class_5437 ReplaceBlobsFeatureConfig
+
+
+
+
+
+
+class_5444 FeaturePlacementContext
+
+
+
+
+
+class_5450 SquarePlacementModifier
+
+class_5452 CountMultilayerPlacementModifier
+
+class_5454 TeleportTarget
+class_5455 DynamicRegistryManager
+class_5456 Info
+
+class_5458 BuiltinRegistries
+class_5459 BlockLocating
+class_5460 Rectangle
+class_5461 IntBounds
+class_5462 CharPredicate
+class_5463 ConfiguredCarvers
+
+
+
+
+class_5468 StructurePools
+class_5469 StructureProcessorLists
+class_5470 Structures
+
+class_5472 RateLimitedConnection
+class_5473 AngleArgumentType
+class_5474 Angle
+class_5475 WorldgenProvider
+
+
+class_5478 OverworldBiomeCreator
+
+
+class_5481 OrderedText
+class_5482 Weather
+class_5483 SpawnSettings
+class_5484 TemperatureModifier
+class_5485 GenerationSettings
+class_5486 GrassColorModifier
+class_5487 NoiseParameters
+class_5488 PlayerOperation
+class_5489 MultilineText
+class_5490 Line
+class_5491 ReorderingUtil
+class_5492 TextReorderingProcessor
+class_5493 NavigationConditions
+class_5494 GoBackToLavaGoal
+class_5495 Builder
+class_5496 Builder
+class_5497 StructureProcessorList
+class_5498 Perspective
+class_5499 OrderableTooltip
+class_5500 SimpleOptionsScreen
+class_5501 RegistryManagerEntry
+class_5502 Instance
+
+class_5504 BuiltinBiomes
+
+class_5506 EntryLoader
+class_5507 Impl
+
+
+
+
+
+class_5513 TextStream
+class_5514 TextFilterer
+class_5515 HashIgnorer
+class_5516 Impl
+class_5517 FailedHttpRequestException
+class_5518 ScissorTestState
+class_5519 SocialInteractionsPlayerListEntry
+class_5520 SocialInteractionsManager
+class_5521 SocialInteractionsPlayerListWidget
+class_5522 SocialInteractionsScreen
+class_5523 Tab
+class_5524 Entry
+class_5525 NetworkEncryptionException
+class_5526 ServerEntityHandler
+class_5527 JigsawBlockNameFix
+class_5528 CauldronRenameFix
+class_5529 RemovalReason
+class_5530 NoPenaltySolidTargeting
+class_5531 NoWaterTargeting
+class_5532 NoPenaltyTargeting
+class_5533 AboveGroundTargeting
+class_5534 FuzzyTargeting
+class_5535 FuzzyPositions
+class_5536 ClickType
+class_5537 BundleItem
+class_5538 SpyglassItem
+class_5539 HeightLimitView
+class_5540 AbstractCandleBlock
+class_5541 AmethystBlock
+class_5542 AmethystClusterBlock
+class_5543 BuddingAmethystBlock
+class_5544 CandleBlock
+class_5545 CandleCakeBlock
+class_5546 CauldronBlock
+class_5547 Degradable
+
+
+
+class_5551 EndRodBlock
+class_5552 OperatorBlock
+class_5553 LavaCauldronBlock
+class_5554 LightningRodBlock
+class_5555 TintedGlassBlock
+class_5556 LeveledCauldronBlock
+class_5557 Effect
+class_5558 BlockEntityTicker
+class_5559 BlockEntityFactory
+class_5560 ChestLidAnimator
+class_5561 ViewerCountManager
+class_5562 BlockEntityTickInvoker
+class_5563 DirectBlockEntityTickInvoker
+class_5564 WrappedBlockEntityTickInvoker
+class_5565 EntityChunkDataAccess
+class_5566 ChunkDataList
+class_5567 ChunkStatusChangeListener
+class_5568 EntityLike
+class_5569 EntityChangeListener
+class_5570 EntityIndex
+class_5571 ChunkDataAccess
+class_5572 EntityTrackingSection
+class_5573 SectionedEntityCache
+class_5574 EntityList
+class_5575 TypeFilter
+class_5576 EntityHandler
+class_5577 EntityLookup
+class_5578 SimpleEntityLookup
+class_5579 ServerEntityManager
+class_5580 Listener
+class_5581 Status
+class_5582 ClientEntityManager
+class_5583 Listener
+class_5584 EntityTrackingStatus
+class_5585 GeodeLayerConfig
+class_5586 GeodeCrackConfig
+class_5587 GeodeLayerThicknessConfig
+class_5588 GeodeFeature
+class_5589 GeodeFeatureConfig
+class_5590 IndexBuffer
+class_5591 IndexMapper
+class_5592 SetBannerPatternFunction
+class_5593 Serializer
+class_5594 State
+class_5595 IndexType
+class_5596 DrawMode
+class_5597 SinglePartEntityModel
+class_5598 SkullBlockEntityModel
+class_5599 EntityModelLoader
+class_5600 EntityModels
+class_5601 EntityModelLayer
+class_5602 EntityModelLayers
+class_5603 ModelTransform
+class_5604 ModelCuboidData
+class_5605 Dilation
+class_5606 ModelPartBuilder
+class_5607 TexturedModelData
+class_5608 TextureDimensions
+class_5609 ModelData
+class_5610 ModelPartData
+class_5611 Vector2f
+class_5612 ClientEntityHandler
+class_5613 SmallFactory
+class_5614 BlockEntityRendererFactory
+class_5615 Context
+class_5616 BlockEntityRendererFactories
+class_5617 EntityRendererFactory
+class_5618 Context
+class_5619 EntityRenderers
+class_5620 CauldronBehavior
+class_5621 CompressionException
+class_5622 NotEnoughSuccessesError
+class_5623 TestFailureLogger
+class_5624 StructureTestListener
+class_5625 NbtOrderedStringFormatter
+class_5626 StringNbtWriter
+class_5627 NbtElementVisitor
+class_5628 NbtTextFormatter
+class_5629 EntityTrackingListener
+class_5630 StackReference
+class_5631 BundleTooltipData
+class_5632 TooltipData
+class_5633 FluidModificationItem
+class_5634 PowderSnowBucketItem
+class_5635 PowderSnowBlock
+class_5636 CameraSubmersionType
+class_5637 UpdateData
+class_5638 Tester
+class_5639 Applier
+class_5640 LootFunctionManager
+class_5641 AndFunction
+class_5642 SetEnchantmentsLootFunction
+class_5643 Serializer
+class_5644 ValueCheckLootCondition
+class_5645 Serializer
+class_5646 ContextLootNbtProvider
+class_5647 CustomSerializer
+class_5648 Target
+class_5649 Serializer
+class_5650 LootNbtProviderType
+class_5651 LootNbtProvider
+class_5652 LootNbtProviderTypes
+class_5653 StorageLootNbtProvider
+class_5654 Serializer
+class_5655 CustomSerializer
+class_5656 Serializer
+class_5657 LootNumberProviderType
+class_5658 LootNumberProvider
+class_5659 LootNumberProviderTypes
+class_5660 ScoreLootNumberProvider
+class_5661 Serializer
+class_5662 UniformLootNumberProvider
+class_5663 Serializer
+class_5664 ContextLootScoreProvider
+class_5665 CustomSerializer
+class_5666 Serializer
+class_5667 FixedLootScoreProvider
+class_5668 Serializer
+class_5669 LootScoreProviderType
+class_5670 LootScoreProvider
+class_5671 LootScoreProviderTypes
+class_5672 RealmsWorldGeneratorType
+class_5673 ResettingNormalWorldTask
+class_5674 ResettingWorldTemplateTask
+
+class_5676 CyclingButtonWidget
+class_5677 Builder
+class_5678 UpdateCallback
+
+class_5680 Values
+
+class_5682 BundleTooltipComponent
+class_5683 OrderedTextTooltipComponent
+class_5684 TooltipComponent
+class_5685 SnowflakeParticle
+class_5686 Factory
+class_5687 ItemCommand
+class_5688 LandingBlock
+class_5689 PointedDripstoneBlock
+
+class_5691 Thickness
+class_5692 DripstoneLavaDrip
+class_5693 LandingDripstoneLavaFactory
+class_5694 FallingDripstoneLavaFactory
+class_5695 DripstoneLavaSplashFactory
+class_5696 FallingDripstoneWaterFactory
+class_5697 PlayerHeldItemFeatureRenderer
+class_5698 GameEventTags
+class_5699 Codecs
+
+class_5701 Schema2684
+class_5702 BlockStateRaycastContext
+class_5703 SculkSensorBlock
+class_5704 SculkSensorBlockEntity
+class_5705 SculkSensorPhase
+
+class_5707 BlockPositionSource
+class_5708 Type
+class_5709 EntityPositionSource
+class_5710 Type
+class_5711 SimpleGameEventDispatcher
+class_5712 GameEvent
+class_5713 GameEventDispatcher
+class_5714 GameEventListener
+class_5715 EntityGameEventHandler
+class_5716 PositionSource
+class_5717 PositionSourceType
+class_5718 VibrationListener
+class_5719 Callback
+
+class_5721 CaveSurface
+class_5722 Empty
+class_5723 Bounded
+class_5724 Half
+class_5725 DripstoneClusterFeature
+class_5726 DripstoneHelper
+class_5727 LargeDripstoneFeature
+class_5728 DripstoneGenerator
+class_5729 WindModifier
+class_5730 SmallDripstoneFeature
+class_5731 DripstoneClusterFeatureConfig
+class_5732 LargeDripstoneFeatureConfig
+class_5733 SmallDripstoneFeatureConfig
+class_5734 DustColorTransitionParticle
+class_5735 Factory
+class_5736 AbstractDustParticle
+class_5737 VibrationParticle
+class_5738 Factory
+class_5739 GameEventDebugRenderer
+class_5740 Entry
+class_5741 Listener
+class_5742 BiomeCoords
+class_5743 DustColorTransitionParticleEffect
+class_5744 AbstractDustParticleEffect
+class_5745 VibrationParticleEffect
+class_5746 GameEventTagProvider
+
+class_5748 Serialized
+
+
+
+class_5752 Schema2686
+class_5753 TemptationCooldownTask
+class_5754 TemptTask
+class_5755 AquaticStrollTask
+class_5756 SeekWaterTask
+class_5757 AquaticMoveControl
+
+
+class_5760 TemptationsSensor
+class_5761 Bucketable
+class_5762 AxolotlEntity
+class_5763 AxolotlData
+class_5764 AxolotlLookControl
+class_5765 AxolotlMoveControl
+class_5766 AxolotlSwimNavigation
+class_5767 Variant
+class_5768 AxolotlBrain
+class_5769 PlayDeadTask
+class_5770 PlayDeadTimerTask
+class_5771 Sprite
+class_5772 AxolotlEntityModel
+class_5773 HandRenderType
+class_5774 AxolotlEntityRenderer
+class_5775 Schema2688
+class_5776 GlowSquidEntity
+class_5777 GlowLichenBlock
+class_5778 MultifaceGrowthBlock
+class_5779 MultifaceGrowthFeature
+class_5780 MultifaceGrowthFeatureConfig
+class_5781 ConversionWarning
+
+
+
+
+class_5786 GlowParticle
+
+class_5788 GlowSquidInkFactory
+class_5789 GlowSquidEntityRenderer
+class_5790 Animation
+class_5791 AnimationFrame
+class_5792 FrameConsumer
+class_5793 BlockFamilies
+class_5794 BlockFamily
+class_5795 Builder
+class_5796 Variant
+class_5797 CraftingRecipeJsonBuilder
+class_5798 LockHelper
+class_5799 MoveEffect
+class_5800 AzaleaBlock
+class_5801 BigDripleafBlock
+class_5802 BigDripleafStemBlock
+class_5803 CaveVines
+class_5804 CaveVinesBodyBlock
+class_5805 CaveVinesHeadBlock
+class_5806 HangingRootsBlock
+class_5807 MossBlock
+class_5808 SmallDripleafBlock
+class_5809 SporeBlossomBlock
+
+class_5811 OxidationLevel
+class_5812 OxidizableBlock
+class_5813 OxidizableSlabBlock
+class_5814 OxidizableStairsBlock
+class_5815 DyedCarpetBlock
+class_5816 Tilt
+class_5817 StructureWeightSampler
+
+class_5819 Random
+class_5820 CheckedRandom
+class_5821 FeatureContext
+class_5822 InterpolatedNoiseSampler
+class_5823 Visitor
+class_5824 FallingSporeBlossomFactory
+
+class_5826 Condition
+class_5827 BakedOverride
+class_5828 InlinedCondition
+class_5829 BundleTutorial
+class_5830 MultithreadAction
+class_5831 AtomicStack
+class_5832 Impl
+
+class_5834 UnderwaterMagmaFeature
+class_5835 UnderwaterMagmaFeatureConfig
+class_5836 NoiseHelper
+class_5837 FilteredMessage
+class_5838 SleepManager
+class_5839 Xor
+
+class_5841 CaveScaler
+
+class_5843 YOffset
+class_5844 AboveBottom
+class_5845 Fixed
+class_5846 BelowTop
+class_5847 StructureTerrainAdaptation
+
+
+
+class_5851 CarvingMaskPlacementModifier
+
+
+
+
+
+class_5857 AbstractCountPlacementModifier
+
+class_5859 ChatRestriction
+class_5860 Interaction
+class_5861 ClampedNormalFloatProvider
+class_5862 ConstantFloatProvider
+class_5863 FloatProvider
+class_5864 FloatProviderType
+class_5865 TrapezoidFloatProvider
+class_5866 UniformFloatProvider
+class_5867 ChunkSectionCache
+class_5868 HeightContext
+class_5869 RavineCarverConfig
+class_5870 RavineCarver
+class_5871 CarverConfig
+class_5872 CarverDebugConfig
+class_5873 CarverContext
+class_5874 SkipPredicate
+class_5875 ScatteredOreFeature
+class_5876 Target
+class_5877 SporeBlossomAirFactory
+class_5878 ParticleGroup
+class_5879 StateFactory
+class_5880 AddAction
+class_5881 Consumer
+class_5882 Action
+class_5883 Type
+class_5884 UpdateNameAction
+class_5885 UpdateProgressAction
+class_5886 UpdatePropertiesAction
+class_5887 UpdateStyleAction
+class_5888 ClearTitleS2CPacket
+class_5889 WorldBorderInitializeS2CPacket
+class_5890 EndCombatS2CPacket
+class_5891 EnterCombatS2CPacket
+class_5892 DeathMessageS2CPacket
+class_5893 Action
+class_5894 OverlayMessageS2CPacket
+class_5895 WorldBorderCenterChangedS2CPacket
+class_5896 WorldBorderInterpolateSizeS2CPacket
+class_5897 WorldBorderSizeChangedS2CPacket
+class_5898 WorldBorderWarningTimeChangedS2CPacket
+class_5899 WorldBorderWarningBlocksChangedS2CPacket
+class_5900 TeamS2CPacket
+class_5901 Operation
+class_5902 SerializableTeam
+class_5903 SubtitleS2CPacket
+class_5904 TitleS2CPacket
+class_5905 TitleFadeS2CPacket
+class_5906 InteractTypeHandler
+class_5907 InteractType
+class_5908 Handler
+class_5909 InteractHandler
+class_5910 InteractAtHandler
+class_5911 OnGroundOnly
+class_5912 ResourceFactory
+class_5913 GLImportProcessor
+class_5914 Context
+class_5915 GlowItemFrameEntity
+class_5916 ScreenHandlerSyncHandler
+class_5917 NoiseInterpolator
+
+class_5919 FossilFeatureConfig
+
+class_5921 RootSystemFeature
+class_5922 VegetationPatchFeature
+class_5923 WaterloggedVegetationPatchFeature
+
+class_5925 HeightmapPlacementModifier
+class_5926 RootSystemFeatureConfig
+class_5927 VegetationPatchFeatureConfig
+class_5928 RandomSpreadFoliagePlacer
+class_5929 RandomizedIntBlockStateProvider
+class_5930 BendingTrunkPlacer
+
+class_5932 VerticalSurfaceType
+
+class_5934 SurfaceWaterDepthFilterPlacementModifier
+
+class_5936 EffectGlShader
+class_5937 EffectProgram
+class_5938 ClearTask
+class_5939 TextureBase
+class_5940 Textures
+class_5941 Builder
+class_5942 Shader
+
+class_5944 Shader
+class_5945 ParticleUtil
+class_5946 ArrowPickupFix
+class_5947 StructureFeatureChildrenPoolElementFix
+
+class_5949 SampleType
+class_5950 ExecutorSampling
+
+class_5952 SampleableExecutor
+class_5953 HoneycombItem
+class_5954 RootedDirtBlock
+class_5955 Oxidizable
+class_5956 ElectricSparkFactory
+class_5957 GlowFactory
+class_5958 ScrapeFactory
+class_5959 WaxOffFactory
+class_5960 WaxOnFactory
+class_5961 DebugRecorder
+class_5962 Recorder
+class_5963 DummyRecorder
+class_5964 Deviation
+class_5965 Sampler
+class_5966 Builder
+class_5967 DeviationChecker
+class_5968 RatioDeviationChecker
+
+
+class_5971 RecordDumper
+class_5972 ChunkInfoList
+class_5973 MathConstants
+class_5974 PackageInfo5974
+class_5975 PackageInfo5975
+class_5976 PackageInfo5976
+class_5977 PackageInfo5977
+class_5978 PackageInfo5978
+class_5979 PackageInfo5979
+class_5980 DelayingChannelInboundHandler
+class_5981 Packet
+class_5982 PackageInfo5982
+class_5983 PackageInfo5983
+class_5984 PackageInfo5984
+class_5985 PackageInfo5985
+class_5986 PackageInfo5986
+class_5987 PackageInfo5987
+class_5988 PackageInfo5988
+class_5989 PackageInfo5989
+class_5990 PackageInfo5990
+class_5991 PackageInfo5991
+class_5992 PackageInfo5992
+class_5993 PackageInfo5993
+class_5994 PackageInfo5994
+
+class_5996 Debug
+class_5997 PackageInfo5997
+class_5998 PackageInfo5998
+class_5999 Schema2571
+class_6000 Schema2704
+class_6001 PackageInfo6001
+class_6002 PackageInfo6002
+class_6003 PackageInfo6003
+class_6004 PackageInfo6004
+class_6005 DataPool
+class_6006 Builder
+class_6007 Weight
+class_6008 Weighted
+class_6009 Absent
+class_6010 Present
+class_6011 Weighting
+class_6012 Pool
+class_6013 PackageInfo6013
+class_6014 GroupAssigningThreadFactory
+class_6015 PackageInfo6015
+class_6016 ConstantIntProvider
+class_6017 IntProvider
+class_6018 IntProviderType
+class_6019 UniformIntProvider
+class_6020 PackageInfo6020
+class_6021 PackageInfo6021
+class_6022 PackageInfo6022
+class_6023 PackageInfo6023
+class_6024 EntityStatuses
+class_6025 Tameable
+class_6026 Mount
+class_6027 PackageInfo6027
+class_6028 WalkTask
+class_6029 LeapingChargeTask
+class_6030 LongJumpTask
+class_6031 Target
+class_6032 WeightedList
+class_6033 Entry
+class_6034 PackageInfo6034
+class_6035 Control
+class_6036 PackageInfo6036
+class_6037 FieldsAreNonnullByDefault2
+class_6038 PackageInfo6038
+class_6039 PackageInfo6039
+class_6040 PackageInfo6040
+class_6041 PackageInfo6041
+class_6042 PackageInfo6042
+class_6043 PackageInfo6043
+class_6044 AxolotlAttackablesSensor
+class_6045 NearestVisibleLivingEntitySensor
+class_6046 PackageInfo6046
+class_6047 PackageInfo6047
+class_6048 PackageInfo6048
+class_6049 PackageInfo6049
+class_6050 PackageInfo6050
+class_6051 PackageInfo6051
+class_6052 PackageInfo6052
+class_6053 GoatEntity
+class_6054 GoatBrain
+class_6055 PackageInfo6055
+class_6056 PackageInfo6056
+class_6057 PackageInfo6057
+class_6058 PackageInfo6058
+class_6059 PackageInfo6059
+class_6060 PackageInfo6060
+class_6061 PackageInfo6061
+class_6062 PackageInfo6062
+class_6063 PackageInfo6063
+class_6064 PackageInfo6064
+class_6065 PackageInfo6065
+class_6066 PackageInfo6066
+class_6067 InventoryOwner
+class_6068 PackageInfo6068
+class_6069 PackageInfo6069
+class_6070 PackageInfo6070
+class_6071 PackageInfo6071
+class_6072 PackageInfo6072
+class_6073 PackageInfo6073
+class_6074 PackageInfo6074
+class_6075 HungerConstants
+class_6076 PackageInfo6076
+class_6077 PackageInfo6077
+class_6078 PackageInfo6078
+class_6079 Builder
+class_6080 PackageInfo6080
+class_6081 PackageInfo6081
+class_6082 PackageInfo6082
+class_6083 PackageInfo6083
+class_6084 PackageInfo6084
+class_6085 PackageInfo6085
+class_6086 PackageInfo6086
+class_6087 Builder
+class_6088 WorldEvents
+class_6089 LightBlock
+class_6090 PackageInfo6090
+class_6091 PackageInfo6091
+class_6092 PackageInfo6092
+class_6093 PackageInfo6093
+class_6094 PackageInfo6094
+class_6095 PackageInfo6095
+class_6096 PackageInfo6096
+class_6097 PackageInfo6097
+class_6098 PackageInfo6098
+class_6099 PackageInfo6099
+class_6100 PackageInfo6100
+class_6101 YLevels
+class_6102 PackageInfo6102
+class_6103 PackageInfo6103
+class_6104 PackageInfo6104
+class_6105 PackageInfo6105
+class_6106 PackageInfo6106
+class_6107 Shape
+class_6108 CaveCarverConfig
+class_6109 PackageInfo6109
+
+class_6111 PackageInfo6111
+class_6112 PackageInfo6112
+class_6113 PackageInfo6113
+class_6114 PackageInfo6114
+class_6115 PackageInfo6115
+class_6116 PackageInfo6116
+class_6117 PackageInfo6117
+class_6118 PackageInfo6118
+class_6119 PackageInfo6119
+class_6120 BiasedToBottomHeightProvider
+class_6121 ConstantHeightProvider
+class_6122 HeightProvider
+class_6123 HeightProviderType
+class_6124 UniformHeightProvider
+class_6125 PackageInfo6125
+class_6126 PackageInfo6126
+
+class_6128 PackageInfo6128
+class_6129 PackageInfo6129
+class_6130 StructurePiecesHolder
+class_6131 PackageInfo6131
+class_6132 PackageInfo6132
+class_6133 PackageInfo6133
+
+class_6135 PackageInfo6135
+class_6136 LinkedBlockPosHashSet
+class_6137 Storage
+class_6138 PackageInfo6138
+class_6139 PackageInfo6139
+
+
+
+
+
+class_6145 PackageInfo6145
+class_6146 PackageInfo6146
+class_6147 PackageInfo6147
+
+class_6149 PackageInfo6149
+class_6150 PackageInfo6150
+class_6151 PackageInfo6151
+class_6152 Builder
+class_6153 Builder
+class_6154 PackageInfo6154
+class_6155 Builder
+class_6156 AttributeBuilder
+class_6157 Builder
+class_6158 Builder
+class_6159 Builder
+class_6160 PackageInfo6160
+class_6161 PackageInfo6161
+class_6162 PackageInfo6162
+class_6163 Builder
+class_6164 Builder
+class_6165 Builder
+class_6166 PackageInfo6166
+class_6167 PackageInfo6167
+class_6168 PackageInfo6168
+class_6169 PackageInfo6169
+class_6170 PackageInfo6170
+class_6171 PackageInfo6171
+class_6172 PackageInfo6172
+class_6173 PackageInfo6173
+class_6174 PackageInfo6174
+class_6175 PackageInfo6175
+class_6176 PackageInfo6176
+class_6177 DeobfuscateClass
+class_6178 ClientFieldsAreNonnullByDefault
+class_6179 ClientMethodsReturnNonnullByDefault
+class_6180 PackageInfo6180
+class_6181 PackageInfo6181
+class_6182 PackageInfo6182
+class_6183 PackageInfo6183
+
+class_6185 PackageInfo6185
+class_6186 PackageInfo6186
+class_6187 PackageInfo6187
+class_6188 PackageInfo6188
+class_6189 Union
+class_6190 PackageInfo6190
+class_6191 PackageInfo6191
+class_6192 PlayerActivity
+class_6193 PlayerActivities
+class_6194 PackageInfo6194
+class_6195 PackageInfo6195
+class_6196 PackageInfo6196
+class_6197 PackageInfo6197
+class_6198 PackageInfo6198
+class_6199 PackageInfo6199
+class_6200 PackageInfo6200
+class_6201 PackageInfo6201
+class_6202 PackageInfo6202
+class_6203 PackageInfo6203
+class_6204 PackageInfo6204
+class_6205 PackageInfo6205
+class_6206 PackageInfo6206
+class_6207 PackageInfo6207
+class_6208 PackageInfo6208
+class_6209 PackageInfo6209
+class_6210 PackageInfo6210
+class_6211 PackageInfo6211
+class_6212 PackageInfo6212
+class_6213 PackageInfo6213
+class_6214 PackageInfo6214
+class_6215 PackageInfo6215
+class_6216 MathMethodsReturnNonnullByDefault
+class_6217 PackageInfo6217
+class_6218 PackageInfo6218
+class_6219 PackageInfo6219
+class_6220 PackageInfo6220
+class_6221 PackageInfo6221
+class_6222 PackageInfo6222
+class_6223 PackageInfo6223
+class_6224 PackageInfo6224
+class_6225 PackageInfo6225
+class_6226 PackageInfo6226
+class_6227 GoatEntityModel
+class_6228 PackageInfo6228
+class_6229 CuboidConsumer
+class_6230 EntityModelPartNames
+class_6231 PackageInfo6231
+class_6232 PackageInfo6232
+class_6233 PackageInfo6233
+
+class_6235 PackageInfo6235
+class_6236 PackageInfo6236
+
+
+
+class_6240 PackageInfo6240
+class_6241 PackageInfo6241
+class_6242 PackageInfo6242
+class_6243 PackageInfo6243
+class_6244 PackageInfo6244
+class_6245 PackageInfo6245
+class_6246 UncheckedModelException
+class_6247 VariantAbsentException
+class_6248 PackageInfo6248
+class_6249 PackageInfo6249
+class_6250 PackageInfo6250
+class_6251 PackageInfo6251
+class_6252 PackageInfo6252
+class_6253 PackageInfo6253
+class_6254 PackageInfo6254
+class_6255 PackageInfo6255
+class_6256 GoatEntityRenderer
+class_6257 PackageInfo6257
+class_6258 PackageInfo6258
+class_6259 PackageInfo6259
+class_6260 PackageInfo6260
+class_6261 PackageInfo6261
+class_6262 PackageInfo6262
+class_6263 PackageInfo6263
+class_6264 PackageInfo6264
+class_6265 PackageInfo6265
+class_6266 PackageInfo6266
+class_6267 PackageInfo6267
+class_6268 PackageInfo6268
+class_6269 PackageInfo6269
+class_6270 PackageInfo6270
+class_6271 PackageInfo6271
+class_6272 PackageInfo6272
+class_6273 PackageInfo6273
+class_6274 PackageInfo6274
+class_6275 PackageInfo6275
+class_6276 PackageInfo6276
+class_6277 PackageInfo6277
+class_6278 PackageInfo6278
+class_6279 PackageInfo6279
+class_6280 PackageInfo6280
+class_6281 PackageInfo6281
+class_6282 PackageInfo6282
+class_6283 PackageInfo6283
+class_6284 PackageInfo6284
+class_6285 PackageInfo6285
+class_6286 PackageInfo6286
+class_6287 PackageInfo6287
+class_6288 PackageInfo6288
+class_6289 PackageInfo6289
+class_6290 QuintFunction
+class_6291 QuadFunction
+class_6292 PackageInfo6292
+class_6293 PackageInfo6293
+class_6294 PackageInfo6294
+class_6295 PackageInfo6295
+class_6296 PackageInfo6296
+class_6297 PackageInfo6297
+class_6298 PackageInfo6298
+class_6299 PackageInfo6299
+class_6300 AfterBatch
+class_6301 BeforeBatch
+class_6302 GameTest
+class_6303 CustomTestProvider
+class_6304 Trigger
+class_6305 PackageInfo6305
+class_6306 TestServer
+class_6307 XmlReportingTestCompletionListener
+class_6308 TeamCityTestCompletionListener
+class_6309 PackageInfo6309
+class_6310 PackageInfo6310
+class_6311 PackageInfo6311
+class_6312 PackageInfo6312
+class_6313 PackageInfo6313
+class_6314 PackageInfo6314
+class_6315 PackageInfo6315
+class_6316 PackageInfo6316
+class_6317 PackageInfo6317
+class_6318 PackageInfo6318
+class_6319 FieldsAreNonnullByDefault
+class_6320 PackageInfo6320
+class_6321 PackageInfo6321
+class_6322 PackageInfo6322
+class_6323 PackageInfo6323
+class_6324 PackageInfo6324
+class_6325 PackageInfo6325
+class_6326 DebugMobSpawningCommand
+class_6327 DebugPathCommand
+class_6328 MethodsReturnNonnullByDefault
+class_6329 RaidCommand
+
+
+class_6332 Schema2707
+class_6333 BiasedToBottomIntProvider
+class_6334 ClampedIntProvider
+class_6335 MarkerEntity
+class_6336 PrepareRamTask
+class_6337 Ram
+class_6338 RamImpactTask
+
+
+
+class_6342 TrapezoidHeightProvider
+class_6343 VeryBiasedToBottomHeightProvider
+class_6344 EmptyEntityRenderer
+class_6345 Execution
+class_6346 Tracer
+class_6347 Tracer
+class_6348 RotatedInfestedBlock
+class_6349 AzaleaSaplingGenerator
+class_6350 AquiferSampler
+class_6351 FluidLevel
+
+
+class_6354 VeinType
+class_6355 Projection
+
+
+
+class_6359 DebugMessage
+class_6360 ResourceReloadLogger
+class_6361 RecoveryEntry
+class_6362 ReloadReason
+class_6363 ReloadState
+class_6364 WindowFramebuffer
+class_6365 Attachment
+class_6366 Size
+class_6367 SimpleFramebuffer
+class_6368 Address
+class_6369 AddressResolver
+class_6370 AllowedAddressResolver
+class_6371 RedirectResolver
+class_6372 PackageInfo6372
+class_6373 PlayPingS2CPacket
+class_6374 PlayPongC2SPacket
+class_6375 AngledModelEntity
+class_6376 ShulkerLookControl
+class_6377 PowderSnowCauldronBlock
+class_6378 ProtectedBlocksStructureProcessor
+class_6379 Selectable
+class_6380 SelectionType
+class_6381 NarrationPart
+class_6382 NarrationMessageBuilder
+class_6383 Narratable
+class_6384 Narration
+class_6385 ScreenNarrator
+class_6386 PartIndex
+class_6387 Message
+class_6388 MessageBuilder
+class_6389 PackageInfo6389
+class_6390 SelectedElementNarrationData
+class_6391 PackageInfo6391
+class_6392 BeaconButtonWidget
+class_6393 LevelTwoEffectButtonWidget
+class_6394 BlockListChecker
+class_6395 UnclampedModelPredicateProvider
+class_6396 SystemDetails
+class_6397 ZipCompressor
+class_6398 Data
+class_6399 MergedSampler
+class_6400 SamplerSource
+class_6401 SamplerFactory
+class_6402 ServerSamplerSource
+class_6403 CpuUsageFetcher
+class_6404 LightningBoltPredicate
+class_6405 LightningStrikeCriterion
+class_6406 Conditions
+class_6407 StartedRidingCriterion
+class_6408 Conditions
+class_6409 UsingItemCriterion
+class_6410 Conditions
+class_6411 HeartType
+class_6412 ClientSamplerSource
+class_6413 PerfCommand
+class_6414 DebugStart
+class_6415 TextLayerType
+class_6416 CrashMemoryReserve
+class_6417 MacWindowUtil
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class_6489 GameVersion
+class_6490 PaletteStorage
+class_6491 CubicSampler
+class_6492 Spline
+class_6493 Builder
+class_6494 FixedFloatFunction
+class_6495 Either
+class_6496 TopologicalSorts
+class_6497 Range
+class_6498 WinNativeModuleUtil
+class_6499 NativeModule
+class_6500 NativeModuleInfo
+class_6501 ToFloatFunction
+class_6502 EmptyPaletteStorage
+class_6503 UntaggedSpawnerFix
+class_6504 Schema2831
+class_6505 JfrProfiler
+class_6506 InstanceType
+class_6507 JfrListener
+class_6508 Quantiles
+class_6509 PacketEvent
+class_6510 Names
+
+class_6512 PackageInfo6512
+
+
+class_6515 PackageInfo6515
+class_6516 JfrProfileRecorder
+class_6517 JfrProfile
+class_6518 PackageInfo6518
+class_6519 JfrJsonReport
+class_6520 PackageInfo6520
+class_6521 ChunkGenerationSample
+class_6522 CpuLoadSample
+class_6523 FileIoSample
+class_6524 Statistics
+class_6525 GcHeapSummarySample
+class_6526 Statistics
+class_6527 SummaryType
+
+
+class_6530 ThreadAllocationStatisticsSample
+class_6531 AllocationMap
+class_6532 ServerTickTimeSample
+class_6533 TimedSample
+class_6534 LongRunningSample
+class_6535 LongRunningSampleStatistics
+class_6536 PackageInfo6536
+class_6537 FlyOntoTreeGoal
+class_6538 BlockPredicatesChecker
+class_6539 ColorResolver
+class_6540 SpawnDensityCapper
+class_6541 DensityCap
+class_6542 CustomSpawnRules
+class_6543 IndexedFeature
+class_6544 MultiNoiseUtil
+class_6545 NodeDistanceFunction
+class_6546 ParameterRange
+class_6547 Entries
+class_6548 SearchTree
+class_6549 TreeLeafNode
+class_6550 TreeNode
+class_6551 TreeBranchNode
+class_6552 MultiNoiseSampler
+class_6553 NoiseValuePoint
+class_6554 VanillaBiomeParameters
+
+
+class_6557 BlockColumn
+class_6558 EntryMissingException
+class_6559 Factory
+class_6560 DataProvider
+class_6561 Data
+class_6562 Serialized
+class_6563 PaletteProvider
+class_6564 SingularPalette
+class_6565 FluidLevelSampler
+class_6566 BaseRandom
+
+class_6568 ChunkNoiseSampler
+class_6569 BlockStateSampler
+
+
+
+
+class_6574 RandomSplitter
+class_6575 LocalRandom
+
+class_6577 DiskFeatureConfig
+class_6578 DualNoiseBlockStateProvider
+class_6579 AbstractNoiseBlockStateProvider
+class_6580 NoiseBlockStateProvider
+class_6581 NoiseThresholdBlockStateProvider
+class_6582 ChainedBlockSource
+class_6583 BlockSource
+class_6584 SurfaceThresholdFilterPlacementModifier
+
+
+
+
+
+
+
+
+
+class_6594 Brightness
+class_6595 SaveVersion
+class_6596 RealmsTextureImage
+class_6597 ChunkBuilderMode
+class_6598 Colors
+class_6599 KeybindsScreen
+class_6600 RenderableChunks
+class_6601 Names
+class_6602 Names
+class_6603 ChunkData
+class_6604 BlockEntityData
+class_6605 BlockEntityVisitor
+class_6606 LightData
+class_6607 JfrCommand
+class_6608 ResetChunksCommand
+class_6609 SimulationDistanceLevelPropagator
+class_6610 TelemetryConstants
+class_6611 FlightProfiler
+class_6612 NoopProfiler
+class_6613 Finishable
+class_6614 PackageInfo6614
+class_6615 Simple
+class_6616 ManagerAware
+
+
+
+
+class_6621 PostPlacementProcessor
+class_6622 StructurePiecesGenerator
+class_6623 Context
+class_6624 StructurePiecesList
+class_6625 StructureContext
+class_6626 StructurePiecesCollector
+class_6627 PackageInfo6627
+class_6628 TelemetrySender
+class_6629 PlayerGameMode
+class_6630 ChaseClient
+class_6631 TeleportPos
+class_6632 ChaseServer
+class_6633 PackageInfo6633
+class_6634 ChaseCommand
+class_6635 ChunkWithHolder
+class_6636 AddFlagIfNotPresentFix
+class_6637 ChunkHeightAndBiomeFix
+class_6638 WorldGenSettingsDisallowOldCustomWorldsFix
+class_6639 WorldGenSettingsHeightAndBiomeFix
+class_6640 Schema2832
+class_6641 PackageInfo6641
+class_6642 WeightedListIntProvider
+class_6643 CarvingMask
+class_6644 AllOfBlockPredicate
+class_6645 AnyOfBlockPredicate
+class_6646 BlockPredicate
+class_6647 BlockPredicateType
+class_6648 CombinedBlockPredicate
+class_6649 MatchingBlocksBlockPredicate
+class_6650 MatchingFluidsBlockPredicate
+class_6651 NotBlockPredicate
+class_6652 ReplaceableBlockPredicate
+class_6653 PackageInfo6653
+class_6654 BlockColumnFeature
+class_6655 BlockColumnFeatureConfig
+class_6656 Layer
+class_6657 PackageInfo6657
+class_6658 BlockFilterPlacementModifier
+
+
+class_6661 AbstractConditionalPlacementModifier
+class_6662 SetPotionLootFunction
+class_6663 Serializer
+class_6664 PackageInfo6664
+class_6665 DeviceChangeStatus
+class_6666 PackageInfo6666
+class_6667 PackageInfo6667
+class_6668 TeleportPos
+class_6669 LegacyBiomeMapping
+class_6670 LivingTargetCache
+class_6671 Splitter
+class_6672 GaussianGenerator
+class_6673 RandomSeed
+class_6674 XoroshiroSeed
+class_6675 RandomProvider
+class_6676 Xoroshiro128PlusPlusRandomImpl
+class_6677 Xoroshiro128PlusPlusRandom
+class_6678 Splitter
+class_6679 OffsetPredicate
+class_6680 AlwaysTrueBlockPredicate
+class_6681 WouldSurviveBlockPredicate
+class_6682 SimulationDistanceS2CPacket
+class_6683 ModStatus
+class_6684 Confidence
+class_6685 InvalidLengthException
+class_6686 MaterialRules
+class_6687 TerracottaBandsMaterialRule
+
+class_6689 BiomeMaterialCondition
+class_6690 BiomePredicate
+class_6691 BlockMaterialRule
+class_6692 BooleanSupplier
+class_6693 MaterialCondition
+class_6694 MaterialRuleContext
+class_6695 NegativeRunDepthPredicate
+class_6696 SteepSlopePredicate
+
+
+
+
+class_6701 HoleMaterialCondition
+class_6702 LazyAbstractPredicate
+class_6703 NoiseThresholdMaterialCondition
+class_6704 NoiseThresholdPredicate
+
+class_6706 InvertedBooleanSupplier
+class_6707 NotMaterialCondition
+class_6708 MaterialRule
+class_6709 SequenceBlockStateRule
+class_6710 SequenceMaterialRule
+class_6711 SimpleBlockStateRule
+class_6712 SteepMaterialCondition
+class_6713 StoneDepthMaterialCondition
+class_6714 StoneDepthPredicate
+class_6715 BlockStateRule
+class_6716 TemperatureMaterialCondition
+class_6717 ConditionalBlockStateRule
+class_6718 ConditionMaterialRule
+
+class_6720 WaterMaterialCondition
+class_6721 WaterPredicate
+class_6722 AboveYMaterialCondition
+class_6723 AboveYPredicate
+class_6724 SurfaceBuilder
+class_6725 VanillaSurfaceRules
+class_6726 TheEndBiomeCreator
+class_6727 TheNetherBiomeCreator
+class_6728 ClampedNormalIntProvider
+class_6729 FittestPositionFinder
+class_6730 Result
+class_6731 NoiseParametersKeys
+class_6732 RandomOffsetPlacementModifier
+
+class_6734 BlockMarkerParticle
+class_6735 Factory
+class_6736 BuiltinNoiseParameters
+class_6737 Serialized
+class_6738 Implementation
+class_6739 Lazy
+class_6740 ProtoChunkTickListFix
+
+class_6742 ChunkLevelTagRenameFix
+class_6743 Schema2842
+
+class_6745 TickSchedulers
+class_6746 BelowZeroRetrogen
+
+class_6748 Blender
+class_6749 BlendingData
+class_6750 CollidableBlockDensityConsumer
+class_6751 HeightConsumer
+
+class_6753 PackageInfo6753
+class_6754 EmptyTickSchedulers
+class_6755 ChunkTickScheduler
+class_6756 QueryableTickScheduler
+class_6757 WorldTickScheduler
+class_6758 ChunkVisitor
+class_6759 Tick
+class_6760 OrderedTick
+class_6761 SerializableTickScheduler
+class_6762 TickScheduler
+class_6763 BasicTickScheduler
+class_6764 PackageInfo6764
+class_6765 VanillaTerrainParametersCreator
+class_6766 PacketCounter
+class_6767 NetworkIoStatistics
+class_6768 PacketStatistics
+class_6769 Packet
+class_6770 SurfaceMaterialCondition
+class_6771 SurfacePredicate
+class_6772 BiomeTemperaturePredicate
+class_6773 HorizontalLazyAbstractPredicate
+class_6774 FullLazyAbstractPredicate
+class_6775 VerticalGradientMaterialCondition
+class_6776 VerticalGradientPredicate
+class_6777 OnlineOptionsScreen
+class_6778 Names
+class_6779 Recorder
+class_6780 BiomeSupplier
+class_6781 BlendingSampler
+
+class_6783 InsideWorldBoundsBlockPredicate
+class_6784 SolidBlockPredicate
+class_6785 FeatureDebugLogger
+class_6786 FeatureData
+class_6787 Features
+class_6788 Config
+class_6789 NetherForestVegetationFeatureConfig
+class_6790 TwistingVinesFeatureConfig
+class_6791 WeightedListHeightProvider
+class_6792 BiomePlacementModifier
+class_6793 CountPlacementModifier
+class_6794 EnvironmentScanPlacementModifier
+class_6795 HeightRangePlacementModifier
+class_6796 PlacedFeature
+class_6797 PlacementModifier
+class_6798 PlacementModifierType
+class_6799 RarityFilterPlacementModifier
+class_6800 OceanConfiguredFeatures
+class_6801 UndergroundConfiguredFeatures
+class_6802 EndConfiguredFeatures
+class_6803 ConfiguredFeatures
+class_6804 MiscConfiguredFeatures
+class_6805 NetherConfiguredFeatures
+class_6806 OreConfiguredFeatures
+class_6807 PileConfiguredFeatures
+class_6808 TreeConfiguredFeatures
+class_6809 VegetationConfiguredFeatures
+class_6810 PackageInfo6810
+class_6811 OceanPlacedFeatures
+class_6812 UndergroundPlacedFeatures
+class_6813 EndPlacedFeatures
+class_6814 MiscPlacedFeatures
+class_6815 NetherPlacedFeatures
+class_6816 OrePlacedFeatures
+class_6817 PlacedFeatures
+class_6818 TreePlacedFeatures
+class_6819 VegetationPlacedFeatures
+class_6820 PackageInfo6820
+class_6821 Element
+class_6822 Entry
+class_6823 FallSounds
+class_6824 CreditsReader
+class_6825 VillagePlacedFeatures
+class_6826 FixedBufferInputStream
+class_6827 IndexedFeatures
+class_6828 MaskPredicate
+class_6829 EntityLoader
+class_6830 NbtScannable
+class_6831 DistanceFunction
+class_6832 StructureLocator
+class_6833 StructurePresence
+class_6834 StructureGeneratorFactory
+class_6835 Context
+class_6836 NbtScanner
+class_6837 NestedResult
+class_6838 Result
+class_6839 OfFixedSize
+class_6840 OfVariableSize
+class_6841 SelectiveNbtCollector
+class_6842 NbtTreeNode
+class_6843 NbtScanQuery
+class_6844 NbtCollector
+class_6845 SimpleNbtScanner
+class_6846 PackageInfo6846
+class_6847 HasSturdyFacePredicate
+class_6848 MatchingBlockTagPredicate
+class_6849 RenderedChunk
+class_6850 ChunkRendererRegionBuilder
+class_6851 ClientChunk
+class_6852 PlaceCommand
+class_6853 BiomeConsumer
+class_6854 FogShape
+
+class_6856 ExclusiveNbtCollector
+class_6857 ServerPacketListener
+class_6858 WeaponsmithChestLootTableFix
+class_6859 WolfEscapeDangerGoal
+class_6860 LifecycledResourceManager
+class_6861 LifecycledResourceManagerImpl
+class_6862 TagKey
+class_6863 RegistryTags
+class_6864 TagPacketSerializer
+class_6865 Loader
+class_6866 ContextRetrievalCodec
+class_6867 StructureSettingsFlattenFix
+class_6868 PowderSnowJumpGoal
+class_6869 BlockStateCounter
+
+class_6871 ConcentricRingsStructurePlacement
+class_6872 RandomSpreadStructurePlacement
+class_6873 SpreadType
+class_6874 StructurePlacement
+class_6875 StructurePlacementType
+class_6876 PackageInfo6876
+class_6877 PeriodicNotificationManager
+class_6878 Entry
+class_6879 NotifyTask
+class_6880 RegistryEntry
+class_6881 Direct
+class_6882 Type
+class_6883 Reference
+class_6884 Type
+class_6885 RegistryEntryList
+class_6886 Direct
+class_6887 ListBacked
+class_6888 Named
+class_6889 DefaultEntryGetter
+class_6890 Immutable
+class_6891 ImmutableImpl
+class_6892 Entry
+class_6893 Mutable
+class_6894 MutableImpl
+class_6895 RegistryCodecs
+
+class_6897 ResourceManagerHolder
+class_6898 RegistryEntryListCodec
+class_6899 RegistryFixedCodec
+class_6900 RegistryLoader
+class_6901 LoaderAccess
+class_6902 ValueHolder
+class_6903 RegistryOps
+class_6904 SaveLoader
+
+class_6906 ServerConfig
+class_6907 LoadContextSupplier
+class_6908 BiomeTags
+class_6909 TicksInWrongChunkFix
+class_6910 DensityFunction
+class_6911 EachApplier
+class_6912 NoisePos
+class_6913 Base
+class_6914 UnblendedNoisePos
+class_6915 DensityFunctionVisitor
+class_6916 DensityFunctionTypes
+class_6917 BinaryOperation
+class_6918 Type
+class_6919 BlendAlpha
+class_6920 BlendDensity
+class_6921 BlendOffset
+class_6922 Clamp
+class_6923 Constant
+class_6924 EndIslands
+class_6925 UnaryOperation
+class_6926 Type
+class_6927 Wrapping
+class_6928 Type
+class_6929 LinearOperation
+class_6930 SpecificType
+class_6931 Noise
+class_6932 Unary
+class_6933 RangeChoice
+class_6934 Shift
+
+
+class_6937 ShiftA
+class_6938 ShiftB
+class_6939 Offset
+class_6940 ShiftedNoise
+
+
+class_6943 Positional
+class_6944 WeirdScaledSampler
+class_6945 YClampedGradient
+class_6946 BlendAlphaDensityFunction
+class_6947 BlendOffsetDensityFunction
+class_6948 Cache2D
+class_6949 CellCache
+class_6950 CacheOnce
+class_6951 FlatCacheDensityFunction
+class_6952 ParentedNoiseType
+class_6953 NoiseRouter
+class_6954 DensityFunctions
+class_6955 OreVeinSampler
+class_6956 BlendResult
+class_6957 BiomeTagProvider
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class_7044 WorldGenProperties
+class_7045 StructureTags
+class_7046 StructuresToConfiguredStructuresFix
+class_7047 Mapping
+class_7048 RarityValueMapper
+class_7049 Beardifier
+class_7050 Beardifying
+class_7051 RegistryEntryHolder
+class_7052 Wrapper
+
+
+class_7055 BinaryOperationLike
+
+class_7057 StructureSetKeys
+class_7058 StructureKeys
+class_7059 StructureSet
+class_7060 WeightedEntry
+class_7061 StructureSpawns
+class_7062 BoundingBox
+class_7063 DeprecationNotice
+class_7064 Realms32BitWarningScreen
+class_7065 WarningScreen
+class_7066 RegistryPredicateArgumentType
+class_7067 RegistryKeyBased
+class_7068 RegistryPredicate
+class_7069 Serializer
+class_7070 TagBased
+class_7071 StructureTagProvider
+class_7072 StructureSets
+class_7073 Visitor
+
+
+class_7076 Spline
+class_7077 PressableTextWidget
+class_7078 SuggestedIdType
+class_7079 RegistryKeyArgumentType
+class_7080 Serializer
+class_7081 EntryList
+class_7082 FilterablePack
+class_7083 Entry
+class_7084 ResourceFilter
+class_7085 BlockEntry
+
+
+class_7088 FlatLevelGeneratorPresetTags
+class_7089 WorldPresetTags
+class_7090 BlendingDataFix
+class_7091 ChunkDeleteIgnoredLightDataFix
+class_7092 Schema3076
+class_7093 Schema3078
+class_7094 AnimationState
+class_7095 CroakTask
+class_7096 BiasedLongJumpTask
+class_7097 WalkTowardsLandTask
+class_7098 WalkTowardsWaterTask
+class_7099 LayFrogSpawnTask
+class_7100 FrogAttackablesSensor
+class_7101 IsInWaterSensor
+class_7102 FrogEntity
+class_7103 FrogLookControl
+class_7104 FrogSwimPathNodeMaker
+class_7105 FrogSwimNavigation
+class_7106 FrogVariant
+class_7107 FrogBrain
+class_7108 FrogEatEntityTask
+class_7109 Phase
+class_7110 TadpoleEntity
+class_7111 TadpoleBrain
+class_7112 PackageInfo7112
+class_7113 FrogspawnBlock
+class_7114 MangroveLeavesBlock
+class_7115 PropaguleBlock
+class_7116 MangroveRootsBlock
+class_7117 MudBlock
+class_7118 LichenGrower
+class_7119 LichenGrowChecker
+class_7120 GrowChecker
+class_7121 GrowPos
+class_7122 GrowPosPredicate
+class_7123 GrowType
+class_7124 SculkSpreadable
+class_7125 SculkBlock
+class_7126 SculkCatalystBlock
+
+class_7128 SculkSpreadManager
+class_7129 Cursor
+class_7130 SculkVeinBlock
+class_7131 SculkVeinGrowChecker
+class_7132 SculkCatalystBlockEntity
+class_7133 SculkShriekerBlockEntity
+class_7134 DimensionTypes
+class_7135 DensityFunctionWrapper
+class_7136 SplinePos
+
+class_7138 NoiseConfig
+
+class_7140 SculkPatchFeature
+class_7141 SculkPatchFeatureConfig
+class_7142 FlatLevelGeneratorPreset
+class_7143 FlatLevelGeneratorPresets
+class_7144 Registrar
+class_7145 WorldPreset
+class_7146 Registrar
+class_7147 BasicTempleStructure
+class_7148 Constructor
+class_7149 Context
+class_7150 StructurePosition
+class_7151 StructureType
+class_7152 ExclusionZone
+class_7153 GenerationPredicate
+class_7154 FrequencyReductionMethod
+class_7155 Setup
+class_7156 PackageInfo7156
+class_7157 CommandRegistryAccess
+class_7158 EntryListCreationPolicy
+class_7159 ChainRestrictedNeighborUpdater
+class_7160 StatefulEntry
+class_7161 SixWayEntry
+class_7162 Entry
+class_7163 SimpleEntry
+class_7164 SimpleNeighborUpdater
+class_7165 NeighborUpdater
+class_7166 SpaceFont
+class_7167 EmptyGlyph
+class_7168 GlTimer
+class_7169 Query
+class_7170 InstanceHolder
+class_7171 Properties
+class_7172 SimpleOption
+class_7173 PotentialValuesBasedCallbacks
+class_7174 ValidatingIntSliderCallbacks
+class_7175 OptionSliderWidgetImpl
+class_7176 SliderCallbacks
+class_7177 DoubleSliderCallbacks
+class_7178 Callbacks
+class_7179 Transformation
+class_7180 Interpolation
+class_7181 Interpolations
+class_7182 Target
+class_7183 Targets
+class_7184 Animation
+class_7185 Builder
+class_7186 Keyframe
+class_7187 AnimationHelper
+class_7188 FrogAnimations
+class_7189 PackageInfo7189
+class_7190 PackageInfo7190
+class_7191 BuiltinEmptyGlyph
+class_7192 ColorSupplier
+class_7193 GeneratorOptionsHolder
+class_7194 Modifier
+class_7195 RegistryAwareModifier
+class_7196 IntegratedServerLoader
+class_7197 Properties
+class_7198 FrogEntityModel
+class_7199 Properties
+class_7200 Properties
+class_7201 TadpoleEntityModel
+class_7202 PendingUpdateManager
+class_7203 PendingUpdate
+class_7204 SequencedPacketCreator
+class_7205 PackageInfo7205
+class_7206 SculkChargeParticle
+class_7207 Factory
+class_7208 SculkChargePopParticle
+class_7209 Factory
+class_7210 SculkSoulFactory
+class_7211 BlockResult
+class_7212 TagResult
+class_7213 FrogEntityRenderer
+class_7214 TadpoleEntityRenderer
+class_7215 ItemResult
+class_7216 TagResult
+class_7217 ArgumentTypeProperties
+class_7218 ArgumentHelper
+class_7219 Properties
+class_7220 Properties
+class_7221 Properties
+class_7222 Properties
+class_7223 Properties
+class_7224 Properties
+class_7225 CommandRegistryWrapper
+class_7226 Impl
+class_7227 SculkChargeParticleEffect
+class_7228 BiomeParametersProvider
+class_7229 FlatLevelGeneratorPresetTagProvider
+class_7230 WorldPresetTagProvider
+class_7231 DimensionTypeRegistrar
+class_7232 ArgumentNode
+class_7233 LiteralNode
+class_7234 CommandTree
+class_7235 SuggestableNode
+class_7236 Parseable
+class_7237 SaveLoading
+class_7238 DataPacks
+class_7239 SaveApplierFactory
+class_7240 WardenSpawnTrackerCommand
+class_7241 ProfileEncoder
+class_7242 MessageEncoder
+class_7243 CodecHolder
+class_7244 LargeEntitySpawnHelper
+class_7245 Schema3081
+class_7246 Schema3082
+class_7247 FactorCalculationData
+class_7248 RideableInventory
+class_7249 DigTask
+class_7250 EmergeTask
+class_7251 SniffTask
+class_7252 WardenAttackablesSensor
+class_7253 Angriness
+class_7254 WardenAngerManager
+class_7255 RoarTask
+class_7256 FindRoarTargetTask
+class_7257 LookAtDisturbanceTask
+
+class_7259 StartSniffingTask
+class_7260 WardenEntity
+class_7261 WardenBrain
+class_7262 SculkShriekerWarningManager
+class_7263 PackageInfo7263
+class_7264 ChestBoatEntity
+class_7265 VehicleInventory
+class_7266 MatchGetter
+class_7267 SwiftSneakEnchantment
+class_7268 SculkShriekerBlock
+class_7269 Vibration
+class_7270 Noise
+class_7271 LegacyNoiseDensityFunctionVisitor
+class_7272 StateReplacementEntry
+class_7273 AlternateValuesSupportingCyclingCallbacks
+class_7274 ValueSetter
+class_7275 IntSliderCallbacks
+class_7276 LazyCyclingCallbacks
+class_7277 TooltipFactory
+class_7278 WardenAnimations
+class_7279 SelectionType
+class_7280 WardenEntityModel
+class_7281 ShriekParticle
+class_7282 Factory
+class_7283 BlindnessFogModifier
+class_7284 DarknessFogModifier
+class_7285 FogData
+class_7286 StatusEffectFogModifier
+class_7287 WardenEntityRenderer
+class_7288 WardenFeatureRenderer
+class_7289 AnimationAngleAdjuster
+class_7290 ShriekParticleEffect
+class_7291 TranslatableOption
+class_7292 Codec
+class_7293 GameEventRenamesFix
+class_7294 Schema3083
+class_7295 NoPenaltyStrollTask
+class_7296 GiveInventoryToLookTargetTask
+class_7297 WalkTowardsLookTargetTask
+class_7298 AllayEntity
+class_7299 AllayBrain
+class_7300 PackageInfo7300
+
+class_7302 Config
+class_7303 ValueTextGetter
+class_7304 MaxSuppliableIntCallbacks
+class_7305 CyclingCallbacks
+class_7306 TypeChangeableCallbacks
+class_7307 TooltipFactoryGetter
+class_7308 AllayEntityModel
+
+class_7310 AllayEntityRenderer
+class_7311 ModelPartVisibility
+class_7312 AncientCityGenerator
+class_7313 AncientCityOutskirtsGenerator
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class_7367 InputSupplier
+class_7368 ResourceMetadata
+class_7369 CatVariantTags
+class_7370 AdvancementCriteriaRenameFix
+class_7371 EntityVariantTypeFix
+class_7372 MultipliedFloatSupplier
+class_7373 FloatSupplier
+class_7374 PackageInfo7374
+class_7375 CatVariant
+class_7376 TypeSpecificPredicate
+class_7377 Deserializer
+class_7378 Deserializers
+class_7379 SuspectComparator
+class_7380 VariantPredicates
+class_7381 DrippingFluid
+class_7382 MangroveSaplingGenerator
+class_7383 SlimePredicate
+class_7384 ThreadSafeRandom
+
+class_7386 MangroveRootPlacer
+class_7387 RootPlacer
+class_7388 RootPlacerType
+class_7389 AttachedToLeavesTreeDecorator
+class_7390 UpwardsBranchingTrunkPlacer
+class_7391 CompassAnglePredicateProvider
+class_7392 CompassTarget
+class_7393 CatVariantTagProvider
+class_7394 ImmutableHandler
+class_7395 DataFixerPhase
+class_7396 SonicBoomTask
+class_7397 Emitter
+class_7398 AboveRootPlacement
+class_7399 MangroveRootPlacement
+class_7400 PredicatedStateProvider
+class_7401 Rule
+class_7402 Generator
+class_7403 DataWriter
+class_7404 CachedDataWriter
+class_7405 CachedData
+class_7406 PaintingVariantTags
+class_7407 EntityPaintingFieldsRenameFix
+class_7408 PaintingVariants
+class_7409 DiscFragmentItem
+class_7410 LevelList
+class_7411 LevelSave
+class_7412 AllocationRateCalculator
+class_7413 LoadingDisplay
+class_7414 Entry
+class_7415 LoadingEntry
+class_7416 PaintingVariantTagProvider
+class_7417 TextContent
+class_7418 Writer
+class_7419 NbtDataSource
+class_7420 KeybindTranslations
+class_7421 PackageInfo7421
+class_7422 TrackedPosition
+
+class_7424 KeyDecoder
+class_7425 SignatureData
+class_7426 SecureRandomUtil
+class_7427 PlayerKeyPair
+class_7428 PlayerPublicKey
+
+class_7430 GoatHornItem
+class_7431 SetGoatHornSoundLootFunction
+class_7432 Serializer
+class_7433 BuiltBuffer
+class_7434 ProfileKeys
+class_7435 RenderData
+class_7436 MessageSourceProfile
+class_7437 TextifiedException
+class_7438 ChatMessageS2CPacket
+class_7439 GameMessageS2CPacket
+class_7440 BannerPatternTags
+class_7441 InstrumentTags
+class_7442 GoatHornIdFix
+class_7443 PublicKeyData
+class_7444 Instrument
+class_7445 Instruments
+class_7446 BannerPatterns
+class_7447 Message
+class_7448 SignedCommandArguments
+class_7449 Impl
+class_7450 ArgumentSignatureDataMap
+class_7451 SignedArgumentType
+class_7452 SonicBoomParticle
+class_7453 Factory
+class_7454 TextSearcher
+class_7455 IdentifierSearcher
+class_7456 ProviderGetter
+class_7457 Instance
+class_7458 BannerPatternTagProvider
+class_7459 InstrumentTagProvider
+class_7460 ServerResourcePackProperties
+class_7461 PacketReader
+class_7462 PacketWriter
+class_7463 Decoration
+class_7464 Parameter
+class_7465 Selector
+
+
+
+class_7469 MessageSignatureData
+class_7470 MessageMetadata
+class_7471 SignedMessage
+class_7472 CommandExecutionC2SPacket
+class_7473 PointOfInterestTypeTags
+class_7474 ValueGetter
+class_7475 TagFile
+class_7476 TagEntryId
+class_7477 PointOfInterestTypes
+class_7478 Realms32BitWarningChecker
+class_7479 ChatPreviewer
+class_7480 Query
+class_7481 Response
+class_7482 IdIncrementor
+class_7483 ChatPreviewWarningScreen
+class_7484 ChatPreview
+class_7485 EnumArgumentType
+class_7486 BlockMirrorArgumentType
+class_7487 BlockRotationArgumentType
+class_7488 Initializer
+class_7489 PathResolver
+class_7490 OutputType
+class_7491 PointOfInterestTypeTagProvider
+class_7492 MessageDecorator
+class_7493 PendingTaskRunner
+class_7494 ChatPreviewS2CPacket
+class_7495 ServerMetadataS2CPacket
+class_7496 RequestChatPreviewC2SPacket
+class_7497 ApiServices
+class_7498 SignatureUpdatable
+class_7499 SignatureUpdater
+class_7500 SignatureVerifier
+class_7501 Signer
+class_7502 Requirements
+class_7503 RemoveFilteredBookTextFix
+class_7504 RemoveFilteredSignTextFix
+class_7505 ItemNbtFix
+class_7506 PointOfInterestRemoveFix
+class_7507 PointOfInterestRenameFix
+class_7508 RenameVariantsFix
+class_7509 BiomeSources
+class_7510 PlacedFeatureIndexer
+class_7511 ChunkGenerators
+class_7512 MonsterSettings
+class_7513 TemplateFileOpener
+class_7514 Provider
+class_7515 SignedMessage
+class_7516 ChatPreviewRequester
+class_7517 DecoratableArgumentType
+class_7518 FutureRunnable
+class_7519 ChatPreviewStateChangeS2CPacket
+class_7520 GoatMissingStateFix
+class_7521 DismountVehicleTask
+class_7522 ReadableContainer
+class_7523 Reader
+class_7524 VibrationListenerCallback
+class_7525 JukeboxEventListener
+
+
+class_7528 ScrollableWidget
+class_7529 EditBoxWidget
+class_7530 EditBox
+class_7531 Substring
+class_7532 PlayerSkinDrawer
+class_7533 CursorMovement
+class_7534 TaskScreen
+class_7535 GroupedMessagesCollector
+class_7536 ReportType
+class_7537 GroupedMessages
+class_7538 ChatReportScreen
+class_7539 DiscardWarningScreen
+class_7540 ValidationErrorTooltipSupplier
+class_7541 MessagesListAdder
+class_7542 MessagesList
+class_7543 ChatSelectionScreen
+class_7544 SelectionListWidget
+class_7545 TextEntry
+class_7546 Entry
+class_7547 SenderEntryPair
+class_7548 MessageEntry
+class_7549 SenderEntry
+class_7550 SeparatorEntry
+class_7551 AbuseReportReasonScreen
+class_7552 ReasonListWidget
+class_7553 ReasonEntry
+class_7554 PackageInfo7554
+class_7555 ChatLog
+class_7556 Streams
+class_7557 ReceivedMessage
+class_7558 ChatMessage
+class_7559 GameMessage
+class_7560 IndexedEntry
+class_7561 ChatLogImpl
+class_7562 PackageInfo7562
+class_7563 AbuseReportSender
+class_7564 AbuseReportException
+class_7565 Impl
+class_7566 ChatAbuseReport
+class_7567 ValidationError
+class_7568 ReportWithId
+class_7569 ReporterEnvironment
+class_7570 Server
+class_7571 Realm
+class_7572 ThirdParty
+class_7573 AbuseReportReason
+class_7574 AbuseReportContext
+class_7575 PackageInfo7575
+class_7576 TimeSupplier
+class_7577 Nanoseconds
+class_7578 RealmsPeriodicCheckers
+class_7579 RealmsNewsUpdater
+class_7580 RealmsServerFilterer
+class_7581 PeriodicRunnerFactory
+class_7582 TimedErrableResult
+class_7583 ResultListenableRunner
+class_7584 RunnersManager
+class_7585 TimedResult
+class_7586 PeriodicRunner
+class_7587 Backoff
+class_7588 Bans
+class_7589 BlendingDataRemoveFromNetherEndFix
+class_7590 Visible
+class_7591 MessageIndicator
+class_7592 Icon
+
+class_7594 MessageHandler
+class_7595 MessageTrustStatus
+
+class_7597 ChatSuggestionsS2CPacket
+class_7598 Action
+class_7599 Entry
+class_7600 ArgumentSigner
+
+class_7602 Parameters
+class_7603 Serialized
+class_7604 SentMessage
+
+class_7606 Profileless
+class_7607 Chat
+class_7608 MessageBody
+class_7609 Entry
+class_7610 MessageChain
+class_7611 Unpacker
+class_7612 Packer
+class_7613 Signature
+class_7614 MessageHeader
+class_7615 MessageVerifier
+class_7616 Impl
+class_7617 HideMessageS2CPacket
+class_7618 MessageHeaderS2CPacket
+class_7619 MessageChainTaskQueue
+class_7620 FutureQueue
+class_7621 FutureSupplier
+
+class_7623 MatchResult
+class_7624 StylePredicateVisitor
+class_7625 ChatPreviewBackground
+class_7626 RenderData
+class_7627 ProcessableMessage
+class_7628 ChatPreviewMode
+class_7629 ChatLogEntry
+class_7630 HeaderEntry
+class_7631 Impl
+class_7632 IndexedMessageConsumer
+class_7633 TickablePacketListener
+class_7634 DecoratedContents
+class_7635 LastSeenMessageList
+class_7636 Acknowledgment
+class_7637 LastSeenMessagesCollector
+class_7638 AcknowledgmentValidator
+class_7639 FailureReason
+class_7640 MessageAcknowledgmentC2SPacket
+class_7641 ItemRemoveBlockEntityTagFix
+class_7642 CachedDecoratorResult
+class_7643 Cache
+class_7644 DecoratableArgumentList
+class_7645 ParsedArgument
+class_7646 Status
+class_7647 GlyphPair
+class_7648 PacketCallbacks
+class_7649 FilterMask
+class_7650 FilterStatus
+class_7651 Unsigned
+class_7652 PublicKeyException
+class_7653 SignableKey

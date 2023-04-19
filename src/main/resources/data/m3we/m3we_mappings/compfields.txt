@@ -1,0 +1,981 @@
+
+comp_1 minInclusive Comparable
+comp_2 maxInclusive Comparable
+comp_3 startTime Instant
+comp_4 endTime Instant
+comp_5 duration Duration
+comp_6 worldGenDuration Duration
+comp_7 serverTickTimeSamples List
+comp_8 cpuLoadSamples List
+comp_9 gcHeapSummaryStatistics Statistics
+comp_10 threadAllocationMap AllocationMap
+comp_11 packetReadStatistics NetworkIoStatistics
+comp_12 packetSentStatistics NetworkIoStatistics
+comp_13 fileWriteStatistics Statistics
+comp_14 fileReadStatistics Statistics
+comp_15 chunkGenerationSamples List
+comp_16 duration Duration
+comp_17 chunkPos ChunkPos
+comp_18 centerPos ColumnPos
+comp_19 chunkStatus ChunkStatus
+
+comp_21 worldKey String
+comp_22 jvm Double
+comp_23 userJvm Double
+comp_24 system Double
+comp_25 duration Duration
+comp_26 path String
+comp_27 bytes Long
+comp_28 totalBytes Long
+comp_29 bytesPerSecond Double
+comp_30 count Long
+comp_31 countPerSecond Double
+comp_32 totalDuration Duration
+comp_33 topContributors List
+comp_34 time Instant
+comp_35 heapUsed Long
+comp_36 summaryType SummaryType
+comp_37 duration Duration
+comp_38 gcDuration Duration
+comp_39 count Integer
+comp_40 allocatedBytesPerSecond Double
+
+
+
+
+
+
+
+comp_48 time Instant
+comp_49 threadName String
+comp_50 allocated Long
+comp_51 allocations Map
+comp_52 time Instant
+comp_53 averageTickMs Duration
+comp_54 fastestSample LongRunningSample
+comp_55 slowestSample LongRunningSample
+comp_56 secondSlowestSample LongRunningSample
+comp_57 count Integer
+comp_58 quantiles Map
+comp_59 totalDuration Duration
+comp_60 pos BlockPos
+comp_61 block Block
+comp_62 type Integer
+comp_63 data Integer
+comp_64 entity NbtCompound
+comp_65 customSpawnRules Optional
+comp_66 blockLightLimit Range
+comp_67 skyLightLimit Range
+
+
+comp_70 property Property
+comp_71 value Comparable
+comp_72 factory Factory
+comp_73 bits Integer
+comp_74 configuration DataProvider
+comp_75 paletteEntries List
+comp_76 storage Optional
+
+
+
+
+comp_81 radius IntProvider
+comp_82 halfHeight Integer
+
+
+
+
+
+comp_88 playerEntityId Integer
+comp_89 hardcore Boolean
+comp_90 gameMode GameMode
+comp_91 previousGameMode GameMode
+comp_92 dimensionIds Set
+comp_93 registryManager Immutable
+comp_94 dimensionType RegistryKey
+comp_95 dimensionId RegistryKey
+comp_96 sha256Seed Long
+comp_97 maxPlayers Integer
+comp_98 viewDistance Integer
+comp_99 reducedDebugInfo Boolean
+comp_100 showDeathScreen Boolean
+comp_101 debugWorld Boolean
+comp_102 flatWorld Boolean
+comp_103 min Long
+comp_104 max Long
+comp_105 temperature ParameterRange
+comp_106 humidity ParameterRange
+comp_107 continentalness ParameterRange
+comp_108 erosion ParameterRange
+comp_109 depth ParameterRange
+comp_110 weirdness ParameterRange
+comp_111 offset Long
+comp_112 temperatureNoise Long
+comp_113 humidityNoise Long
+comp_114 continentalnessNoise Long
+comp_115 erosionNoise Long
+comp_116 depth Long
+comp_117 weirdnessNoise Long
+comp_118 storage PaletteStorage
+comp_119 palette Palette
+
+
+
+
+
+
+
+
+
+comp_129 world HeightLimitView
+
+
+
+
+comp_134 registryManager DynamicRegistryManager
+
+comp_136 gameMode GameMode
+comp_137 hardcore Boolean
+comp_138 dimension RegistryKey
+comp_139 pos Vec3d
+comp_140 rot Vec2f
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+comp_156 toPlace BlockStateProvider
+
+
+
+comp_160 dimensionName String
+comp_161 x Double
+comp_162 y Double
+comp_163 z Double
+comp_164 yaw Float
+comp_165 pitch Float
+
+
+
+
+
+
+
+comp_173 minimumY Integer
+comp_174 height Integer
+
+
+
+comp_178 horizontalSize Integer
+comp_179 verticalSize Integer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+comp_223 location BlockPos
+comp_224 fitness Long
+
+
+
+comp_228 value Float
+comp_229 locationFunction ToFloatFunction
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+comp_259 side NetworkSide
+
+
+
+
+
+
+comp_266 language String
+comp_267 viewDistance Integer
+comp_268 chatVisibility ChatVisibility
+comp_269 chatColors Boolean
+comp_270 playerModelBitMask Integer
+comp_271 mainArm Arm
+comp_272 filterText Boolean
+
+comp_274 preset Preset
+comp_275 biomeRegistry Registry
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+comp_290 key RegistryKey
+comp_291 rawId Integer
+comp_292 value Object
+comp_293 registry RegistryKey
+comp_294 entryCodec Codec
+comp_295 networkEntryCodec Codec
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+comp_311 world HeightLimitView
+
+
+comp_314 registryManager DynamicRegistryManager
+
+
+
+
+
+comp_320 key String
+
+
+
+comp_324 entry TagEntry
+comp_325 source String
+
+comp_327 id Identifier
+
+
+comp_330 carver Carver
+comp_331 config CarverConfig
+comp_332 feature Feature
+comp_333 config FeatureConfig
+comp_334 feature RegistryEntry
+comp_335 placementModifiers List
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+comp_353 dataPackContents DataPackContents
+comp_354 dynamicRegistryManager Mutable
+
+
+comp_357 dataPackContents DataPackContents
+comp_358 dynamicRegistryManager Immutable
+comp_359 saveProperties SaveProperties
+
+comp_361 commandEnvironment RegistrationEnvironment
+comp_362 functionPermissionLevel Integer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+comp_437 samplers List
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+comp_474 generationShapeConfig GenerationShapeConfig
+comp_475 defaultBlock BlockState
+comp_476 defaultFluid BlockState
+
+comp_478 surfaceRule MaterialRule
+comp_479 seaLevel Integer
+comp_480 mobGenerationDisabled Boolean
+comp_481 aquifers Boolean
+comp_482 oreVeins Boolean
+comp_483 usesLegacyRandom Boolean
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+comp_516 firstOctave Integer
+comp_517 amplitudes DoubleList
+
+
+
+
+
+
+
+
+
+comp_527 metadataId Identifier
+
+
+comp_530 underlying ResourcePack
+
+comp_532 min Float
+comp_533 max Float
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+comp_561 dynamicRegistryManager DynamicRegistryManager
+
+
+comp_564 noiseConfig NoiseConfig
+
+
+
+
+comp_569 world HeightLimitView
+comp_570 biomePredicate Predicate
+
+
+comp_573 noiseConfig NoiseConfig
+
+
+
+
+
+
+
+
+
+
+
+
+comp_586 sourceBlock Block
+comp_587 sourcePos BlockPos
+
+
+comp_590 sourceBlock Block
+comp_591 sourcePos BlockPos
+
+
+
+
+
+
+
+
+
+
+
+comp_603 scaleFactor Float
+comp_604 image NativeImage
+comp_605 x Integer
+comp_606 y Integer
+comp_607 width Integer
+comp_608 height Integer
+comp_609 advance Integer
+comp_610 ascent Integer
+comp_611 unpackSkipPixels Integer
+comp_612 unpackSkipRows Integer
+comp_613 width Integer
+comp_614 height Integer
+comp_615 image NativeImage
+comp_616 generatorOptions GeneratorOptions
+
+comp_618 dynamicRegistryManager Immutable
+comp_619 dataPackContents DataPackContents
+comp_620 spriteProvider SpriteProvider
+comp_621 spriteProvider SpriteProvider
+
+
+
+
+
+
+
+
+
+
+
+
+comp_634 dataPacks DataPacks
+comp_635 manager ResourcePackManager
+comp_636 settings DataPackSettings
+
+comp_638 x Integer
+comp_639 z Integer
+
+
+
+
+comp_644 ultrawarm Boolean
+
+
+
+
+
+
+
+
+
+
+comp_655 effects Identifier
+
+
+
+
+
+
+
+
+
+
+
+comp_667 neighborState BlockState
+
+
+
+
+
+
+
+
+
+
+comp_678 startingMs Long
+comp_679 event GameEvent
+comp_680 pos Vec3d
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+comp_733 rawPos String
+comp_734 pos PosArgument
+comp_735 rawSelector String
+comp_736 selector EntitySelector
+comp_737 string String
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+comp_780 name String
+comp_781 bytes Byte
+comp_782 snbtContent String
+comp_783 sha1 HashCode
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+comp_801 sender UUID
+comp_802 timestamp Instant
+
+
+
+
+
+
+comp_809 timestamp Instant
+
+
+
+
+
+comp_815 blockStates Set
+comp_816 ticketCount Integer
+comp_817 searchDistance Integer
+comp_818 id String
+comp_819 heldWorkstation Predicate
+comp_820 acquirableWorkstation Predicate
+comp_821 gatherableItems ImmutableSet
+comp_822 secondaryJobSites ImmutableSet
+comp_823 workSound SoundEvent
+
+comp_825 message String
+comp_826 receptionTimestamp Long
+
+comp_828 previewText Text
+comp_829 textRenderer TextRenderer
+
+
+
+
+
+
+
+
+comp_838 serviceSignatureVerifier SignatureVerifier
+
+comp_840 userCache UserCache
+comp_841 raw String
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+comp_872 timestamp Instant
+comp_873 index Integer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+comp_892 creationTick Integer
+
+comp_894 indicator MessageIndicator
+
+
+comp_897 indicator MessageIndicator
+
+
+
+
+comp_902 loggedName String
+
+
+comp_905 trustStatus MessageTrustStatus
+
+
+
+
+
+
+
+
+
+
+
+
+comp_918 playerPublicKey PlayerPublicKey
+comp_919 type MessageType
+
+
+comp_922 typeId Integer
+
+
+comp_925 data Byte
+
+
+
+
+comp_930 timestamp Instant
+
+comp_932 lastSeenMessages LastSeenMessageList
+
+
+
+comp_936 precedingSignature MessageSignatureData
+
+
+
+
+
+
+comp_943 serializedParameters Serialized
+
+comp_945 chatMessage String
+comp_946 timestamp Instant
+
+
+
+
+
+
+
+
+
+
+
+
+comp_959 entry ChatLogEntry
+
+
+
+
+
+
+
+
+comp_968 acknowledgment Acknowledgment
+comp_969 acknowledgment Acknowledgment
+comp_970 acknowledgment Acknowledgment
+
+
+
+
+
+
+comp_977 argumentType DecoratableArgumentType
+
+comp_979 glyph Glyph
+comp_980 advanceValidatedGlyph Glyph

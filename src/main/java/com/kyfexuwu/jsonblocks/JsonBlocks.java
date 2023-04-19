@@ -3,12 +3,15 @@ package com.kyfexuwu.jsonblocks;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
+import com.kyfexuwu.jsonblocks.lua.Translations;
 import com.kyfexuwu.jsonblocks.luablock.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -17,6 +20,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
@@ -71,6 +75,41 @@ public class JsonBlocks implements ModInitializer {
             if(field.getName().toUpperCase().equals(field.getName()))
                 System.out.print("\""+field.getName()+"\", ");
          */
+
+        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener(){
+
+            @Override
+            public void reload(ResourceManager manager) {
+                for(var ooga : manager.findResources("m3we_mappings",(id)->true).entrySet()){
+                    try {
+                        var toAssign=
+                                new String(ooga.getValue().getInputStream().readAllBytes()).split("\n");
+                        switch (ooga.getKey().getPath().substring("m3we_mappings/".length())) {
+                            case "classes.txt" -> Translations.classesTranslations = Arrays.stream(toAssign)
+                                    .map(Translations.ClassToken::fromStr)
+                                    .toList().toArray(Translations.ClassToken[]::new);
+                            case "fields.txt" -> Translations.fieldsTranslations = Arrays.stream(toAssign)
+                                    .map(Translations.FieldToken::fromStr)
+                                    .toList().toArray(Translations.FieldToken[]::new);
+                            case "compfields.txt" -> Translations.compFieldsTranslations = Arrays.stream(toAssign)
+                                    .map(Translations.FieldToken::fromStr)
+                                    .toList().toArray(Translations.FieldToken[]::new);
+                            case "methods.txt" -> Translations.methodsTranslations = Arrays.stream(toAssign)
+                                    .map(Translations.MethodToken::fromStr)
+                                    .toList().toArray(Translations.MethodToken[]::new);
+                            default -> System.out.println("what do i do with this mapping file "
+                                    +ooga.getKey().getPath());
+                        }
+                    } catch (IOException ignored) { }
+                }
+                System.out.println("Loaded m3we mappings");
+            }
+
+            @Override
+            public Identifier getFabricId() {
+                return new Identifier(MOD_ID,"m3we_mappings");
+            }
+        });
 
         JBFolder.mkdir();
         blocksFolder.mkdir();

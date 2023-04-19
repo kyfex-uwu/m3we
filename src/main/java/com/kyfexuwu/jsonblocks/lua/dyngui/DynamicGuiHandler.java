@@ -105,38 +105,4 @@ public class DynamicGuiHandler extends ScreenHandler {
         super.close(player);
         this.gui.onClose.accept(this,player);
     }
-
-    //-- dont actually know if i need these
-
-    public static final Field listenersField;
-    static{
-        Field bruh=null;
-        try{
-            bruh=ScreenHandler.class.getDeclaredField("listeners");
-            bruh.setAccessible(true);
-        }catch(Exception e){
-            System.out.println("cry 2");
-        }
-        listenersField=bruh;
-    }
-    private final List<ScreenHandlerListener> widenedListeners;
-    {
-        List<ScreenHandlerListener> bruh=null;
-        try {
-            bruh = (List<ScreenHandlerListener>) listenersField.get(this);
-        }catch(Exception e){
-            System.out.println("cry");
-        }
-        widenedListeners=bruh;
-    }
-    public void dataToClient(int id, int value){
-        for (ScreenHandlerListener screenHandlerListener : this.widenedListeners) {
-            screenHandlerListener.onPropertyUpdate(this, id, value);
-        }
-    }
-    public void itemToClient(int id, ItemStack stack){
-        for (ScreenHandlerListener screenHandlerListener : this.widenedListeners) {
-            screenHandlerListener.onSlotUpdate(this, id, stack);
-        }
-    }
 }

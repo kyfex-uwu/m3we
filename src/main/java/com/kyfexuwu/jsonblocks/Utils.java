@@ -1,8 +1,10 @@
 package com.kyfexuwu.jsonblocks;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.kyfexuwu.jsonblocks.lua.CustomScript;
 import com.kyfexuwu.jsonblocks.lua.LuaSurfaceObj;
+import com.kyfexuwu.jsonblocks.lua.Translations;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.util.Identifier;
 import org.luaj.vm2.LuaError;
@@ -10,6 +12,7 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
 import java.lang.reflect.Array;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
@@ -50,20 +53,31 @@ public class Utils {
         }
     }
 
-    public static class PropertyTranslator {
+    public static class PropertyTranslator<T, Settings> {
         final String jsonProp;
-        final String javaProp;
-        final Function<ScriptAndValue, Object> transformFunc;
-        public PropertyTranslator(String jsonProp,String javaProp, Function<ScriptAndValue,Object> transformFunc){
+        final BiFunction<Settings, T, Settings> toJavaFunc;
+        final Function<ScriptAndValue, T> transformFunc;
+        public PropertyTranslator(String jsonProp,
+                                  BiFunction<Settings, T, Settings> toJavaFunc,
+                                  Function<ScriptAndValue,T> transformFunc){
             this.jsonProp=jsonProp;
-            this.javaProp=javaProp;
+            this.toJavaFunc=toJavaFunc;
             this.transformFunc=transformFunc;
+        }
+        public Settings apply(Settings settings, JsonObject value, CustomScript script){
+            try {
+                return this.toJavaFunc.apply(settings, this.transformFunc.apply(new ScriptAndValue(script, value.get(this.jsonProp))));
+            }catch(UnsupportedOperationException e) {
+                System.out.println("Property " + this.jsonProp + " failed to load, check your json!");
+                e.printStackTrace();
+                return settings;
+            }
         }
     }
 
-    static final Function<ScriptAndValue, Object> BoolTransformFunc = scriptAndValue -> scriptAndValue.value.getAsBoolean();
-    static final Function<ScriptAndValue, Object> FloatTransformFunc = scriptAndValue -> scriptAndValue.value.getAsFloat();
-    static final Function<ScriptAndValue, Object> IntTransformFunc = scriptAndValue -> scriptAndValue.value.getAsInt();
+    static final Function<ScriptAndValue, Boolean> BoolTransformFunc = scriptAndValue -> scriptAndValue.value.getAsBoolean();
+    static final Function<ScriptAndValue, Float> FloatTransformFunc = scriptAndValue -> scriptAndValue.value.getAsFloat();
+    static final Function<ScriptAndValue, Integer> IntTransformFunc = scriptAndValue -> scriptAndValue.value.getAsInt();
     static AbstractBlock.ContextPredicate PredTransformFunc(ScriptAndValue SAV, boolean dfault){ //this one works differently
         if(SAV.value.getAsString().startsWith("script:")) {
             return (state, world, pos) -> tryAndExecute(
@@ -155,5 +169,25 @@ public class Utils {
     public static void tryAndExecute(CustomScript scriptContainer, String funcString,Object[] args){
         tryAndExecute(null,scriptContainer, funcString, args, returnValue -> null);
         //calls tryAndExecute, but always returns null
+    }
+
+    public static String deobfuscate(String obfuscated){
+        if(!Translations.OBFUSCATED || !Translations.obfuscatedPattern.matcher(obfuscated).matches()) return obfuscated;
+
+        int endingNum=Integer.parseInt(obfuscated.substring(obfuscated.indexOf('_')+1));
+
+        var token =  switch (obfuscated.charAt(1)) {
+            case 'l' -> //class
+                    Translations.classesTranslations[endingNum];
+            case 'i' -> //field
+                    Translations.fieldsTranslations[endingNum];
+            case 'e' -> //method
+                    Translations.methodsTranslations[endingNum];
+            case 'o' -> //comp
+                    Translations.compFieldsTranslations[endingNum];
+            default -> null;
+        };
+
+        return token!=null ? token.deobfuscated : obfuscated;
     }
 }
