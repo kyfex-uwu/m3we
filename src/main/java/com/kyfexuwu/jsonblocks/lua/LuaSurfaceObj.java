@@ -8,12 +8,14 @@ import org.luaj.vm2.lib.TwoArgFunction;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.LinkedList;
 
 public class LuaSurfaceObj extends LuaTable {
-    public Object object;
-    private final String[] valueNames;
+    public final Object object;
+    public final Class<?> objClass;
+    private final Token[] fields;
+    private final Token[] methods;
     public static final TwoArgFunction eqFunc=new TwoArgFunction() {
         @Override
         public LuaValue call(LuaValue one, LuaValue two) {
@@ -23,36 +25,46 @@ public class LuaSurfaceObj extends LuaTable {
         }
     };
 
+    public static class Token{
+        public final String obf;
+        public final String deobf;
+        public Token(String obf, String deobf){
+            this.obf=obf;
+            this.deobf=deobf;
+        }
+    }
+
     public LuaSurfaceObj(Object object){
         LuaTable thisMT = new LuaTable();
         thisMT.set(EQ, eqFunc);
         this.setmetatable(thisMT);
 
         this.object=object;
-        Field[] fields = object.getClass().getFields();//todo: dont copy methods from Object class
-        Method[] methods = object.getClass().getMethods();
+        this.objClass = object.getClass();
+        Field[] fields = this.objClass.getFields();
+        Method[] methods = this.objClass.getMethods();
 
-        var tempFieldNames = new LinkedList<String>();
+        var tempFieldNames = new LinkedList<Token>();
         for(Field field : fields){
             var toAdd = field.getName();
-            if(tempFieldNames.contains(toAdd))
-                continue;
-            tempFieldNames.add(toAdd);
+            tempFieldNames.add(new Token(toAdd,Utils.deobfuscate(toAdd)));
         }
-        var tempMethodNames = new LinkedList<String>();
+        var tempMethodNames = new LinkedList<Token>();
         for(Method method : methods){
             var toAdd = method.getName();
-            if(tempMethodNames.contains(toAdd))
+            var deobfuscated = Utils.deobfuscate(toAdd);
+
+            if(deobfuscated==null || tempMethodNames.stream().anyMatch((pair)->pair.deobf.equals(deobfuscated)))
                 continue;
 
-            if(tempFieldNames.contains(toAdd))
-                toAdd="func_"+toAdd;
-            tempMethodNames.add(toAdd);
+            if(tempFieldNames.stream().anyMatch((token)->token.deobf.equals(deobfuscated)))
+                tempMethodNames.add(new Token(toAdd,"func_"+deobfuscated));
+            else
+                tempMethodNames.add(new Token(toAdd,deobfuscated));
         }
 
-        tempFieldNames.addAll(tempMethodNames);
-        tempFieldNames.sort(String::compareTo);
-        valueNames = tempFieldNames.toArray(new String[0]);
+        this.fields = tempFieldNames.toArray(new Token[]{});
+        this.methods = tempMethodNames.toArray(new Token[]{});
     }
 
     public String typename(){
@@ -61,18 +73,25 @@ public class LuaSurfaceObj extends LuaTable {
 
     @Override
     public LuaValue get(LuaValue key){
+        var toReturn = Arrays.stream(this.fields).filter((value)->value.deobf.equals(key.checkjstring()))
+                .findFirst();
         try {
-            return Utils.toLuaValue(object.getClass().getField(key.toString()).get(object));
-        }catch(NoSuchFieldException e){
-            LinkedList<Method> methods = new LinkedList<>();
-            for(Method method : object.getClass().getMethods()){
-                if(method.getName().equals(key.toString()))
-                    methods.add(method);
+            if (toReturn.isPresent()) {
+                return Utils.toLuaValue(this.objClass.getField(toReturn.get().obf).get(this.object));
+            } else {
+                toReturn = Arrays.stream(this.methods).filter((value) -> value.deobf.equals(key.checkjstring()))
+                        .findFirst();
+                if (toReturn.isPresent()) {
+                    var matchingMethods = Arrays.stream(this.methods)
+                            .filter((method)->method.deobf.equals(key.checkjstring())).toList();
+
+                    return new UndecidedLuaFunction(this.object, Arrays.stream(this.objClass.getMethods())
+                            .filter((method)->matchingMethods.stream().anyMatch((validMethod)->
+                                    Utils.deobfuscate(method.getName()).equals(validMethod.deobf)))
+                            .toList().toArray(new Method[]{}));
+                }
             }
-            if(methods.size()==0)
-                return NIL;
-            return new UndecidedLuaFunction(object,methods.toArray(new Method[0]));
-        }catch(Exception ignored){}
+        }catch(Exception ignored){ }
 
         //not a field or a method? L bozo
         return NIL;
@@ -85,12 +104,20 @@ public class LuaSurfaceObj extends LuaTable {
     @Override //now works with pairs :sugnlasses:
     public Varargs next( LuaValue keyAsValue ) {
         if(keyAsValue.isnil()) {
-            return LuaValue.valueOf(this.valueNames[0]);
+            return LuaValue.valueOf(this.fields[0].deobf);
         }
         String key = keyAsValue.toString();
-        for(int i=0;i<this.valueNames.length-1;i++){
-            if(key.equals(this.valueNames[i])&&!key.equals("wait")){//todo
-                return LuaValue.valueOf(this.valueNames[i+1]);
+        for(int i=0;i<this.fields.length-1;i++){
+            if(key.equals(this.fields[i].deobf)){
+                return LuaValue.valueOf(this.fields[i+1].deobf);
+            }
+        }
+        if(key.equals(this.fields[this.fields.length-1].deobf)){
+            return LuaValue.valueOf(this.methods[0].deobf);
+        }
+        for(int i=0;i<this.methods.length-1;i++){
+            if(key.equals(this.methods[i].deobf)){
+                return LuaValue.valueOf(this.methods[i+1].deobf);
             }
         }
 
@@ -111,6 +138,6 @@ public class LuaSurfaceObj extends LuaTable {
     }
 
     public String toString(){
-        return "java: "+Object.class.getSimpleName();
+        return "java: "+Utils.deobfuscate(Object.class.getSimpleName());
     }
 }

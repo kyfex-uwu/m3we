@@ -44,7 +44,7 @@ public class CustomBlockMaker {
                              JsonElement blockShapeJson, JsonElement outlineShapeJson, String scriptName) {
 
         class thisCustomBlock extends Block implements CustomBlock {
-            public Property[] props;
+            public Property<?>[] props;
             public final VoxelShape blockShape;
             public final VoxelShape outlineShape;
 
@@ -138,7 +138,7 @@ public class CustomBlockMaker {
             @Override
             protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
                 if(blockStates!=null) {
-                    var propsList = new LinkedList<Property>();
+                    var propsList = new LinkedList<Property<?>>();
                     for (String propName : blockStates.keySet()) {
                         if (!validPropertyName.matcher(propName).matches()) continue;
                         var thisState = blockStates.get(propName).getAsJsonObject();
@@ -167,7 +167,7 @@ public class CustomBlockMaker {
                     this.props= new Property[0];
                 }
 
-                for (Property prop : this.props) {
+                for (Property<?> prop : this.props) {
                     builder.add(prop);
                 }
             }

@@ -22,6 +22,8 @@ import static org.luaj.vm2.LuaValue.NIL;
 
 public class CustomScript {
 
+    public static CustomScript NULL = new CustomScript(null, true);
+
     public Globals runEnv;
     public final String name;
     public final boolean isFake;
@@ -134,12 +136,14 @@ public class CustomScript {
         print(createVarArgs(args));
     }
     public static LuaValue explore(LuaValue value){
+
         var chatHud = MinecraftClient.getInstance().inGameHud.getChatHud();
 
         MutableText message = Text.literal("\n");
 
         if(value.typename().equals("surfaceObj") || value.typename().equals("table")) {
             LuaValue nextKey = (LuaValue) value.next(NIL);
+            //int maxProps=100;
             do {
                 LuaValue finalNextKey = nextKey;
                 message.append(Text.literal(nextKey.toString()+", ")
@@ -149,7 +153,8 @@ public class CustomScript {
                                 Text.literal(valueToString(value.get(finalNextKey),0))))));
 
                 nextKey = (LuaValue) value.next(nextKey);
-            } while (nextKey != NIL);
+                //maxProps--;
+            } while (nextKey != NIL /* &&maxProps>0 */);
         }else{
             message.append(Text.literal(value.toString()));
         }
@@ -236,18 +241,19 @@ public class CustomScript {
                     toReturn.append("{...}");
                 }
             }
-            case "surfaceObj" -> toReturn.append("java object: ").append(((LuaSurfaceObj) value).object.getClass().getSimpleName());
+            case "surfaceObj" -> toReturn.append("java object: ").append(Utils.deobfuscate(
+                    ((LuaSurfaceObj) value).object.getClass().getSimpleName()));
             case "undecidedFunc" -> {
                 var refMethods = ((UndecidedLuaFunction) value).methods;
                 toReturn.append("java function: ")
-                        .append(refMethods[0].getName());
+                        .append(Utils.deobfuscate(refMethods[0].getName()));
 
                 for(Method m : refMethods) {
                     var paramClasses = m.getParameterTypes();
                     if (paramClasses.length > 0) {
                         toReturn.append(" [takes parameters of types: ");
                         for (Class<?> clazz : paramClasses) {
-                            toReturn.append(clazz.getSimpleName())
+                            toReturn.append(Utils.deobfuscate(clazz.getSimpleName()))
                                     .append(", ");
                         }
                     } else {
@@ -258,7 +264,7 @@ public class CustomScript {
                     var returnClass = m.getReturnType();
                     if (!returnClass.equals(Void.class)) {
                         toReturn.append("returns with type ")
-                                .append(returnClass.getSimpleName())
+                                .append(Utils.deobfuscate(returnClass.getSimpleName()))
                                 .append("]");
                     } else {
                         toReturn.append("does not return a value]");

@@ -12,7 +12,7 @@ import java.util.Locale;
 public class UndecidedLuaFunction extends VarArgFunction {
     public Object thisObj;
     public Method[] methods;
-    public UndecidedLuaFunction(Object thisObj,Method[] methods){
+    public UndecidedLuaFunction(Object thisObj, Method[] methods){
         this.thisObj=thisObj;
         this.methods=methods;
     }
@@ -39,7 +39,7 @@ public class UndecidedLuaFunction extends VarArgFunction {
         for(int i=0;i<args.length;i++){
             translatedArgs[i]=Utils.toObject(args[i]);
         }
-        for(Method method: methods){
+        for(Method method : this.methods){
             var paramTypes = method.getParameterTypes();
             if(paramTypes.length!=args.length)
                 continue;
@@ -105,11 +105,8 @@ public class UndecidedLuaFunction extends VarArgFunction {
                     }
 
                     try {
-                        return Utils.toLuaValue(
-                                method.getClass().getMethod("invoke", Object.class, Object[].class)
-                                        .invoke(method, thisObj, changeableArgs)
-                        );
-                    } catch (Exception ignored) {}
+                        return Utils.toLuaValue(method.invoke(this.thisObj, changeableArgs));
+                    } catch (Exception ignored) { }
                 }
             }
         }

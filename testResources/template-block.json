@@ -1,11 +1,11 @@
 {
-		"_comment": "everything here is optional (unless marked otherwise), and it is the default. (unless marked otherwise)",
+
+		"_comment": "everything here is optional except for blockName, and it is the default. (unless marked otherwise)",
 		"_comment": "for example: if you leave out slipperiness, it will be automatically set to 0.6",
 		"_comment": "the fields marked with OR mean you can give it either data type",
 
 	"namespace": "m3we",
 	"blockName": "name" REQUIRED,
-	"material": "STONE",
 
 	"hardness": 0.0,
 	"resistance": 0.0,
