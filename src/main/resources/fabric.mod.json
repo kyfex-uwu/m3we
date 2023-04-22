@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "jsonblocks",
+  "id": "m3we",
   "version": "${version}",
-  "name": "JsonBlocks",
+  "name": "m3we",
   "description": "",
   "authors": [
     "kyfex_uwu"
@@ -13,14 +13,14 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "com.kyfexuwu.jsonblocks.JsonBlocksClient"
+      "com.kyfexuwu.m3we.m3weClient"
     ],
     "main": [
-      "com.kyfexuwu.jsonblocks.JsonBlocks"
+      "com.kyfexuwu.m3we.m3we"
     ]
   },
   "mixins": [
-    "JsonBlocks.mixins.json"
+    "m3we.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.14.9",
