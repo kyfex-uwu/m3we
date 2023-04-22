@@ -47,8 +47,14 @@ public class LuaSurfaceObj extends LuaTable {
         var tempFieldNames = new LinkedList<Token>();
         for(Field field : fields){
             var toAdd = field.getName();
+            var deobfuscated = Utils.deobfuscate(toAdd);
+
+            if(deobfuscated==null || tempFieldNames.stream().anyMatch((pair)->pair.deobf.equals(deobfuscated)))
+                continue;
+
             tempFieldNames.add(new Token(toAdd,Utils.deobfuscate(toAdd)));
         }
+
         var tempMethodNames = new LinkedList<Token>();
         for(Method method : methods){
             var toAdd = method.getName();

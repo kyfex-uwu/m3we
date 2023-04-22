@@ -24,19 +24,6 @@ public class LuaBlock extends BlockWithEntity implements OperatorBlock {
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new LuaBlockEntity(pos, state);
     }
-
-    @Override
-    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-        if (world.isClient) {
-            return;
-        }
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof LuaBlockEntity && world.isReceivingRedstonePower(pos)) {
-            //todo
-            world.createAndScheduleBlockTick(pos, this, 1);
-        }
-    }
-
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.getBlockEntity(pos) instanceof LuaBlockEntity && player.isCreativeLevelTwoOp()) {
