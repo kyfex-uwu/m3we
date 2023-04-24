@@ -9,6 +9,7 @@ import org.luaj.vm2.lib.TwoArgFunction;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 public class LuaSurfaceObj extends LuaTable {
@@ -69,6 +70,8 @@ public class LuaSurfaceObj extends LuaTable {
                 tempMethodNames.add(new Token(toAdd,deobfuscated));
         }
 
+        tempFieldNames.sort((f1, f2) -> f1.deobf.compareToIgnoreCase(f2.deobf));
+        tempMethodNames.sort((m1, m2) -> m1.deobf.compareToIgnoreCase(m2.deobf));
         this.fields = tempFieldNames.toArray(new Token[]{});
         this.methods = tempMethodNames.toArray(new Token[]{});
     }
@@ -85,15 +88,17 @@ public class LuaSurfaceObj extends LuaTable {
             if (toReturn.isPresent()) {
                 return Utils.toLuaValue(this.objClass.getField(toReturn.get().obf).get(this.object));
             } else {
-                toReturn = Arrays.stream(this.methods).filter((value) -> value.deobf.equals(key.checkjstring()))
+                toReturn = Arrays.stream(this.methods).filter((method) -> method.deobf.equals(key.checkjstring()))
                         .findFirst();
                 if (toReturn.isPresent()) {
                     var matchingMethods = Arrays.stream(this.methods)
                             .filter((method)->method.deobf.equals(key.checkjstring())).toList();
+                    var realName = key.checkjstring().startsWith("func_")?
+                            key.checkjstring().substring(5) : key.checkjstring();
 
                     return new UndecidedLuaFunction(this.object, Arrays.stream(this.objClass.getMethods())
                             .filter((method)->matchingMethods.stream().anyMatch((validMethod)->
-                                    Utils.deobfuscate(method.getName()).equals(validMethod.deobf)))
+                                    Utils.deobfuscate(method.getName()).equals(realName)))
                             .toList().toArray(new Method[]{}));
                 }
             }

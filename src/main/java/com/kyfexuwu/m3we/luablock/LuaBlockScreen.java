@@ -1,6 +1,7 @@
 package com.kyfexuwu.m3we.luablock;
 
 import com.kyfexuwu.m3we.m3we;
+import com.kyfexuwu.m3we.mixins.LuaBlockPacketMixin;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -25,11 +26,13 @@ public class LuaBlockScreen extends Screen {
     final BlockPos pos;
     String code;
     String[] formattedCode;
+    boolean active;
 
-    public LuaBlockScreen(BlockPos pos, String initialCode) {
+    public LuaBlockScreen(BlockPos pos, String initialCode, boolean active) {
         super(title);
         this.pos=pos;
         this.code=initialCode;
+        this.active=active;
         this.updateCode();
     }
 
@@ -110,6 +113,8 @@ public class LuaBlockScreen extends Screen {
         int x = (this.width - this.backgroundWidth) / 2;
         int y = (this.height - this.backgroundHeight) / 2;
         drawTexture(matrices, x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        var inButton=(mouseX-x>=240&&mouseX-x<=252&&mouseY-y>=2&&mouseY-y<=14);
+        drawTexture(matrices, x+241, y+3, this.active?0:12, inButton?212:200, 12, 12);
 
         this.textRenderer.draw(matrices, this.getTitle(), x + 8, y + 6, 0x404040);
 
@@ -180,11 +185,22 @@ public class LuaBlockScreen extends Screen {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             this.client.keyboard.setRepeatEvents(false);
-            ClientPlayNetworking.send(m3we.updateLuaBlockPacket,
-                    PacketByteBufs.create().writeBlockPos(this.pos).writeString(this.code));
+            var toSend=PacketByteBufs.create()
+                    .writeBlockPos(this.pos)
+                    .writeString(this.code);
+            toSend.writeBoolean(this.active);
+            ClientPlayNetworking.send(m3we.updateLuaBlockPacket,toSend);
+
             var blockEntity=this.client.player.world.getBlockEntity(this.pos);
-            if(blockEntity instanceof LuaBlockEntity)
-                ((LuaBlockEntity) this.client.player.world.getBlockEntity(this.pos)).setLua(this.code);
+            if(blockEntity instanceof LuaBlockEntity) {
+                ((LuaBlockEntity) blockEntity).setState(this.code, this.active);
+            }
+            var luaBlock = this.client.player.world.getBlockState(this.pos);
+            if(luaBlock.getBlock() instanceof LuaBlock) {
+                this.client.player.world.setBlockState(pos, this.client.player.world.getBlockState(pos)
+                        .with(LuaBlock.ACTIVE, this.active));
+            }
+
             this.client.player.closeHandledScreen();
             return true;
         }
@@ -211,71 +227,71 @@ public class LuaBlockScreen extends Screen {
             return true;
         }
         switch (keyCode) {
-            case 257: {
+            case 257 -> {
                 this.write("\n");
                 return true;
             }
-            case 263: {
+            case 263 -> {
                 this.moveCursor(-1, Screen.hasShiftDown());
                 return true;
             }
-            case 262: {
+            case 262 -> {
                 this.moveCursor(1, Screen.hasShiftDown());
                 return true;
             }
-            case 265: {
+            case 265 -> {
                 var pos = this.getXY(this.cursorPos);
-                if(pos.getRight()<=0){
-                    this.setCursor(0,Screen.hasShiftDown());
+                if (pos.getRight() <= 0) {
+                    this.setCursor(0, Screen.hasShiftDown());
                     return true;
                 }
-                var newPos=this.textRenderer.trimToWidth(
-                        this.formattedCode[pos.getRight()-1],
-                        this.textRenderer.getWidth(this.formattedCode[pos.getRight()].substring(0,pos.getLeft()))
+                var newPos = this.textRenderer.trimToWidth(
+                        this.formattedCode[pos.getRight() - 1],
+                        this.textRenderer.getWidth(this.formattedCode[pos.getRight()].substring(0, pos.getLeft()))
                 ).length();
-                for(int i=0;i<pos.getRight()-1;i++)
-                    newPos+=this.formattedCode[i].length()+1;
-                this.setCursor(newPos,Screen.hasShiftDown());
+                for (int i = 0; i < pos.getRight() - 1; i++)
+                    newPos += this.formattedCode[i].length() + 1;
+                this.setCursor(newPos, Screen.hasShiftDown());
                 return true;
             }
-            case 264: {
+            case 264 -> {
                 var pos = this.getXY(this.cursorPos);
-                if(pos.getRight()>=this.formattedCode.length-1){
-                    this.setCursor(Integer.MAX_VALUE,Screen.hasShiftDown());
+                if (pos.getRight() >= this.formattedCode.length - 1) {
+                    this.setCursor(Integer.MAX_VALUE, Screen.hasShiftDown());
                     return true;
                 }
-                var newPos=this.textRenderer.trimToWidth(
-                        this.formattedCode[pos.getRight()+1],
-                        this.textRenderer.getWidth(this.formattedCode[pos.getRight()].substring(0,pos.getLeft()))
+                var newPos = this.textRenderer.trimToWidth(
+                        this.formattedCode[pos.getRight() + 1],
+                        this.textRenderer.getWidth(this.formattedCode[pos.getRight()].substring(0, pos.getLeft()))
                 ).length();
-                for(int i=0;i<pos.getRight()+1;i++)
-                    newPos+=this.formattedCode[i].length()+1;
-                this.setCursor(newPos,Screen.hasShiftDown());
+                for (int i = 0; i < pos.getRight() + 1; i++)
+                    newPos += this.formattedCode[i].length() + 1;
+                this.setCursor(newPos, Screen.hasShiftDown());
                 return true;
             }
-            case 259: {
-                if(this.cursorPos!=this.selectionPos){
+            case 259 -> {
+                if (this.cursorPos != this.selectionPos) {
                     var selection = this.getSelection();
-                    this.delete(selection.getLeft(),selection.getRight());
-                }else{
-                    this.delete(this.cursorPos-1,this.cursorPos);
+                    this.delete(selection.getLeft(), selection.getRight());
+                } else {
+                    this.delete(this.cursorPos - 1, this.cursorPos);
                 }
                 return true;
             }
-            case 261: {
-                if(this.cursorPos!=this.selectionPos){
+            case 261 -> {
+                if (this.cursorPos != this.selectionPos) {
                     var selection = this.getSelection();
-                    this.delete(selection.getLeft(),selection.getRight());
-                }else{
-                    this.delete(this.cursorPos,this.cursorPos+1);
+                    this.delete(selection.getLeft(), selection.getRight());
+                } else {
+                    this.delete(this.cursorPos, this.cursorPos + 1);
                 }
                 return true;
             }
-            case 268: {
+            case 268 -> {
                 this.moveCursor(0, Screen.hasShiftDown());
                 return true;
             }
-            case 269: {
+            case 269 -> {
                 this.moveCursor(Integer.MAX_VALUE, Screen.hasShiftDown());
                 return true;
             }
@@ -301,6 +317,11 @@ public class LuaBlockScreen extends Screen {
         var adjMouseX = mouseX-(this.width-this.backgroundWidth)/2-8;
         var adjMouseY = mouseY-(this.height-this.backgroundHeight)/2-18;
 
+        if(adjMouseX+8>=240&&adjMouseX+8<=252&&adjMouseY+18>=2&&adjMouseY+18<=14){
+            this.active=!this.active;
+
+            return true;
+        }
         if(adjMouseX<0||adjMouseY<0||adjMouseX>this.backgroundWidth-16||adjMouseY>this.backgroundHeight-26) return false;
 
         this.setCursor(this.mouseEventPos(adjMouseX,adjMouseY), Screen.hasShiftDown());

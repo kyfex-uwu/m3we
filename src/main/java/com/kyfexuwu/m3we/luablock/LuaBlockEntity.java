@@ -13,19 +13,22 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class LuaBlockEntity extends BlockEntity {
-    public LuaBlockEntity(BlockPos pos, BlockState state) {
+
+    public LuaBlockEntity(BlockPos pos, BlockState state, boolean active) {
         super(m3we.luaBlockEntity, pos, state);
         this.script = new LuaBlockScript(this);
+        this.active=active;
     }
 
     private String lua = "";
+    private boolean active;
     public LuaBlockScript script;
-    public String getLua(){
-        return this.lua;
-    }
-    public void setLua(String lua){
+    public String getLua(){ return this.lua; }
+    public boolean getActive() { return this.active; }
+    public void setState(String lua, boolean active){
         this.lua=lua;
         this.script.updateScript(lua);
+        this.active=active;
         this.markDirty();
     }
 
@@ -33,13 +36,13 @@ public class LuaBlockEntity extends BlockEntity {
     boolean errored=false;
     int currRevision =-1;
     public static void tick(World world, BlockPos pos, BlockState state, LuaBlockEntity blockEntity){
+        if(!blockEntity.active) return;
+
         if(!blockEntity.loaded){
-            blockEntity.script.setSelf(blockEntity);
             blockEntity.script.updateScript(blockEntity.lua);
             blockEntity.loaded=true;
         }
 
-        blockEntity.script.setSelf(blockEntity);
         if(blockEntity.currRevision==-1) blockEntity.currRevision=blockEntity.script.revision;
 
         //todo: when error, stop executing
@@ -91,12 +94,14 @@ public class LuaBlockEntity extends BlockEntity {
     @Override
     protected void writeNbt(NbtCompound nbt) {
         nbt.putString("lua", this.lua);
+        nbt.putBoolean("active", this.active);
         super.writeNbt(nbt);
     }
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
         this.lua = nbt.getString("lua");
+        this.active = nbt.getBoolean("active");
     }
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {

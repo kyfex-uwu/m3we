@@ -43,7 +43,8 @@ public class m3we implements ModInitializer {
     public static final BlockEntityType<LuaBlockEntity> luaBlockEntity = Registry.register(
             Registry.BLOCK_ENTITY_TYPE,
             new Identifier(MOD_ID, "lua_block"),
-            FabricBlockEntityTypeBuilder.create(LuaBlockEntity::new,luaBlock).build()
+            FabricBlockEntityTypeBuilder.create((pos,state)->
+                    new LuaBlockEntity(pos,state,false),luaBlock).build()
     );
     static{
         Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "lua_block"),luaBlock);

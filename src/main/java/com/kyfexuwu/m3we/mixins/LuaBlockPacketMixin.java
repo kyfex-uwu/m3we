@@ -1,5 +1,6 @@
 package com.kyfexuwu.m3we.mixins;
 
+import com.kyfexuwu.m3we.luablock.LuaBlock;
 import com.kyfexuwu.m3we.m3we;
 import com.kyfexuwu.m3we.luablock.LuaBlockEntity;
 import net.minecraft.network.NetworkThreadUtils;
@@ -22,9 +23,17 @@ public class LuaBlockPacketMixin {
         if(!thisObj.player.isCreativeLevelTwoOp()) return;
 
         NetworkThreadUtils.forceMainThread(packet, thisObj, thisObj.player.getWorld());
-        var luaBlock = thisObj.player.world.getBlockEntity(buffer.readBlockPos());
-        if(!(luaBlock instanceof LuaBlockEntity)) return;
+        var pos = buffer.readBlockPos();
+        var code=buffer.readString();
+        var active=buffer.readBoolean();
 
-        ((LuaBlockEntity) luaBlock).setLua(buffer.readString());
+        var luaBlockEntity = thisObj.player.world.getBlockEntity(pos);
+        if(!(luaBlockEntity instanceof LuaBlockEntity)) return;
+        ((LuaBlockEntity) luaBlockEntity).setState(code, active);
+
+        var luaBlock = thisObj.player.world.getBlockState(pos);
+        if(!(luaBlock.getBlock() instanceof LuaBlock)) return;
+        thisObj.player.world.setBlockState(pos, thisObj.player.world.getBlockState(pos)
+                .with(LuaBlock.ACTIVE, active));
     }
 }
