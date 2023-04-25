@@ -3,7 +3,6 @@ package com.kyfexuwu.m3we.lua.api;
 import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.lua.ScriptError;
 import net.minecraft.nbt.*;
-import net.minecraft.world.PersistentState;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.TwoArgFunction;
 
@@ -19,23 +18,51 @@ public class DatastoreAPI extends TwoArgFunction {
         return CustomScript.dataStore;
     }
 
-    static class DatastoreTable extends LuaTable{//TODO
+    public static class DatastoreTable extends LuaTable{//TODO
         public DatastoreTable(){
             super();
         }
 
-        HashMap<String, NbtElement> entries = new HashMap<>();
+        HashMap<String, LuaValue> values = new HashMap<>();
 
-        public LuaValue fromNBTVal(NbtElement nbt){
+        public static LuaValue fromNBTVal(NbtElement nbt){
             if(nbt instanceof NbtString) return LuaValue.valueOf(nbt.asString());
             else if(nbt instanceof NbtDouble) return LuaValue.valueOf(((NbtDouble) nbt).doubleValue());
             else if(nbt instanceof NbtByte) return LuaValue.valueOf(((NbtByte) nbt).byteValue()!=0);
+            else if(nbt instanceof NbtCompound){
+                var table = new LuaTable();
+
+                var keys = ((NbtCompound)nbt).getKeys();
+                keys.forEach(key->{
+                    table.set(key, fromNBTVal(((NbtCompound) nbt).get(key)));
+                });
+
+                return table;
+            }
             else return NONE;
         }
-        public Optional<NbtElement> fromLuaVal(LuaValue val){
+        public static Optional<NbtElement> fromLuaVal(LuaValue val){
             if(val instanceof LuaString) return Optional.of(NbtString.of(val.checkjstring()));
             else if(val instanceof LuaBoolean) return Optional.of(NbtByte.of(val.checkboolean()));
             else if(val instanceof LuaNumber) return Optional.of(NbtDouble.of(val.checkdouble()));
+            else if(val instanceof LuaTable){
+                var table = new NbtCompound();
+
+                var key = LuaValue.NIL;
+                while(true){
+                    Varargs n = val.next(key);
+                    if ((key = n.arg1()).isnil())
+                        break;
+
+                    var toPut=fromLuaVal(n.arg(2));
+                    try {
+                        if (toPut.isPresent())
+                            table.put(n.arg(1).strvalue().checkjstring(), toPut.get());
+                    }catch(Exception ignored){ /*if key is not str or num*/ }
+                }
+
+                return Optional.of(table);
+            }
             return Optional.empty();
         }
 
@@ -57,9 +84,11 @@ public class DatastoreAPI extends TwoArgFunction {
         @Override
         public void rawset( LuaValue key, LuaValue value ) {
             ScriptError.execute(()->{
-                var toSet = this.fromLuaVal(key);
-                if(toSet.isPresent()) this.entries.put(key.checkjstring(),toSet.get());
-                else argerror("string, boolean, or number");
+                //todo: validate table/input
+                if(key.isstring()||key.isnumber())
+                    this.values.put(key.strvalue().checkjstring(), value);
+                else throw new LuaError("key must be a string or number, and values must be" +
+                        "string, boolean, number, or table");
             },(e)->{
                 CustomScript.print("Couldn't set datastore value! "+e.getMessage());
             });
@@ -82,46 +111,13 @@ public class DatastoreAPI extends TwoArgFunction {
 
         @Override
         public LuaValue rawget( LuaValue key ) {
-            return fromNBTVal(this.entries.get(key.checkjstring()));
+            var toReturn = this.values.get(key.checkjstring());
+            return toReturn == null ? NIL : toReturn;
         }
 
         @Override
         public LuaValue remove(int pos) {
-            if(this.entries.containsKey(pos+""))
-                return fromNBTVal(this.entries.remove(pos + ""));
-            return NONE;
-        }
-    }
-
-    static class DatastoreState extends PersistentState{
-        public LuaTable dataStore;
-        @Override
-        public NbtCompound writeNbt(NbtCompound nbt) {
-
-            return nbt;
-        }
-
-        public static DatastoreState createFromNbt(NbtCompound tag) {
-            DatastoreState state = new DatastoreState();
-            state.dataStore = toTable(tag);
-            return state;
-        }
-
-        public static NbtCompound toNBT(DatastoreTable table){
-            var toReturn = new NbtCompound();
-
-            for(LuaValue key : table.keys()){
-                //string
-                //boolean (byte)
-                //number
-            }
-
-            return toReturn;
-        }
-        public static LuaTable toTable(NbtCompound tag){
-            var toReturn = new LuaTable();
-
-            return toReturn;
+            throw new LuaError("please do not do this rn");
         }
     }
 }

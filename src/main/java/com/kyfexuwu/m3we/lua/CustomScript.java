@@ -30,7 +30,7 @@ public class CustomScript {
 
     static final Disabled disabled = new Disabled();
 
-    public static LuaTable dataStore = new LuaTable();//todo, make this per world
+    public static LuaTable dataStore = new DatastoreAPI.DatastoreTable();//todo, make this per world
 
     private static Globals unsafeGlobal(){
         var toReturn = new Globals();
