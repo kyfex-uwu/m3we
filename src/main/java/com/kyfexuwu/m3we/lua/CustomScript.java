@@ -30,8 +30,6 @@ public class CustomScript {
 
     static final Disabled disabled = new Disabled();
 
-    public static LuaTable dataStore = new DatastoreAPI.DatastoreTable();//todo, make this per world
-
     private static Globals unsafeGlobal(){
         var toReturn = new Globals();
         toReturn.load(new JseBaseLib());
