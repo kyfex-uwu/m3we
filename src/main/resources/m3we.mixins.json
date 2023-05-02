@@ -6,7 +6,8 @@
   "mixins": [
     "CustomClickEventMixin",
     "m3weResourceMixin",
-    "LuaBlockPacketMixin"
+    "LuaBlockPacketMixin",
+    "DatastoreLoadMixin"
   ],
   "client": [
   ],
