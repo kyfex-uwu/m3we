@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.kyfexuwu.m3we.lua.CustomScript;
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.*;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
@@ -137,7 +136,7 @@ public class BlockIniter {
             return new SuccessAndIdentifier(SuccessRate.BAD_JSON);
 
         //setting material
-        AbstractBlock.Settings settings = FabricBlockSettings.of(starterMaterial);
+        AbstractBlock.Settings settings = AbstractBlock.Settings.of(starterMaterial);
 
         //setting the properties of the block settings
         String scriptName = null;

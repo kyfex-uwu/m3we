@@ -11,16 +11,13 @@ import java.util.HashMap;
 import java.util.Optional;
 
 public class DatastoreAPI extends TwoArgFunction {
-    public static DatastoreManager currentManager;
-    static{
-        new DatastoreManager();
-    }
+    public static DatastoreTable table = new DatastoreTable();
 
     @Override
     public LuaValue call(LuaValue modname, LuaValue env) {
-        env.set("Datastore", currentManager.table);
-        env.get("package").get("loaded").set("Datastore", currentManager.table);
-        return currentManager.table;
+        env.set("Datastore", table);
+        env.get("package").get("loaded").set("Datastore", table);
+        return table;
     }
 
     public static class DatastoreTable extends LuaTable{//TODO
@@ -33,8 +30,9 @@ public class DatastoreAPI extends TwoArgFunction {
         public static LuaValue fromNBTVal(NbtElement nbt, DatastoreTable tableToWrite){
             if(nbt instanceof NbtString) return LuaValue.valueOf(nbt.asString());
             else if(nbt instanceof NbtDouble) return LuaValue.valueOf(((NbtDouble) nbt).doubleValue());
+            else if(nbt instanceof NbtFloat) return LuaValue.valueOf(((NbtFloat) nbt).doubleValue());
+            else if(nbt instanceof NbtInt) return LuaValue.valueOf(((NbtInt) nbt).doubleValue());
             else if(nbt instanceof NbtByte) return LuaValue.valueOf(((NbtByte) nbt).byteValue()!=0);
-            else if(nbt instanceof NbtInt) return NIL;
             else if(nbt instanceof NbtCompound){
                 var table = tableToWrite==null ?
                         new DatastoreTable() : tableToWrite;
@@ -53,7 +51,6 @@ public class DatastoreAPI extends TwoArgFunction {
             if(val instanceof LuaString) return Optional.of(NbtString.of(val.checkjstring()));
             else if(val instanceof LuaBoolean) return Optional.of(NbtByte.of(val.checkboolean()));
             else if(val instanceof LuaNumber) return Optional.of(NbtDouble.of(val.checkdouble()));
-            else if(val.isnil()) return Optional.of(NbtInt.of(0));
             else if(val instanceof DatastoreTable){
                 var table = new NbtCompound();
 
@@ -120,7 +117,8 @@ public class DatastoreAPI extends TwoArgFunction {
         }
         public static LuaValue cleanup(LuaValue toClean){
             if(toClean instanceof LuaBoolean || toClean instanceof LuaNumber
-                    || toClean instanceof LuaString || toClean.isnil())
+                    || toClean instanceof LuaString || toClean instanceof DatastoreTable
+                    || toClean.isnil())
                 return toClean;
 
             var toReturn = new DatastoreTable();
@@ -144,7 +142,6 @@ public class DatastoreAPI extends TwoArgFunction {
             ScriptError.execute(()->{
                 if((key.isstring()||key.isnumber())&&validate(value)) {
                     this.values.put(key.strvalue().checkjstring(), cleanup(value));
-                    DatastoreAPI.currentManager.markDirty();
                 }
                 else throw new LuaError("key must be a string or number, and values must be " +
                         "string, boolean, number, or table");
@@ -177,27 +174,6 @@ public class DatastoreAPI extends TwoArgFunction {
         @Override
         public LuaValue remove(int pos) {
             throw new LuaError("please do not do this rn");
-        }
-    }
-
-    public static class DatastoreManager extends PersistentState {
-        public final DatastoreTable table;
-        public DatastoreManager(){
-            this.table = new DatastoreTable();
-            DatastoreAPI.currentManager = this;
-        }
-
-        @Override
-        public NbtCompound writeNbt(NbtCompound nbt) {
-            System.out.println("Datastore saved");
-            nbt.put("Data", this.table.toNBT().get()); // truss me
-            return nbt;
-        }
-
-        public static DatastoreManager fromNBT(NbtCompound nbt){
-            var toReturn = new DatastoreManager();
-            DatastoreTable.fromNBTVal(nbt.get("Data"), DatastoreAPI.currentManager.table);
-            return toReturn;
         }
     }
 }
