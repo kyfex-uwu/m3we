@@ -7,9 +7,7 @@ import com.kyfexuwu.m3we.lua.LuaSurfaceObj;
 import com.kyfexuwu.m3we.lua.Translations;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.util.Identifier;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.*;
 
 import java.lang.reflect.Array;
 import java.util.function.BiFunction;
@@ -94,7 +92,21 @@ public class Utils {
 
     //--
 
+    public static void forEach(LuaTable table, BiFunction<LuaValue, LuaValue, Boolean> function){
+        var key = LuaValue.NIL;
+        while(true){
+            Varargs n = table.next(key);
+            key = n.arg1();
+            if (key.isnil())
+                break;
+
+            if(function.apply(key, n.arg(2))==false) break;
+        }
+    }
+
     public static LuaValue toLuaValue(Object value){
+        if(value instanceof LuaValue)
+            return (LuaValue)value;
 
         if(value==null)
             return NIL;

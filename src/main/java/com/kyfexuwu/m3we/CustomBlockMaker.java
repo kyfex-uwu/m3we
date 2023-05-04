@@ -15,6 +15,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameter;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootContextType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.*;
@@ -30,11 +34,11 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
 
 import static com.kyfexuwu.m3we.Utils.tryAndExecute;
 import static com.kyfexuwu.m3we.Utils.validPropertyName;
@@ -175,6 +179,32 @@ public class CustomBlockMaker {
             //--
             // add overrides here!
 
+            private static Map<String, LootContextParameter<?>> lootParams = Map.ofEntries(
+                    Map.entry("tool", LootContextParameters.TOOL),
+                    Map.entry("minerEntity",LootContextParameters.DIRECT_KILLER_ENTITY)
+            );
+            @Override
+            public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder){
+                scriptContainer.setSelf(this);
+
+                //todo
+                var context = builder.build(LootContextType.create().build());
+
+                var paramsTable = new LuaTable();
+                for(var entry : lootParams.entrySet()){
+                    var param = context.get(entry.getValue());
+                    if(param!=null)
+                        paramsTable.set(entry.getKey(), Utils.toLuaValue(param));
+                }
+
+                return Utils.tryAndExecute(new ArrayList<>(), scriptContainer, "getDrops",
+                        new Object[]{paramsTable}, returnVal->{
+                            if(!(returnVal instanceof LuaTable)) throw new LuaError("wanted a table qwq");
+
+                            return new ArrayList<>();
+                        });
+            }
+
             @Override
             public BlockState getPlacementState(ItemPlacementContext ctx){
                 scriptContainer.setSelf(this);
@@ -302,6 +332,13 @@ public class CustomBlockMaker {
             public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
                 scriptContainer.setSelf(this);
                 Utils.tryAndExecute(scriptContainer,"randomTick",new Object[]{state,world,pos,random});
+            }
+
+            @Override
+            public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+                scriptContainer.setSelf(this);
+
+                Utils.tryAndExecute(scriptContainer,"randomDisplayTick",new Object[]{state,world,pos,random});
             }
 
             @Override//this is actually deprecated, might wanna look into that
