@@ -310,7 +310,7 @@ public class LuaBlockScreen extends Screen {
         if(y<this.formattedCode.length)
             newPos+=this.textRenderer.trimToWidth(this.formattedCode[y],(int) adjMouseX).length();
 
-        return newPos;
+        return Math.min(newPos,this.code.length());
     }
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {

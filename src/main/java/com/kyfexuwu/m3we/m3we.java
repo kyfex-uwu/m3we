@@ -79,8 +79,11 @@ public class m3we implements ModInitializer {
 
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener(){
 
+            private static boolean loaded=false;
             @Override
             public void reload(ResourceManager manager) {
+                if(loaded) return;
+
                 for(var ooga : manager.findResources("m3we_mappings",(id)->true).entrySet()){
                     try {
                         var toAssign=
@@ -103,6 +106,12 @@ public class m3we implements ModInitializer {
                         }
                     } catch (IOException ignored) { }
                 }
+                loaded=true;
+                System.out.println(Translations.classesTranslations.length+","+
+                        Translations.fieldsTranslations.length+","+
+                        Translations.compFieldsTranslations.length+","+
+                        Translations.methodsTranslations.length+
+                        " : 7654,39960,981,45105");
                 System.out.println("Loaded m3we mappings");
             }
 
