@@ -5,13 +5,12 @@ import com.google.gson.JsonObject;
 import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.lua.Translations;
 import com.kyfexuwu.m3we.luablock.*;
+import com.mojang.logging.LogUtils;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -20,7 +19,6 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
@@ -29,6 +27,7 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 import java.io.*;
 import java.nio.file.*;
@@ -38,6 +37,7 @@ import java.util.function.Predicate;
 
 public class m3we implements ModInitializer {
     public static String MOD_ID = "m3we";
+    public static Logger LOGGER = LogUtils.getLogger();
 
     public static Block luaBlock = new LuaBlock(FabricBlockSettings.copyOf(Blocks.COMMAND_BLOCK));
     public static final BlockEntityType<LuaBlockEntity> luaBlockEntity = Registry.register(
@@ -68,58 +68,12 @@ public class m3we implements ModInitializer {
     );
 
     public static final Identifier updateLuaBlockPacket = new Identifier("m3we","update_lua_block");
+    public static final Identifier askForLuaCodePacket = new Identifier("m3we","get_lua_code");
+    public static final Identifier giveLuaCodePacket = new Identifier("m3we","give_lua_code");
 
     @Override
     public void onInitialize() {
-        /* //for enums
-        for(Field field : .class.getDeclaredFields())
-            if(field.getName().toUpperCase().equals(field.getName()))
-                System.out.print("\""+field.getName()+"\", ");
-         */
-
-        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener(){
-
-            private static boolean loaded=false;
-            @Override
-            public void reload(ResourceManager manager) {
-                if(loaded) return;
-
-                for(var ooga : manager.findResources("m3we_mappings",(id)->true).entrySet()){
-                    try {
-                        var toAssign=
-                                new String(ooga.getValue().getInputStream().readAllBytes()).split("\n");
-                        switch (ooga.getKey().getPath().substring("m3we_mappings/".length())) {
-                            case "classes.txt" -> Translations.classesTranslations = Arrays.stream(toAssign)
-                                    .map(Translations.ClassToken::fromStr)
-                                    .toList().toArray(Translations.ClassToken[]::new);
-                            case "fields.txt" -> Translations.fieldsTranslations = Arrays.stream(toAssign)
-                                    .map(Translations.FieldToken::fromStr)
-                                    .toList().toArray(Translations.FieldToken[]::new);
-                            case "compfields.txt" -> Translations.compFieldsTranslations = Arrays.stream(toAssign)
-                                    .map(Translations.FieldToken::fromStr)
-                                    .toList().toArray(Translations.FieldToken[]::new);
-                            case "methods.txt" -> Translations.methodsTranslations = Arrays.stream(toAssign)
-                                    .map(Translations.MethodToken::fromStr)
-                                    .toList().toArray(Translations.MethodToken[]::new);
-                            default -> System.out.println("what do i do with this mapping file "
-                                    +ooga.getKey().getPath());
-                        }
-                    } catch (IOException ignored) { }
-                }
-                loaded=true;
-                System.out.println(Translations.classesTranslations.length+","+
-                        Translations.fieldsTranslations.length+","+
-                        Translations.compFieldsTranslations.length+","+
-                        Translations.methodsTranslations.length+
-                        " : 7654,39960,981,45105");
-                System.out.println("Loaded m3we mappings");
-            }
-
-            @Override
-            public Identifier getFabricId() {
-                return new Identifier(MOD_ID,"m3we_mappings");
-            }
-        });
+        Translations.init();
 
         JBFolder.mkdir();
         blocksFolder.mkdir();

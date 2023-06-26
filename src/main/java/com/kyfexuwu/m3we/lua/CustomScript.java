@@ -247,17 +247,21 @@ public class CustomScript {
                         .append(Utils.deobfuscate(refMethods[0].getName()));
 
                 for(Method m : refMethods) {
-                    var paramClasses = m.getParameterTypes();
-                    if (paramClasses.length > 0) {
-                        toReturn.append(" [takes parameters of types: ");
-                        for (Class<?> clazz : paramClasses) {
-                            toReturn.append(Utils.deobfuscate(clazz.getSimpleName()))
-                                    .append(", ");
+                    var token = Translations.getToken(m);
+
+                    if (token.paramNames.length > 0) {
+                        toReturn.append(" [takes parameters: ");
+                        for (int i=0;i<token.paramNames.length;i++) {
+                            if(i>0) toReturn.append(", ");
+                            toReturn.append(token.paramNames[i])
+                                    .append(" (")
+                                    .append(token.paramClasses[i])
+                                    .append(")");
                         }
                     } else {
-                        toReturn.append(" [takes no parameters, ");
+                        toReturn.append(" [takes no parameters,");
                     }
-                    toReturn.append("and ");
+                    toReturn.append(" and ");
 
                     var returnClass = m.getReturnType();
                     if (!returnClass.equals(Void.class)) {

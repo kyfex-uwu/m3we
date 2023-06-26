@@ -26,9 +26,12 @@ public class LuaBlockEntity extends BlockEntity {
     public String getLua(){ return this.lua; }
     public boolean getActive() { return this.active; }
     public void setState(String lua, boolean active){
+        this.active=active;
+        this.setScript(lua);
+    }
+    public void setScript(String lua){
         this.lua=lua;
         this.script.updateScript(lua);
-        this.active=active;
         this.markDirty();
     }
 

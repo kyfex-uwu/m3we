@@ -9,7 +9,6 @@ import org.luaj.vm2.lib.TwoArgFunction;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.LinkedList;
 
 public class LuaSurfaceObj extends LuaTable {
@@ -140,7 +139,7 @@ public class LuaSurfaceObj extends LuaTable {
     public void set(LuaValue key, LuaValue value){
         MinecraftClient.getInstance().inGameHud.getChatHud()
                 .addMessage(Text.of("You can't set properties on Java objects directly," +
-                        "see if there's a helper function instead!"));
+                        "see if there's a helper function instead! (this should change soon)"));
     }
     @Override
     public void rawset(LuaValue key, LuaValue value){

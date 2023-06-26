@@ -1,7 +1,6 @@
 package com.kyfexuwu.m3we.luablock;
 
 import com.kyfexuwu.m3we.m3we;
-import com.kyfexuwu.m3we.mixins.LuaBlockPacketMixin;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -24,19 +23,23 @@ public class LuaBlockScreen extends Screen {
     private static final Text title = Text.translatable("m3we.lua_script");
 
     final BlockPos pos;
-    String code;
+    public String code;
     String[] formattedCode;
     boolean active;
 
-    public LuaBlockScreen(BlockPos pos, String initialCode, boolean active) {
+    public LuaBlockScreen(BlockPos pos, boolean active) {
         super(title);
         this.pos=pos;
-        this.code=initialCode;
+        this.code="loading...";
         this.active=active;
         this.updateCode();
+
+        ClientPlayNetworking.send(m3we.askForLuaCodePacket, PacketByteBufs
+                .create()
+                .writeBlockPos(pos));
     }
 
-    void updateCode(){
+    public void updateCode(){
         this.formattedCode = Arrays.stream(code.split("\n")).toArray(String[]::new);
     }
     Pair<Integer, Integer> getXY(int charPos){
