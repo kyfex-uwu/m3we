@@ -68,16 +68,6 @@ public class BlockIniter {
                     return MapColor.CLEAR;
                 }
             }),
-            /*
-            new PropertyTranslator("drops",AbstractBlock.Settings::,(ScriptAndValue SAV) -> {
-                try{
-                    return LootTables.class.getField(SAV.value.getAsString()).get(null);
-                    //todo: custom drops
-                }catch(NoSuchFieldException | IllegalAccessException e){
-                    return LootTables.EMPTY;
-                }
-            }),
-            */
             new BlockPropertyTranslator<>("isToolRequired", (settings, toolRequired) ->
                     toolRequired ? settings.requiresTool() : settings, BoolTransformFunc),
             new BlockPropertyTranslator<>("ticksRandomly", (settings, randomlyTicks) ->

@@ -15,10 +15,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextType;
+import net.minecraft.loot.context.*;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.*;
@@ -179,30 +176,38 @@ public class CustomBlockMaker {
             //--
             // add overrides here!
 
-            private static Map<String, LootContextParameter<?>> lootParams = Map.ofEntries(
+            private static final Map<String, LootContextParameter<?>> lootParams = Map.ofEntries(
                     Map.entry("tool", LootContextParameters.TOOL),
                     Map.entry("minerEntity",LootContextParameters.DIRECT_KILLER_ENTITY)
             );
             @Override
             public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder){
-                scriptContainer.setSelf(this);
+                var doDatapackDrops = scriptContainer.isFake;
+                if(!doDatapackDrops) doDatapackDrops = !scriptContainer.runEnv.get("getDrops").isfunction();
 
-                //todo
-                var context = builder.build(LootContextType.create().build());
+                LootContext lootContext = builder.parameter(LootContextParameters.BLOCK_STATE, state).build(LootContextTypes.BLOCK);
 
-                var paramsTable = new LuaTable();
-                for(var entry : lootParams.entrySet()){
-                    var param = context.get(entry.getValue());
-                    if(param!=null)
-                        paramsTable.set(entry.getKey(), Utils.toLuaValue(param));
+                if(doDatapackDrops){
+                    var toReturn = super.getDroppedStacks(state, builder);
+                    System.out.println(this.lootTableId.toString());
+                    System.out.println(toReturn.get(0).getName().getString());
+                    return toReturn;
+                }else {
+
+                    var paramsTable = new LuaTable();
+                    for (var entry : lootParams.entrySet()) {
+                        var param = lootContext.get(entry.getValue());
+                        if (param != null)
+                            paramsTable.set(entry.getKey(), Utils.toLuaValue(param));
+                    }
+
+                    return Utils.tryAndExecute(new ArrayList<>(), scriptContainer, "getDrops",
+                            new Object[]{paramsTable}, returnVal -> {
+                                if (!(returnVal instanceof LuaTable)) throw new LuaError("wanted a table qwq");
+
+                                return new ArrayList<>();
+                            });
                 }
-
-                return Utils.tryAndExecute(new ArrayList<>(), scriptContainer, "getDrops",
-                        new Object[]{paramsTable}, returnVal->{
-                            if(!(returnVal instanceof LuaTable)) throw new LuaError("wanted a table qwq");
-
-                            return new ArrayList<>();
-                        });
             }
 
             @Override

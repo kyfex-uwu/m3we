@@ -1,7 +1,5 @@
 package com.kyfexuwu.m3we;
 
-import com.google.common.collect.Lists;
-import com.google.gson.JsonObject;
 import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.lua.Translations;
 import com.kyfexuwu.m3we.luablock.*;
@@ -19,21 +17,15 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.resource.ResourcePack;
-import net.minecraft.resource.ResourceType;
-import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.FilenameUtils;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 public class m3we implements ModInitializer {
     public static String MOD_ID = "m3we";
@@ -50,7 +42,7 @@ public class m3we implements ModInitializer {
         Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "lua_block"),luaBlock);
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "lua_block"),
                 new BlockItem(luaBlock, new FabricItemSettings()));
-        //.group(ItemGroup.OPERATOR)
+        //.group(ItemGroup.OPERATOR);//1.20
     }
 
     public static HashMap<String, Block> jsonBlocks= new HashMap<>();
@@ -117,11 +109,19 @@ public class m3we implements ModInitializer {
 
         m3weResources.mkdir();
         for (File packDir : m3weResources.listFiles()) {
-            if(packDir.isDirectory()&&
-                    Arrays.asList(packDir.list()).contains("assets")) {
+            if(!packDir.isDirectory()) continue;
+            var dirs = Arrays.asList(packDir.list());
+
+            if(dirs.contains("assets")) {
                 for(File resourceDir : new File(packDir.getAbsolutePath()+"\\assets").listFiles()){
-                    crawlResources(resourceDir,"", resourceDir.getName(),
-                            packDir.getName()+"/assets/"+resourceDir.getName()+"/");
+                    m3weData.crawlResources(resourceDir,"", resourceDir.getName(),
+                            packDir.getName()+"/assets/"+resourceDir.getName()+"/", true);
+                }
+            }
+            if(dirs.contains("data")) {
+                for(File resourceDir : new File(packDir.getAbsolutePath()+"\\data").listFiles()){
+                    m3weData.crawlResources(resourceDir, "", resourceDir.getName(),
+                            packDir.getName() + "/data/" + resourceDir.getName() + "/", false);
                 }
             }
         }
@@ -140,79 +140,11 @@ public class m3we implements ModInitializer {
                     case CANT_READ -> System.out.println("Can't read file "+prefix+modFile.getName());
                     case BAD_JSON -> System.out.println("Bad JSON in file "+prefix+modFile.getName());
                     case IDK -> System.out.println("Message me on discord KYFEX#3614 and tell me to fix my mod");
-                    case YOU_DID_IT -> packNamespaces.add(modObject.identifier.getNamespace());
+                    case YOU_DID_IT -> m3weData.packNamespaces.add(modObject.identifier.getNamespace());
                 }
             }
         }
     }
 
     public static File m3weResources = new File(JBFolder.getAbsolutePath()+"\\resources");
-    public static final JsonObject packMetadata = JsonHelper.deserialize("{" +
-        "\"pack\":{" +
-            "\"pack_format\":9," +
-            "\"description\":\""+MOD_ID+" resources\"" +
-        "}" +
-    "}");
-    public static Set<String> packNamespaces = new HashSet<>();
-    public static HashMap<String,String> packFiles = new HashMap<>();
-    private static void crawlResources(File folder, String prefix, String namespace, String origFilePath){
-        for (File modFile : folder.listFiles()) {
-            if(modFile.isDirectory()) {
-                crawlResources(modFile, prefix+modFile.getName()+"/", namespace, origFilePath);
-            }else{
-                packFiles.put(namespace+":"+prefix+modFile.getName(),origFilePath+prefix+modFile.getName());
-            }
-        }
-    }
-    public static final ResourcePack m3weResourcePack = new ResourcePack() {
-        @Nullable
-        @Override//done
-        public InputStream openRoot(String fileName){
-            if (!fileName.contains("/") && !fileName.contains("\\")) {
-                return null;
-                //literally no clue what this is
-            } else {
-                throw new IllegalArgumentException("Root resources can only be filenames, not paths (no / allowed!)");
-            }
-        }
-
-        @Override//done
-        public InputStream open(ResourceType type, Identifier id) throws IOException {
-            return new FileInputStream(m3weResources.getAbsolutePath()+"/"+packFiles.get(id.toString()));
-        }
-
-        @Override//done
-        public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, Predicate<Identifier> allowedPathPredicate) {
-            //System.out.println(namespace+"\n"+prefix+"\n"+allowedPathPredicate.toString());
-            //todo: this asks for a font and a realms main screen, maybe i add?
-            return Lists.newArrayList();
-        }
-
-        @Override//done
-        public boolean contains(ResourceType type, Identifier id){
-            if(type==ResourceType.SERVER_DATA) return false;
-
-            return packFiles.containsKey(id.toString());
-        }
-
-        @Override//done
-        public Set<String> getNamespaces(ResourceType type) {
-            return packNamespaces;
-        }
-
-        @Nullable
-        @Override//done
-        public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) {
-            if(!packMetadata.has(metaReader.getKey())) return null;
-            return metaReader.fromJson(JsonHelper.getObject(packMetadata, metaReader.getKey()));
-        }
-
-        @Override//done
-        public String getName() {
-            return MOD_ID;
-        }
-
-        @Override//done
-        public void close() {}
-    };
 }

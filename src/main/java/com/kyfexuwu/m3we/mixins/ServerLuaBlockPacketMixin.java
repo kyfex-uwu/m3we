@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerPlayNetworkHandler.class)
 public class ServerLuaBlockPacketMixin {
     @Inject(method = "onCustomPayload", at = @At("HEAD"))
-    private void updateLuaBlock(CustomPayloadC2SPacket packet, CallbackInfo ci) {
+    private void updateLuaBlock__m3we(CustomPayloadC2SPacket packet, CallbackInfo ci) {
         if(!packet.getChannel().equals(m3we.updateLuaBlockPacket)) return;
         var buffer = packet.getData();
 
@@ -39,7 +39,7 @@ public class ServerLuaBlockPacketMixin {
                 .with(LuaBlock.ACTIVE, active));
     }
     @Inject(method = "onCustomPayload", at = @At("HEAD"))
-    private void askForCode(CustomPayloadC2SPacket packet, CallbackInfo ci) {
+    private void askForCode__m3we(CustomPayloadC2SPacket packet, CallbackInfo ci) {
         if(!packet.getChannel().equals(m3we.askForLuaCodePacket)) return;
         var buffer = packet.getData();
 

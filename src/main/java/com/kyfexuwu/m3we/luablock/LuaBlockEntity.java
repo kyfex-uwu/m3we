@@ -39,6 +39,7 @@ public class LuaBlockEntity extends BlockEntity {
     boolean errored=false;
     int currRevision =-1;
     public static void tick(World world, BlockPos pos, BlockState state, LuaBlockEntity blockEntity){
+        if(world.isClient) return;
         if(!blockEntity.active) return;
 
         if(!blockEntity.loaded){
@@ -48,50 +49,26 @@ public class LuaBlockEntity extends BlockEntity {
 
         if(blockEntity.currRevision==-1) blockEntity.currRevision=blockEntity.script.revision;
 
-        //todo: when error, stop executing
-        if(world.isClient) {
-            ScriptError.execute(() -> {
-                if(blockEntity.currRevision==blockEntity.script.revision&&blockEntity.errored){
-                    return;
-                }
+        ScriptError.execute(() -> {
+            if(blockEntity.currRevision==blockEntity.script.revision&&blockEntity.errored){
+                return;
+            }
 
-                var clientTick = blockEntity.script.runEnv.get("clientTick");
-                if(!clientTick.isnil())
-                    clientTick.call();
+            var serverTick = blockEntity.script.runEnv.get("tick");
+            if(!serverTick.isnil())
+                serverTick.call();
+            blockEntity.errored = false;
+        }, (e) -> {
+            if(blockEntity.currRevision!=blockEntity.script.revision&&blockEntity.errored){
                 blockEntity.errored=false;
-            }, (e) -> {
-                if(blockEntity.currRevision!=blockEntity.script.revision&&blockEntity.errored){
-                    blockEntity.errored=false;
-                    blockEntity.currRevision=blockEntity.script.revision;
-                    return;
-                }
-                if (blockEntity.errored) return;
-                blockEntity.errored=true;
+                blockEntity.currRevision=blockEntity.script.revision;
+                return;
+            }
+            if (blockEntity.errored) return;
+            blockEntity.errored=true;
 
-                CustomScript.print("clientTick: "+e.getMessage());
-            });
-        }else{
-            ScriptError.execute(() -> {
-                if(blockEntity.currRevision==blockEntity.script.revision&&blockEntity.errored){
-                    return;
-                }
-
-                var serverTick = blockEntity.script.runEnv.get("serverTick");
-                if(!serverTick.isnil())
-                    serverTick.call();
-                blockEntity.errored = false;
-            }, (e) -> {
-                if(blockEntity.currRevision!=blockEntity.script.revision&&blockEntity.errored){
-                    blockEntity.errored=false;
-                    blockEntity.currRevision=blockEntity.script.revision;
-                    return;
-                }
-                if (blockEntity.errored) return;
-                blockEntity.errored=true;
-
-                CustomScript.print("serverTick: "+e.getMessage());
-            });
-        }
+            CustomScript.print("tick error: "+e.getMessage());
+        });
     }
 
     @Override

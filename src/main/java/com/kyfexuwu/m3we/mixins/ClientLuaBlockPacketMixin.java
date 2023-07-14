@@ -22,7 +22,7 @@ public class ClientLuaBlockPacketMixin {
     @Shadow private ClientWorld world;
 
     @Inject(method = "onCustomPayload", at = @At("HEAD"))
-    private void updateLuaBlock(CustomPayloadS2CPacket packet, CallbackInfo ci) {
+    private void updateLuaBlock__m3we(CustomPayloadS2CPacket packet, CallbackInfo ci) {
         if(!packet.getChannel().equals(m3we.giveLuaCodePacket)) return;
         var buffer = packet.getData();
 
