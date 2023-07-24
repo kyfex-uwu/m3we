@@ -19,7 +19,7 @@ public class DatastoreLoadMixin {
     @Shadow @Final protected LevelStorage.Session session;
 
     @Inject(method="save", at=@At(value = "RETURN"))
-    private void saveDatastoreMixin(boolean suppressLogs, boolean flush, boolean force, CallbackInfoReturnable<Boolean> cir) {
+    private void saveDatastoreMixin__m3we(boolean suppressLogs, boolean flush, boolean force, CallbackInfoReturnable<Boolean> cir) {
         try {
             NbtIo.write((NbtCompound) DatastoreAPI.table.toNBT().get(), this.session.getDirectory(WorldSavePath.ROOT)
                     .resolve("m3we_datastore.dat").toFile());
@@ -27,7 +27,7 @@ public class DatastoreLoadMixin {
     }
 
     @Inject(method="loadWorld", at=@At(value = "RETURN"))
-    private void loadDatastoreMixin(CallbackInfo ci) {
+    private void loadDatastoreMixin__m3we(CallbackInfo ci) {
         try {
             var file=this.session.getDirectory(WorldSavePath.ROOT)
                     .resolve("m3we_datastore.dat").toFile();

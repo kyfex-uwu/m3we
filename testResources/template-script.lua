@@ -27,22 +27,16 @@ function onUse(state,world,pos,player,hand,hit)
         print(key)
     end
 end
+function onBroken(world,pos,state) end
+function onSteppedOn(world,pos,state,entity) end
+function onPlaced(world,pos,state,placer,itemStack) end
 
-function onBroken(world,pos,state)
+function neighborUpdate(state,world,pos,sourceBlock,sourcePos,notify) end
+function scheduledTick(state,world,pos,random) end --not the same as a random tick, these have to be scheduled
+function randomTick(state,world,pos,random) end --for server
+function randomDisplayTick(state,world,pos,random) end --for client
 
-end
-function onSteppedOn(world,pos,state,entity)
+function getStrongRedstonePower(state,world,pos,direction) end
+function getWeakRedstonePower(state,world,pos,direction) end
 
-end
-function onPlaced(world,pos,state,placer,itemStack)
-
-end
-function randomTick(state,world,pos,random)
-
-end
-function neighborUpdate(state,world,pos,sourceBlock,sourcePos,notify)
-
-end
-function scheduledTick(state,world,pos,random)
-
-end
+function getDrops(paramsTable) end

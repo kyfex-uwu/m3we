@@ -4,12 +4,13 @@
   "package": "com.kyfexuwu.m3we.mixins",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "ClientLuaBlockPacketMixin",
     "CustomClickEventMixin",
-    "m3weResourceMixin",
-    "LuaBlockPacketMixin",
-    "DatastoreLoadMixin"
-  ],
-  "client": [
+    "DatastoreLoadMixin",
+    "m3weDatapackMixinServer",
+    "m3weDatapackMixinIntegrated",
+    "m3weResourcePackMixin",
+    "ServerLuaBlockPacketMixin"
   ],
   "injectors": {
     "defaultRequire": 1

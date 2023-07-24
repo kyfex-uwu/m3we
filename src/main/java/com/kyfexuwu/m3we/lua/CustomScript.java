@@ -56,6 +56,7 @@ public class CustomScript {
         toReturn.load(new RegistryAPI());
         toReturn.load(new DatastoreAPI());
         toReturn.load(new CreateApi());
+        toReturn.load(new MiscAPI());
 
         return toReturn;
     }
@@ -122,11 +123,11 @@ public class CustomScript {
             else
                 toPrint.append(valueToString(args.arg(i), 0));
         }
-        try {
+        try {//CHANGE
             MinecraftClient.getInstance().inGameHud.getChatHud()
                     .addMessage(Text.of(toPrint.toString()));
         }catch(Exception e){
-            System.out.println(toPrint);
+            System.out.println("m3we print: "+toPrint);
         }
         return NIL;
     }
@@ -204,7 +205,8 @@ public class CustomScript {
         }
     }
 
-    public void setSelf(Object self){
+    public void setContext(Object self){
+        if(this.isFake) return;
         this.runEnv.set("self",new LuaSurfaceObj(self));
     }
 
@@ -247,17 +249,21 @@ public class CustomScript {
                         .append(Utils.deobfuscate(refMethods[0].getName()));
 
                 for(Method m : refMethods) {
-                    var paramClasses = m.getParameterTypes();
-                    if (paramClasses.length > 0) {
-                        toReturn.append(" [takes parameters of types: ");
-                        for (Class<?> clazz : paramClasses) {
-                            toReturn.append(Utils.deobfuscate(clazz.getSimpleName()))
-                                    .append(", ");
+                    var token = Translations.getToken(m);
+
+                    if (token.paramNames.length > 0) {
+                        toReturn.append(" [takes parameters: ");
+                        for (int i=0;i<token.paramNames.length;i++) {
+                            if(i>0) toReturn.append(", ");
+                            toReturn.append(token.paramNames[i])
+                                    .append(" (")
+                                    .append(token.paramClasses[i])
+                                    .append(")");
                         }
                     } else {
-                        toReturn.append(" [takes no parameters, ");
+                        toReturn.append(" [takes no parameters,");
                     }
-                    toReturn.append("and ");
+                    toReturn.append(" and ");
 
                     var returnClass = m.getReturnType();
                     if (!returnClass.equals(Void.class)) {

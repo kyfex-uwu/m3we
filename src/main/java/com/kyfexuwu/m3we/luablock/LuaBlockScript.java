@@ -19,9 +19,12 @@ public class LuaBlockScript extends CustomScript {
         this.runEnv = CustomScript.safeGlobal();
         LoadState.install(this.runEnv);
         LuaC.install(this.runEnv);
-
-        this.setSelf(this.self);
-        ScriptError.execute(()-> this.runEnv.load(script).call());
         this.revision=(this.revision+1)%100;
+
+        var world = this.self.getWorld();
+        if(world!=null&&!world.isClient) {
+            this.setContext(this.self);
+            ScriptError.execute(() -> this.runEnv.load(script).call());
+        }
     }
 }

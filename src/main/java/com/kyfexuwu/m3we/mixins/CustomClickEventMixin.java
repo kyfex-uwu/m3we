@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Screen.class)
 public class CustomClickEventMixin {
     @Inject(method="handleTextClick", at=@At(value="HEAD"), cancellable = true)
-    private void customClickEventHandler(Style style, CallbackInfoReturnable<Boolean> cir) {
-        if(style!=null&style.getClickEvent()!=null){//this is a kinda bruh way to to it but uwu
+    private void customClickEventHandler__m3we(Style style, CallbackInfoReturnable<Boolean> cir) {
+        if(style!=null&style.getClickEvent()!=null){//this is a kinda bruh way to do it but uwu
             if(style.getClickEvent().getValue().equals("CUSTOM_CLICK_EVENT")){
                 cir.cancel();
             }

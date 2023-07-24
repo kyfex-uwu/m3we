@@ -7,8 +7,8 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.ThreeArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
@@ -75,13 +75,10 @@ public class CreateApi extends TwoArgFunction {
 
             var propTable = arg.get("properties");
             if(!propTable.isnil()) {
-                LuaValue k = LuaValue.NIL;
-                while (true) {
-                    Varargs n = propTable.next(k);
-                    if ((k = n.arg1()).isnil())
-                        break;
-                    proposedProps.add(k.checkjstring());
-                }
+                Utils.forEach((LuaTable) propTable, (key, value)->{
+                    proposedProps.add(key.checkjstring());
+                    return null;
+                });
                 for (Property prop : props.toArray(Property[]::new)) {
                     if (proposedProps.contains(prop.getName())) {
                         var setTo = (Object) Utils.toObject(propTable.get(prop.getName()));

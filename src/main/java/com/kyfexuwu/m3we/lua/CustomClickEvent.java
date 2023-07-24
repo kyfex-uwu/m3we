@@ -1,4 +1,4 @@
-package com.kyfexuwu.m3we.lua.api;
+package com.kyfexuwu.m3we.lua;
 
 import net.minecraft.text.ClickEvent;
 

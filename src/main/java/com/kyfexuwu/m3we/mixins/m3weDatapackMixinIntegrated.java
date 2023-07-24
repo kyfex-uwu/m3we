@@ -1,8 +1,11 @@
 package com.kyfexuwu.m3we.mixins;
 
 import com.kyfexuwu.m3we.m3we;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.resource.*;
+import com.kyfexuwu.m3we.m3weData;
+import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.resource.ResourcePackProvider;
+import net.minecraft.resource.ResourcePackSource;
+import net.minecraft.server.integrated.IntegratedServerLoader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -10,18 +13,18 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import java.io.File;
 import java.util.Arrays;
 
-@Mixin(MinecraftClient.class)
-public class m3weResourceMixin {
+@Mixin(IntegratedServerLoader.class)
+public class m3weDatapackMixinIntegrated {
     @ModifyArg(
-            method = "<init>",
+            method = "createDataPackManager",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/resource/ResourcePackManager;<init>("+
-                                "Lnet/minecraft/resource/ResourcePackProfile$Factory;"+
-                                "[Lnet/minecraft/resource/ResourcePackProvider;)V"
+                    target = "Lnet/minecraft/resource/ResourcePackManager;<init>(" +
+                            "Lnet/minecraft/resource/ResourceType;" +
+                            "[Lnet/minecraft/resource/ResourcePackProvider;)V"
             ),
             index = 1)
-    private ResourcePackProvider[] addm3weResourcePack(ResourcePackProvider[] packs) {
+    private static ResourcePackProvider[] addm3weDataPackIntegrated__m3we(ResourcePackProvider[] packs) {
         File resourcesFolder = new File(m3we.JBFolder.getAbsolutePath()+"\\resources");
         resourcesFolder.mkdir();
 
@@ -30,7 +33,7 @@ public class m3weResourceMixin {
             ResourcePackProfile resourcePackProfile = ResourcePackProfile.of(
                     m3we.MOD_ID,
                     true,
-                    () -> m3we.m3weResourcePack,
+                    () -> m3weData.resourcePack,
                     factory,
                     ResourcePackProfile.InsertionPosition.BOTTOM,
                     ResourcePackSource.PACK_SOURCE_BUILTIN

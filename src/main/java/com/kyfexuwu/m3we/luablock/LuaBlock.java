@@ -10,12 +10,10 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class LuaBlock extends BlockWithEntity implements OperatorBlock {
@@ -40,7 +38,7 @@ public class LuaBlock extends BlockWithEntity implements OperatorBlock {
         if (world.getBlockEntity(pos) instanceof LuaBlockEntity && player.isCreativeLevelTwoOp()) {
             if(player instanceof ClientPlayerEntity){
                 MinecraftClient.getInstance().setScreen(
-                        new LuaBlockScreen(pos,((LuaBlockEntity) world.getBlockEntity(pos)).getLua(),state.get(ACTIVE)));
+                        new LuaBlockScreen(pos, state.get(ACTIVE)));
             }
             return ActionResult.success(world.isClient);
         } else {

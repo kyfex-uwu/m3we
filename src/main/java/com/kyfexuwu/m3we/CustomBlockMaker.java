@@ -10,11 +10,21 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.loot.LootPool;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.condition.*;
+import net.minecraft.loot.context.*;
+import net.minecraft.loot.entry.ItemEntry;
+import net.minecraft.predicate.NumberRange;
+import net.minecraft.predicate.item.EnchantmentPredicate;
+import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.*;
@@ -30,18 +40,87 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
 
 import static com.kyfexuwu.m3we.Utils.tryAndExecute;
 import static com.kyfexuwu.m3we.Utils.validPropertyName;
 
 public class CustomBlockMaker {
+    private enum DropBehavior{
+        UNSPECIFIED(""),
+        SELF("self"),
+        SILK_TOUCH("silk_touch");
+
+        private final String name;
+        DropBehavior(String name){
+            this.name=name;
+        }
+        static DropBehavior get(String str){
+            for(var val : DropBehavior.values()){
+                if(val.name.equals(str)) return val;
+            }
+            return UNSPECIFIED;
+        }
+        static final LootTable selfTable;
+        static final LootTable silkTouchTable;
+        static{
+            selfTable = new LootTable.Builder()
+                    .type(LootContextTypes.BLOCK)
+                    .pool(new LootPool.Builder()
+                            .conditionally(SurvivesExplosionLootCondition.builder().build())
+                            .with(ItemEntry.builder(Items.DIAMOND)))
+                    .build();
+            silkTouchTable = new LootTable.Builder()
+                    .type(LootContextTypes.BLOCK)
+                    .pool(new LootPool.Builder()
+                            .conditionally(SurvivesExplosionLootCondition.builder().build())
+                            .conditionally(MatchToolLootCondition.builder(
+                                    ItemPredicate.Builder.create().enchantment(
+                                            new EnchantmentPredicate(Enchantments.SILK_TOUCH,
+                                                    NumberRange.IntRange.ANY))))
+                            .with(ItemEntry.builder(Items.DIAMOND)))
+                    .build();
+        }
+        List<ItemStack> getDrops(BlockState state, LootContext context){
+            switch(this){
+                case SELF -> {
+                    var toReturn = new ItemStack(state.getBlock().asItem());
+                    toReturn.setCount(selfTable.generateLoot(context).size());
+                    return Collections.singletonList(toReturn);
+                }
+                case SILK_TOUCH -> {
+                    var toReturn = new ItemStack(state.getBlock().asItem());
+                    toReturn.setCount(silkTouchTable.generateLoot(context).size());
+                    return Collections.singletonList(toReturn);
+                }
+                default -> { return List.of(); }
+            }
+        }
+    }
+
+    private static final Map<String, LootContextParameter<?>> lootParams = Map.ofEntries(
+            Map.entry("thisEntity",LootContextParameters.THIS_ENTITY),
+            Map.entry("lastDamagePlayer",LootContextParameters.LAST_DAMAGE_PLAYER),
+            Map.entry("damageSource",LootContextParameters.DAMAGE_SOURCE),
+            Map.entry("killerEntity",LootContextParameters.KILLER_ENTITY),
+            Map.entry("directKillerEntity",LootContextParameters.DIRECT_KILLER_ENTITY),
+            Map.entry("origin",LootContextParameters.ORIGIN),
+            Map.entry("blockState",LootContextParameters.BLOCK_STATE),
+            Map.entry("blockEntity",LootContextParameters.BLOCK_ENTITY),
+            Map.entry("tool",LootContextParameters.TOOL),
+            Map.entry("explosionRadius",LootContextParameters.EXPLOSION_RADIUS));
+
     public static Block from(AbstractBlock.Settings settings, JsonObject blockStates,
-                             JsonElement blockShapeJson, JsonElement outlineShapeJson, String scriptName) {
+                             JsonObject blockJson, String scriptName) {
+        final var blockShapeJson = blockJson.get("blockShape");
+        final var outlineShapeJson = blockJson.get("outlineShape");
+        var dropsSelfTemp = blockJson.get("dropsSelf");
+        final var dropSelfBehavior = (dropsSelfTemp!=null&&dropsSelfTemp.isJsonPrimitive())?
+                DropBehavior.get(dropsSelfTemp.getAsString()):DropBehavior.UNSPECIFIED;
 
         class thisCustomBlock extends Block implements CustomBlock {
             public Property<?>[] props;
@@ -176,8 +255,34 @@ public class CustomBlockMaker {
             // add overrides here!
 
             @Override
+            public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder){
+                LootContext lootContext = builder.parameter(LootContextParameters.BLOCK_STATE, state).build(LootContextTypes.BLOCK);
+                if(dropSelfBehavior!=DropBehavior.UNSPECIFIED){
+                    return dropSelfBehavior.getDrops(state,lootContext);
+                }
+
+                if(scriptContainer.isFake || !scriptContainer.runEnv.get("getDrops").isfunction()){
+                    return super.getDroppedStacks(state, builder);
+                }
+
+                var paramsTable = new LuaTable();
+                for (var entry : lootParams.entrySet()) {
+                    var param = lootContext.get(entry.getValue());
+                    if (param != null)
+                        paramsTable.set(entry.getKey(), Utils.toLuaValue(param));
+                }
+
+                return Utils.tryAndExecute(new ArrayList<>(), scriptContainer, "getDrops",
+                        new Object[]{paramsTable}, returnVal -> {
+                            if (!(returnVal instanceof LuaTable)) throw new LuaError("wanted a table qwq");
+
+                            return new ArrayList<>();
+                        });
+            }
+
+            @Override
             public BlockState getPlacementState(ItemPlacementContext ctx){
-                scriptContainer.setSelf(this);
+                scriptContainer.setContext(this);
 
                 return Utils.tryAndExecute(this.getDefaultState(),scriptContainer,"getStateOnPlace",
                         new Object[]{ctx},returnValue->{
@@ -216,7 +321,7 @@ public class CustomBlockMaker {
                     if(this.outlineScriptString==null)
                         return this.outlineShape!=null ? this.outlineShape : this.getCollisionShape(state, world, pos, context);
 
-                    scriptContainer.setSelf(this);
+                    scriptContainer.setContext(this);
                     return tryAndExecute(
                         VoxelShapes.empty(),
                         scriptContainer,
@@ -257,7 +362,7 @@ public class CustomBlockMaker {
             public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
                 if(this.shapeIsScript){
                     if(shapeScriptString==null) return VoxelShapes.fullCube();
-                    scriptContainer.setSelf(this);
+                    scriptContainer.setContext(this);
 
                     return tryAndExecute(
                             VoxelShapes.empty(),
@@ -300,33 +405,40 @@ public class CustomBlockMaker {
 
             @Override
             public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-                scriptContainer.setSelf(this);
+                scriptContainer.setContext(this);
                 Utils.tryAndExecute(scriptContainer,"randomTick",new Object[]{state,world,pos,random});
             }
 
-            @Override//this is actually deprecated, might wanna look into that
+            @Override
+            public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+                scriptContainer.setContext(this);
+
+                Utils.tryAndExecute(scriptContainer,"randomDisplayTick",new Object[]{state,world,pos,random});
+            }
+
+            @Override
             public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-                scriptContainer.setSelf(this);
+                scriptContainer.setContext(this);
 
                 Utils.tryAndExecute(scriptContainer,"neighborUpdate",new Object[]{state,world,pos,sourceBlock,sourcePos,notify});
             }
 
             @Override
             public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-                scriptContainer.setSelf(this);
+                scriptContainer.setContext(this);
 
                 Utils.tryAndExecute(scriptContainer,"scheduledTick",new Object[]{state,world,pos,random});
             }
 
             @Override
             public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction){
-                scriptContainer.setSelf(this);
+                scriptContainer.setContext(this);
                 return Utils.tryAndExecute(0,scriptContainer,"getStrongRedstonePower",
                         new Object[]{state,world,pos,direction}, LuaValue::checkint);
             }
             @Override
             public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction){
-                scriptContainer.setSelf(this);
+                scriptContainer.setContext(this);
 
                 return Utils.tryAndExecute(0,scriptContainer,"getWeakRedstonePower",
                         new Object[]{state,world,pos,direction}, LuaValue::checkint);
@@ -334,7 +446,7 @@ public class CustomBlockMaker {
 
             @Override
             public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-                scriptContainer.setSelf(this);
+                scriptContainer.setContext(this);
 
                 return Utils.tryAndExecute(ActionResult.PASS,scriptContainer,"onUse",
                     new Object[]{state,world,pos,player,hand,hit}, returnValue->{
@@ -348,21 +460,21 @@ public class CustomBlockMaker {
 
             @Override
             public void onBroken(WorldAccess world, BlockPos pos, BlockState state){
-                scriptContainer.setSelf(this);
+                scriptContainer.setContext(this);
 
                 Utils.tryAndExecute(scriptContainer,"onBroken",new Object[]{world,pos,state});
             }
 
             @Override
             public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-                scriptContainer.setSelf(this);
+                scriptContainer.setContext(this);
 
                 Utils.tryAndExecute(scriptContainer,"onSteppedOn",new Object[]{world,pos,state,entity});
             }
 
             @Override
             public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-                scriptContainer.setSelf(this);
+                scriptContainer.setContext(this);
 
                 Utils.tryAndExecute(scriptContainer,"onPlaced",new Object[]{world,pos,state,placer,itemStack});
             }

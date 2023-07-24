@@ -1,14 +1,15 @@
 package com.kyfexuwu.m3we.lua.api;
 
+import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.lua.ScriptError;
 import net.minecraft.nbt.*;
-import net.minecraft.world.PersistentState;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.TwoArgFunction;
 
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DatastoreAPI extends TwoArgFunction {
     public static DatastoreTable table = new DatastoreTable();
@@ -64,16 +65,13 @@ public class DatastoreAPI extends TwoArgFunction {
             }else if(val instanceof LuaTable){
                 var table = new NbtCompound();
 
-                var key = LuaValue.NIL;
-                while(true){
-                    Varargs n = val.next(key);
-                    if ((key = n.arg1()).isnil())
-                        break;
+                Utils.forEach((LuaTable) val, (key, value)->{
+                    var toPut=toNBT(value);
+                    if (toPut.isPresent() && (key instanceof LuaString || key instanceof LuaNumber))
+                        table.put(key.strvalue().checkjstring(), toPut.get());
 
-                    var toPut=toNBT(n.arg(2));
-                    if (toPut.isPresent() && (n.arg(1) instanceof LuaString || n.arg(1) instanceof LuaNumber))
-                        table.put(n.arg(1).strvalue().checkjstring(), toPut.get());
-                }
+                    return null;
+                });
 
                 return Optional.of(table);
             }
@@ -99,19 +97,21 @@ public class DatastoreAPI extends TwoArgFunction {
             if(val instanceof LuaBoolean || val instanceof LuaNumber || val instanceof LuaString || val.isnil())
                 return true;
             if(val instanceof LuaTable){
-                var key = LuaValue.NIL;
-                while(true){
-                    Varargs n = val.next(key);
-                    key = n.arg1();
-                    if (key.isnil())
-                        break;
-
-                    if(!(key instanceof LuaString || key instanceof LuaNumber))
+                AtomicBoolean toReturn = new AtomicBoolean(true);
+                Utils.forEach((LuaTable) val, (key, value)->{
+                    if(!(key instanceof LuaString || key instanceof LuaNumber)){
+                        toReturn.set(false);
                         return false;
+                    }
 
-                    if(!validate(n.arg(2))) return false;
-                }
-                return true;
+                    if(!validate(value)) {
+                        toReturn.set(false);
+                        return false;
+                    }
+
+                    return null;
+                });
+                return toReturn.get();
             }
             return false;
         }
@@ -123,15 +123,10 @@ public class DatastoreAPI extends TwoArgFunction {
 
             var toReturn = new DatastoreTable();
             if(toClean instanceof LuaTable){
-                var key = LuaValue.NIL;
-                while(true){
-                    Varargs n = toClean.next(key);
-                    key = n.arg1();
-                    if (key.isnil())
-                        break;
-
-                    toReturn.set(key, cleanup(n.arg(2)));
-                }
+                Utils.forEach((LuaTable) toClean, (key, value)->{
+                    toReturn.set(key, cleanup(value));
+                    return null;
+                });
                 return toReturn;
             }
 
