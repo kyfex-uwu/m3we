@@ -23,7 +23,7 @@ public class LuaBlockScript extends CustomScript {
 
         var world = this.self.getWorld();
         if(world!=null&&!world.isClient) {
-            this.setSelf(this.self);
+            this.setContext(this.self);
             ScriptError.execute(() -> this.runEnv.load(script).call());
         }
     }

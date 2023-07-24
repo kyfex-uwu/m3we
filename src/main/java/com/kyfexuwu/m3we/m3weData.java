@@ -58,13 +58,13 @@ public class m3weData {
 
         @Override//done
         public InputStream open(ResourceType type, Identifier id) throws IOException {
-            System.out.println(type+","+id+" "+"open");
+            //System.out.println(type+","+id+" "+"open");
             return new FileInputStream(m3we.m3weResources.getAbsolutePath()+"/"+ getPack(type).get(id.toString()));
         }
 
         @Override//done
         public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, Predicate<Identifier> allowedPathPredicate) {
-            System.out.println(type+","+namespace+":"+prefix+" "+"findResources");
+            //System.out.println(type+","+namespace+":"+prefix+" "+"findResources");
 
             Collection<Identifier> toReturn = Lists.newArrayList();
             getPack(type).forEach((key,path)->{
@@ -78,7 +78,7 @@ public class m3weData {
 
         @Override//done
         public boolean contains(ResourceType type, Identifier id){
-            System.out.println(type+","+id+" "+"contains, "+getPack(type).containsKey(id.toString()));
+            //System.out.println(type+","+id+" "+"contains, "+getPack(type).containsKey(id.toString()));
             return getPack(type).containsKey(id.toString());
         }
 

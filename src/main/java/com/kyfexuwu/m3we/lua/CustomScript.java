@@ -4,7 +4,6 @@ import com.kyfexuwu.m3we.m3we;
 import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.lua.api.*;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.*;
 import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;
@@ -27,7 +26,6 @@ public class CustomScript {
 
     public Globals runEnv;
     public final String name;
-    public ServerWorld world = null;
     public final boolean isFake;
 
     static final Disabled disabled = new Disabled();
@@ -125,11 +123,11 @@ public class CustomScript {
             else
                 toPrint.append(valueToString(args.arg(i), 0));
         }
-        try {
+        try {//CHANGE
             MinecraftClient.getInstance().inGameHud.getChatHud()
                     .addMessage(Text.of(toPrint.toString()));
         }catch(Exception e){
-            System.out.println(toPrint);
+            System.out.println("m3we print: "+toPrint);
         }
         return NIL;
     }
@@ -207,7 +205,7 @@ public class CustomScript {
         }
     }
 
-    public void setSelf(Object self){
+    public void setContext(Object self){
         if(this.isFake) return;
         this.runEnv.set("self",new LuaSurfaceObj(self));
     }

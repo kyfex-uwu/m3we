@@ -152,8 +152,7 @@ public class BlockIniter {
         thisBlock = CustomBlockMaker.from(
                 settings,
                 blockStates,
-                blockJsonData.get("blockShape"),
-                blockJsonData.get("outlineShape"),
+                blockJsonData,
                 script
         );
 
