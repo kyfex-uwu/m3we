@@ -21,7 +21,7 @@ import org.luaj.vm2.lib.VarArgFunction;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class CreateApi extends TwoArgFunction {
+public class CreateAPI extends TwoArgFunction {
     @Override
     public LuaValue call(LuaValue modname, LuaValue env) {
         JavaExclusiveTable thisApi = new JavaExclusiveTable();

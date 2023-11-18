@@ -85,7 +85,7 @@ public class CustomScript {
             }
         });
 
-        toReturn.load(new CreateApi());
+        toReturn.load(new CreateAPI());
         toReturn.load(new DatastoreAPI());
         toReturn.load(new EnumsAPI());
         toReturn.load(new GuiAPI());
