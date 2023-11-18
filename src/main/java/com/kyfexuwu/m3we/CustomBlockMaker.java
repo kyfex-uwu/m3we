@@ -38,7 +38,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
@@ -72,7 +71,7 @@ public class CustomBlockMaker {
                     .type(LootContextTypes.BLOCK)
                     .pool(new LootPool.Builder()
                             .conditionally(SurvivesExplosionLootCondition.builder().build())
-                            .with(ItemEntry.builder(Items.DIAMOND)))
+                            .with(ItemEntry.builder(Items.AIR)))
                     .build();
             silkTouchTable = new LootTable.Builder()
                     .type(LootContextTypes.BLOCK)
@@ -82,7 +81,7 @@ public class CustomBlockMaker {
                                     ItemPredicate.Builder.create().enchantment(
                                             new EnchantmentPredicate(Enchantments.SILK_TOUCH,
                                                     NumberRange.IntRange.ANY))))
-                            .with(ItemEntry.builder(Items.DIAMOND)))
+                            .with(ItemEntry.builder(Items.AIR)))
                     .build();
         }
         List<ItemStack> getDrops(BlockState state, LootContext context){
@@ -127,7 +126,8 @@ public class CustomBlockMaker {
             public final VoxelShape blockShape;
             public final VoxelShape outlineShape;
 
-            public final CustomScript scriptContainer;
+            public final CustomScript clientScriptContainer;
+            public final CustomScript serverScriptContainer;
             public final boolean shapeIsScript;
             public final String shapeScriptString;
             public final String outlineScriptString;
@@ -135,7 +135,10 @@ public class CustomBlockMaker {
             public thisCustomBlock(Settings settings) {
                 super(settings);
 
-                this.scriptContainer=new CustomScript(scriptName);
+                this.clientScriptContainer=new CustomScript(scriptName);
+                this.serverScriptContainer=new CustomScript(scriptName);
+                clientScriptContainer.contextObj.javaSet("env",Utils.toLuaValue("client"));
+                serverScriptContainer.contextObj.javaSet("env",Utils.toLuaValue("server"));
 
                 //shape
                 if(blockShapeJson.isJsonArray()) {
@@ -194,30 +197,34 @@ public class CustomBlockMaker {
 
                 //--
 
-                var defaultState = getStateManager().getDefaultState();
-                for (Property prop : this.props) {
+                var defaultState = this.getStateManager().getDefaultState();
+                for (Property<?> prop : this.props) {
+                    System.out.println(prop.getName());
                     try {
                         var jsonDefault = blockStates.get(prop.getName()).getAsJsonObject().get("default");
-                        switch (prop.getType().getName()) {
-                            case "java.lang.Integer" ->
-                                    defaultState = defaultState.with(prop, jsonDefault.getAsInt());
-                            case "java.lang.Boolean" ->
-                                    defaultState = defaultState.with(prop, jsonDefault.getAsBoolean());
-                            //case "java.lang.String" -> //fake enum
-                                    //todo: fix this rn, im lazy
+                        if(prop instanceof IntProperty)
+                            defaultState = defaultState.with((IntProperty)prop, jsonDefault.getAsInt());
+                        else if(prop instanceof BooleanProperty)
+                            defaultState = defaultState.with((BooleanProperty)prop, jsonDefault.getAsBoolean());
+                        else if(prop instanceof DynamicEnumProperty) {
+                            var def = jsonDefault==null?
+                                    blockStates.get(prop.getName()).getAsJsonObject().get("values").getAsJsonArray()
+                                            .get(0).getAsString():
+                                    jsonDefault.getAsString();
+                            defaultState = defaultState.with((DynamicEnumProperty) prop, def);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                         System.out.println("Property " + prop.getName() + " has an invalid default value");
                     }
                 }
-                setDefaultState(defaultState);
+                this.setDefaultState(defaultState);
             }
 
             @Override
             protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
                 if(blockStates!=null) {
-                    var propsList = new LinkedList<Property<?>>();
+                    var propsList = new ArrayList<Property<?>>();
                     for (String propName : blockStates.keySet()) {
                         if (!validPropertyName.matcher(propName).matches()) continue;
                         var thisState = blockStates.get(propName).getAsJsonObject();
@@ -243,7 +250,7 @@ public class CustomBlockMaker {
                     }
                     this.props = propsList.toArray(new Property[0]);
                 }else{
-                    this.props= new Property[0];
+                    this.props = new Property[0];
                 }
 
                 for (Property<?> prop : this.props) {
@@ -261,7 +268,7 @@ public class CustomBlockMaker {
                     return dropSelfBehavior.getDrops(state,lootContext);
                 }
 
-                if(scriptContainer.isFake || !scriptContainer.runEnv.get("getDrops").isfunction()){
+                if(serverScriptContainer.isFake || !serverScriptContainer.runEnv.get("getDrops").isfunction()){
                     return super.getDroppedStacks(state, builder);
                 }
 
@@ -272,47 +279,56 @@ public class CustomBlockMaker {
                         paramsTable.set(entry.getKey(), Utils.toLuaValue(param));
                 }
 
-                return Utils.tryAndExecute(new ArrayList<>(), scriptContainer, "getDrops",
+                serverScriptContainer.setThis(this);
+                serverScriptContainer.setStateWorldPos(state, null, null);
+                List<ItemStack> toReturn = Utils.tryAndExecute(new ArrayList<>(), serverScriptContainer, "getDrops",
                         new Object[]{paramsTable}, returnVal -> {
                             if (!(returnVal instanceof LuaTable)) throw new LuaError("wanted a table qwq");
 
                             return new ArrayList<>();
                         });
+                serverScriptContainer.clearStateWorldPos();
+                return toReturn;
             }
 
             @Override
             public BlockState getPlacementState(ItemPlacementContext ctx){
-                scriptContainer.setContext(this);
+                var container=ctx.getWorld() instanceof ServerWorld?
+                        serverScriptContainer : clientScriptContainer;
+                container.setThis(this);
+                container.setStateWorldPos(null,ctx.getWorld(),ctx.getBlockPos());
 
-                return Utils.tryAndExecute(this.getDefaultState(),scriptContainer,"getStateOnPlace",
+                var toReturn = Utils.tryAndExecute(this.getDefaultState(),container,"getStateOnPlace",
                         new Object[]{ctx},returnValue->{
-                    try{
-                        var length = returnValue.narg();
-                        var luaKeys=((LuaTable)returnValue).keys();
-                        var stateToReturn = this.getDefaultState();
-                        for(int i=0;i<length;i++){//iterate over lua table
-                            for(Property prop : props){
-                                if(prop.getName().equals(luaKeys[i].toString())){
-                                    switch (prop.getType().getName()) {
-                                        case "java.lang.Integer" ->
-                                                stateToReturn = stateToReturn.with(prop,
-                                                    returnValue.get(luaKeys[i]).checkint());
-                                        case "java.lang.Boolean" ->
-                                                stateToReturn = stateToReturn.with(prop,
-                                                    returnValue.get(luaKeys[i]).checkboolean());
-                                        case "java.lang.String" ->
-                                                stateToReturn = stateToReturn.with(prop,
-                                                        returnValue.get(luaKeys[i]).checkjstring());
-                                        //todo: add enum
+                            try{
+                                var length = returnValue.narg();
+                                var luaKeys=((LuaTable)returnValue).keys();
+                                var stateToReturn = this.getDefaultState();
+                                for(int i=0;i<length;i++){//iterate over lua table
+                                    for(Property prop : props){//todo: redo this whole thing, it ugly
+                                        if(prop.getName().equals(luaKeys[i].toString())){
+                                            switch (prop.getType().getName()) {
+                                                case "java.lang.Integer" ->
+                                                        stateToReturn = stateToReturn.with(prop,
+                                                                returnValue.get(luaKeys[i]).checkint());
+                                                case "java.lang.Boolean" ->
+                                                        stateToReturn = stateToReturn.with(prop,
+                                                                returnValue.get(luaKeys[i]).checkboolean());
+                                                case "java.lang.String" ->
+                                                        stateToReturn = stateToReturn.with(prop,
+                                                                returnValue.get(luaKeys[i]).checkjstring());
+                                                //todo: add enum
+                                            }
+                                        }
                                     }
                                 }
+                                return stateToReturn;
+                            }catch(Exception e) {
+                                return this.getDefaultState();
                             }
-                        }
-                        return stateToReturn;
-                    }catch(Exception e) {
-                        return this.getDefaultState();
-                    }
-                });
+                        });
+                container.clearStateWorldPos();
+                return toReturn;
             }
 
             @Override//yes dont worry i already checked this is the one you need to override
@@ -321,10 +337,12 @@ public class CustomBlockMaker {
                     if(this.outlineScriptString==null)
                         return this.outlineShape!=null ? this.outlineShape : this.getCollisionShape(state, world, pos, context);
 
-                    scriptContainer.setContext(this);
-                    return tryAndExecute(
+                    serverScriptContainer.setThis(this);
+                    serverScriptContainer.setStateWorldPos(state, null, pos);
+
+                    var finalToReturn = tryAndExecute(
                         VoxelShapes.empty(),
-                        scriptContainer,
+                        serverScriptContainer,
                         outlineScriptString,
                         new Object[]{state, world, pos, context},
                         value -> {
@@ -354,6 +372,8 @@ public class CustomBlockMaker {
                             return toReturn;
                         }
                     );
+                    serverScriptContainer.clearStateWorldPos();
+                    return finalToReturn;
                 }else{
                     return this.outlineShape!=null ? this.outlineShape : this.getCollisionShape(state,world,pos,context);
                 }
@@ -362,11 +382,12 @@ public class CustomBlockMaker {
             public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
                 if(this.shapeIsScript){
                     if(shapeScriptString==null) return VoxelShapes.fullCube();
-                    scriptContainer.setContext(this);
+                    serverScriptContainer.setThis(this);
+                    serverScriptContainer.setStateWorldPos(state, null, pos);
 
-                    return tryAndExecute(
+                    var finalToReturn = tryAndExecute(
                             VoxelShapes.empty(),
-                            scriptContainer,
+                            serverScriptContainer,
                             shapeScriptString,
                             new Object[]{state, world, pos, context},
                             value -> {
@@ -398,6 +419,8 @@ public class CustomBlockMaker {
                                 return toReturn;
                             }
                     );
+                    serverScriptContainer.clearStateWorldPos();
+                    return finalToReturn;
                 }else{
                     return this.blockShape;
                 }
@@ -405,78 +428,116 @@ public class CustomBlockMaker {
 
             @Override
             public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-                scriptContainer.setContext(this);
-                Utils.tryAndExecute(scriptContainer,"randomTick",new Object[]{state,world,pos,random});
+                serverScriptContainer.setThis(this);
+                serverScriptContainer.setStateWorldPos(state, world, pos);
+
+                Utils.tryAndExecute(serverScriptContainer,"randomTick",new Object[]{state,world,pos,random});
+                serverScriptContainer.clearStateWorldPos();
             }
 
             @Override
             public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-                scriptContainer.setContext(this);
+                clientScriptContainer.setThis(this);
+                clientScriptContainer.setStateWorldPos(state, world, pos);
 
-                Utils.tryAndExecute(scriptContainer,"randomDisplayTick",new Object[]{state,world,pos,random});
+                Utils.tryAndExecute(clientScriptContainer,"randomDisplayTick",new Object[]{state,world,pos,random});
+                clientScriptContainer.clearStateWorldPos();
             }
 
             @Override
-            public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-                scriptContainer.setContext(this);
+            public void neighborUpdate(BlockState state, World world, BlockPos pos,
+                                       Block sourceBlock, BlockPos sourcePos, boolean notify) {
+                var container=world instanceof ServerWorld?
+                        serverScriptContainer : clientScriptContainer;
 
-                Utils.tryAndExecute(scriptContainer,"neighborUpdate",new Object[]{state,world,pos,sourceBlock,sourcePos,notify});
+                container.setThis(this);
+                container.setStateWorldPos(state, world, pos);
+
+                Utils.tryAndExecute(container,"neighborUpdate",
+                        new Object[]{state,world,pos,sourceBlock,sourcePos,notify});
+                container.clearStateWorldPos();
             }
 
             @Override
             public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-                scriptContainer.setContext(this);
+                serverScriptContainer.setThis(this);
+                serverScriptContainer.setStateWorldPos(state, world, pos);
 
-                Utils.tryAndExecute(scriptContainer,"scheduledTick",new Object[]{state,world,pos,random});
+                Utils.tryAndExecute(serverScriptContainer,"scheduledTick",new Object[]{state,world,pos,random});
+                serverScriptContainer.clearStateWorldPos();
             }
 
             @Override
             public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction){
-                scriptContainer.setContext(this);
-                return Utils.tryAndExecute(0,scriptContainer,"getStrongRedstonePower",
+                serverScriptContainer.setThis(this);
+                serverScriptContainer.setStateWorldPos(state, null, pos);
+
+                var toReturn = Utils.tryAndExecute(0,serverScriptContainer,"getStrongRedstonePower",
                         new Object[]{state,world,pos,direction}, LuaValue::checkint);
+                serverScriptContainer.clearStateWorldPos();
+                return toReturn;
             }
             @Override
             public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction){
-                scriptContainer.setContext(this);
+                serverScriptContainer.setThis(this);
+                serverScriptContainer.setStateWorldPos(state, null, pos);
 
-                return Utils.tryAndExecute(0,scriptContainer,"getWeakRedstonePower",
+                var toReturn = Utils.tryAndExecute(0,serverScriptContainer,"getWeakRedstonePower",
                         new Object[]{state,world,pos,direction}, LuaValue::checkint);
+                serverScriptContainer.clearStateWorldPos();
+                return toReturn;
             }
 
             @Override
             public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-                scriptContainer.setContext(this);
+                var container=world instanceof ServerWorld?
+                        serverScriptContainer : clientScriptContainer;
 
-                return Utils.tryAndExecute(ActionResult.PASS,scriptContainer,"onUse",
-                    new Object[]{state,world,pos,player,hand,hit}, returnValue->{
-                        try {
-                            return ActionResult.valueOf(returnValue.tojstring());
-                        }catch(IllegalArgumentException e) {
-                            return ActionResult.PASS;
-                        }
-                });
+                var toReturn = Utils.tryAndExecute(ActionResult.PASS,container,"onUse",
+                        new Object[]{state,world,pos,player,hand,hit}, returnValue->{
+                            try {
+                                var r = Utils.toObject(returnValue);
+                                if(r instanceof ActionResult) return (ActionResult) r;
+                                return ActionResult.valueOf((String) r);
+                            }catch(IllegalArgumentException e) {
+                                return ActionResult.PASS;
+                            }
+                        });
+                container.clearStateWorldPos();
+                return toReturn;
             }
 
             @Override
-            public void onBroken(WorldAccess world, BlockPos pos, BlockState state){
-                scriptContainer.setContext(this);
+            public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved){
+                serverScriptContainer.setThis(this);
+                serverScriptContainer.setStateWorldPos(state, world, pos);
 
-                Utils.tryAndExecute(scriptContainer,"onBroken",new Object[]{world,pos,state});
+                Utils.tryAndExecute(serverScriptContainer,"onStateReplaced",new Object[]{state,world,pos,newState,moved});
+                serverScriptContainer.clearStateWorldPos();
             }
 
             @Override
             public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-                scriptContainer.setContext(this);
+                var container=world instanceof ServerWorld?
+                        serverScriptContainer : clientScriptContainer;
 
-                Utils.tryAndExecute(scriptContainer,"onSteppedOn",new Object[]{world,pos,state,entity});
+                container.setThis(this);
+                container.setStateWorldPos(state, world, pos);
+
+                Utils.tryAndExecute(container,"onSteppedOn",new Object[]{state,world,pos,entity});
+                container.clearStateWorldPos();
             }
 
             @Override
             public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-                scriptContainer.setContext(this);
+                var container=world instanceof ServerWorld?
+                        serverScriptContainer : clientScriptContainer;
 
-                Utils.tryAndExecute(scriptContainer,"onPlaced",new Object[]{world,pos,state,placer,itemStack});
+                container.setThis(this);
+                container.setStateWorldPos(state, world, pos);
+
+                Utils.tryAndExecute(container,"onPlaced",new Object[]{state,world,pos,placer,itemStack});
+                container.clearStateWorldPos();
             }
         }
 

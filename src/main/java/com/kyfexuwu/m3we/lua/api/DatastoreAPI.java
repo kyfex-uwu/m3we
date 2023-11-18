@@ -16,9 +16,7 @@ public class DatastoreAPI extends TwoArgFunction {
 
     @Override
     public LuaValue call(LuaValue modname, LuaValue env) {
-        env.set("Datastore", table);
-        env.get("package").get("loaded").set("Datastore", table);
-        return table;
+        return CustomScript.finalizeAPI("Datastore",table,env);
     }
 
     public static class DatastoreTable extends LuaTable{//TODO
@@ -28,7 +26,7 @@ public class DatastoreAPI extends TwoArgFunction {
 
         HashMap<String, LuaValue> values = new HashMap<>();
 
-        public static LuaValue fromNBTVal(NbtElement nbt, DatastoreTable tableToWrite){
+        public static LuaValue fromNBTVal(NbtElement nbt, LuaTable tableToWrite){
             if(nbt instanceof NbtString) return LuaValue.valueOf(nbt.asString());
             else if(nbt instanceof NbtDouble) return LuaValue.valueOf(((NbtDouble) nbt).doubleValue());
             else if(nbt instanceof NbtFloat) return LuaValue.valueOf(((NbtFloat) nbt).doubleValue());
@@ -57,8 +55,8 @@ public class DatastoreAPI extends TwoArgFunction {
 
                 ((DatastoreTable)val).values.forEach((key, value) -> {
                     var toAssign = toNBT(value);
-                    if(toAssign.isPresent())
-                        table.put(key, toAssign.get());
+                    toAssign.ifPresent(nbtElement ->
+                            table.put(key, nbtElement));
                 });
 
                 return Optional.of(table);
@@ -141,7 +139,7 @@ public class DatastoreAPI extends TwoArgFunction {
                 else throw new LuaError("key must be a string or number, and values must be " +
                         "string, boolean, number, or table");
             },(e)->{
-                CustomScript.print("Couldn't set datastore value! "+e.getMessage());
+                CustomScript.print("client","Couldn't set datastore value! "+e.getMessage());
             });
         }
 

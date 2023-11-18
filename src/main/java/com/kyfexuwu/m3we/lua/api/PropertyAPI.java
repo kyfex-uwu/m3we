@@ -1,6 +1,8 @@
 package com.kyfexuwu.m3we.lua.api;
 
 import com.kyfexuwu.m3we.Utils;
+import com.kyfexuwu.m3we.lua.CustomScript;
+import com.kyfexuwu.m3we.lua.JavaExclusiveTable;
 import com.kyfexuwu.m3we.lua.LuaSurfaceObj;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
@@ -13,14 +15,11 @@ import org.luaj.vm2.lib.TwoArgFunction;
 public class PropertyAPI extends TwoArgFunction {
     @Override
     public LuaValue call(LuaValue modname, LuaValue env) {
-        APITable thisApi = new APITable();
-        thisApi.set("get",new getPropValue());
-        thisApi.set("set",new setProperty());
+        JavaExclusiveTable thisApi = new JavaExclusiveTable();
+        thisApi.javaSet("get",new getPropValue());
+        thisApi.javaSet("set",new setProperty());
 
-        thisApi.locked=true;
-        env.set("Properties", thisApi);
-        env.get("package").get("loaded").set("Properties", thisApi);
-        return thisApi;
+        return CustomScript.finalizeAPI("Properties",thisApi,env);
     }
 
     static final class getPropValue extends TwoArgFunction {

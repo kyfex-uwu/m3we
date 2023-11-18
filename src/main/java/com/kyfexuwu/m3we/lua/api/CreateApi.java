@@ -1,6 +1,10 @@
 package com.kyfexuwu.m3we.lua.api;
 
 import com.kyfexuwu.m3we.Utils;
+import com.kyfexuwu.m3we.lua.CustomScript;
+import com.kyfexuwu.m3we.lua.JavaExclusiveTable;
+import com.kyfexuwu.m3we.lua.LuaSurfaceObj;
+import com.kyfexuwu.m3we.lua.UndecidedLuaFunction;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.Property;
@@ -9,9 +13,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.OneArgFunction;
-import org.luaj.vm2.lib.ThreeArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
+import org.luaj.vm2.lib.VarArgFunction;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -19,20 +24,25 @@ import java.util.Locale;
 public class CreateApi extends TwoArgFunction {
     @Override
     public LuaValue call(LuaValue modname, LuaValue env) {
-        APITable thisApi = new APITable();
+        JavaExclusiveTable thisApi = new JavaExclusiveTable();
 
-        thisApi.set("itemStack",new itemStack());
-        thisApi.set("blockPos",new blockPos());
-        thisApi.set("blockState",new blockState());
+        thisApi.apiMethodSet("itemStack",new itemStack(), "({item=stackItem, count=stackCount} data): " +
+                "Creates a new itemstack of the type stackItem, with count stackCount. Alternatively, " +
+                "if data is \"empty\" this will create an itemstack of air (empty).");
+        thisApi.apiMethodSet("blockPos",MethodWrapper.inst.create((Integer x, Integer y, Integer z)->new BlockPos(x,y,z)),
+                "(int x, int y, int z): " +
+                "Returns a block position of (x,y,z).");
+        thisApi.apiMethodSet("blockState",new blockState(), "({block=blockName, properties={...}} data): " +
+                "Creates a new blockstate of block blockName, with the properties specified. To create a powered " +
+                "redstone lamp with this method, you'd use blockState({block=\"minecraft:redstone_lamp\", " +
+                "properties={lit=false}}).");
 
-        thisApi.locked = true;
-        env.set("Create", thisApi);
-        env.get("package").get("loaded").set("Create", thisApi);
-        return thisApi;
+        thisApi.javaSet("fromClass",new fromClass());
+
+        return CustomScript.finalizeAPI("Create",thisApi,env);
     }
 
     public static class itemStack extends OneArgFunction{
-
         @Override
         public LuaValue call(LuaValue arg) {
             if(arg.isstring()&&arg.checkjstring().toLowerCase(Locale.ROOT).equals("empty")){
@@ -43,12 +53,6 @@ public class CreateApi extends TwoArgFunction {
             int count=1;
             if(!arg.get("count").isnil()) count = arg.get("count").checkint();
             return Utils.toLuaValue(new ItemStack(item, count));
-        }
-    }
-    public static class blockPos extends ThreeArgFunction {
-        @Override
-        public LuaValue call(LuaValue x, LuaValue y, LuaValue z) {
-            return Utils.toLuaValue(new BlockPos(x.checkint(), y.checkint(), z.checkint()));
         }
     }
     public static class blockState extends OneArgFunction{
@@ -93,6 +97,15 @@ public class CreateApi extends TwoArgFunction {
             }
 
             return Utils.toLuaValue(stateToReturn);
+        }
+    }
+
+    public static class fromClass extends VarArgFunction{
+        @Override
+        public LuaValue invoke(Varargs args) {
+            var clazz = (Class<?>) ((LuaSurfaceObj)args.arg(1)).object;
+            var constructor = new UndecidedLuaFunction(null,clazz.getConstructors());
+            return constructor.invoke(args.subargs(2)).arg(1);
         }
     }
 }

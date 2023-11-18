@@ -5,14 +5,16 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Locale;
 
 public class UndecidedLuaFunction extends VarArgFunction {
     public Object thisObj;
-    public Method[] methods;
-    public UndecidedLuaFunction(Object thisObj, Method[] methods){
+    public Executable[] methods;
+    public UndecidedLuaFunction(Object thisObj, Executable[] methods){
         this.thisObj=thisObj;
         this.methods=methods;
     }
@@ -39,7 +41,7 @@ public class UndecidedLuaFunction extends VarArgFunction {
         for(int i=0;i<args.length;i++){
             translatedArgs[i]=Utils.toObject(args[i]);
         }
-        for(Method method : this.methods){
+        for(Executable method : this.methods){
             var paramTypes = method.getParameterTypes();
             if(paramTypes.length!=args.length)
                 continue;
@@ -105,7 +107,10 @@ public class UndecidedLuaFunction extends VarArgFunction {
                     }
 
                     try {
-                        return Utils.toLuaValue(method.invoke(this.thisObj, changeableArgs));
+                        if(method instanceof Method)
+                            return Utils.toLuaValue(((Method)method).invoke(this.thisObj, changeableArgs));
+                        else
+                            return Utils.toLuaValue(((Constructor<?>)method).newInstance(changeableArgs));
                     } catch (Exception ignored) { }
                 }
             }

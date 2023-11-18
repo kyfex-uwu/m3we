@@ -8,14 +8,14 @@ import static org.luaj.vm2.LuaValue.FALSE;
 import static org.luaj.vm2.LuaValue.TRUE;
 
 public class ScriptError {
-     public static LuaBoolean execute(Runnable toRun){
+    public static LuaBoolean execute(Runnable toRun){
         return execute(toRun,true);
     }
     public static LuaBoolean execute(Runnable toRun, boolean log){
          return execute(toRun,(e)->{
              if(log){
                  e.printStackTrace();
-                 CustomScript.print("Lua Error: "+e.getMessage());
+                 CustomScript.print("client", "Lua Error: "+e.getMessage());
              }
          });
     }

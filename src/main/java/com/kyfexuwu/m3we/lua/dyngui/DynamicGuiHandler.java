@@ -20,7 +20,7 @@ public class DynamicGuiHandler extends ScreenHandler {
             Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "m3we_gui"),
                     new ExtendedScreenHandlerType<>(DynamicGuiHandler::new));
 
-    public final DynamicGuiBuilder gui;
+    public final DynamicGuiBuilder builder;
     public DynamicInventory inv= new DynamicInventory();
     public ScreenHandlerContext context;
 
@@ -31,26 +31,26 @@ public class DynamicGuiHandler extends ScreenHandler {
     //server
     public DynamicGuiHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context, String guiName) {
         super(dynamicGuiHandler, syncId);
-        this.gui = RegistryAPI.getGui(guiName);
+        this.builder = RegistryAPI.getGui(guiName);
         this.context = context;
 
-        this.inv.setSize(this.gui.slotCount);
+        this.inv.setSize(this.builder.slotCount);
         this.inv.onOpen(playerInventory.player);
 
-        if(this.gui.hasPlayerInventory){
+        if(this.builder.hasPlayerInventory){
             for(int i=0;i<27;i++)
                 this.addSlot(new Slot(playerInventory,i+9,0,0));
             for(int i=0;i<9;i++)
                 this.addSlot(new Slot(playerInventory,i,0,0));
         }
-        for(int i=0;i<this.gui.slotCount;i++)
+        for(int i = 0; i<this.builder.slotCount; i++)
             this.addSlot(new Slot(this.inv,i,i*5,i%5*5));
 
         var thisRef=this;
         this.addListener(new ScreenHandlerListener() {
             @Override
             public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
-                thisRef.gui.guiBehavior.accept(thisRef);
+                thisRef.builder.guiBehavior.accept(thisRef);
             }
 
             @Override
@@ -75,7 +75,7 @@ public class DynamicGuiHandler extends ScreenHandler {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
             if (index < 36 ?
-                    !this.insertItem(itemStack2, 36, 36+this.gui.slotCount, false) :
+                    !this.insertItem(itemStack2, 36, 36+this.builder.slotCount, false) :
                     !this.insertItem(itemStack2, 0, 36, true)) {
                 return ItemStack.EMPTY;
             }
@@ -100,6 +100,6 @@ public class DynamicGuiHandler extends ScreenHandler {
     @Override
     public void close(PlayerEntity player) {
         super.close(player);
-        this.gui.onClose.accept(this,player);
+        this.builder.onClose.accept(this,player);
     }
 }

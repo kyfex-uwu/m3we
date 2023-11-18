@@ -1,6 +1,8 @@
 package com.kyfexuwu.m3we.lua.dyngui;
 
 import com.kyfexuwu.m3we.Utils;
+import com.kyfexuwu.m3we.lua.CustomScript;
+import com.kyfexuwu.m3we.lua.JavaExclusiveTable;
 import com.kyfexuwu.m3we.lua.ScriptError;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -19,20 +21,35 @@ public class DynamicGuiBuilder {
     public int slotCount;
     public boolean hasPlayerInventory;
 
-    public DynamicGuiBuilder(LuaValue value){
+    public DynamicGuiBuilder(LuaValue globals, LuaValue value){
         this.drawPrep = (gui) -> {
             ScriptError.execute(()->{
+                var ctxTable=(JavaExclusiveTable)globals.get(CustomScript.contextIdentifier);
+                ctxTable.javaSet("guiData",Utils.toLuaValue(gui));
+
                 value.get("onClient").call(Utils.toLuaValue(gui));
+
+                ctxTable.javaSet("guiData", LuaValue.NIL);
             });
         };
         this.guiBehavior = (gui) -> {
             ScriptError.execute(()->{
+                var ctxTable=(JavaExclusiveTable)globals.get(CustomScript.contextIdentifier);
+                ctxTable.javaSet("guiData",Utils.toLuaValue(gui));
+
                 value.get("onServer").call(Utils.toLuaValue(gui));
+
+                ctxTable.javaSet("guiData", LuaValue.NIL);
             });
         };
         this.onClose = (gui,player) -> {
             ScriptError.execute(()->{
+                var ctxTable=(JavaExclusiveTable)globals.get(CustomScript.contextIdentifier);
+                ctxTable.javaSet("guiData",Utils.toLuaValue(gui));
+
                 value.get("onClose").call(Utils.toLuaValue(gui),Utils.toLuaValue(player));
+
+                ctxTable.javaSet("guiData", LuaValue.NIL);
             });
         };
         ScriptError.execute(()->{

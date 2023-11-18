@@ -5999,7 +5999,7 @@ method_5997 attackLivingEntity Void target:LivingEntity
 method_5998 getStackInHand ItemStack hand:Hand 
 method_5999 isUndead Boolean 
 method_6000 enterCombat Void 
-method_6001 initAttributes Void random:Random 
+method_6001 initAttributes Void 
 method_6002 getDeathSound SoundEvent 
 method_6003 getRoll Integer 
 
