@@ -27,9 +27,9 @@ function onUse(state,world,pos,player,hand,hit)
         print(key)
     end
 end
-function onBroken(world,pos,state) end
-function onSteppedOn(world,pos,state,entity) end
-function onPlaced(world,pos,state,placer,itemStack) end
+function onStateReplaced(state,world,pos,newState,wasMoved) end
+function onSteppedOn(state,world,pos,entity) end
+function onPlaced(state,world,pos,placer,itemStack) end
 
 function neighborUpdate(state,world,pos,sourceBlock,sourcePos,notify) end
 function scheduledTick(state,world,pos,random) end --not the same as a random tick, these have to be scheduled

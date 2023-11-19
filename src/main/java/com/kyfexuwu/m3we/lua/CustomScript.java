@@ -3,8 +3,12 @@ package com.kyfexuwu.m3we.lua;
 import com.kyfexuwu.m3we.m3we;
 import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.lua.api.*;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;
 import org.luaj.vm2.lib.*;
@@ -13,10 +17,12 @@ import org.luaj.vm2.lib.jse.JseMathLib;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 
 import static org.luaj.vm2.LuaValue.NIL;
 
@@ -30,8 +36,26 @@ public class CustomScript {
 
     static final Disabled disabled = new Disabled();
 
+
+    public static final String contextIdentifier = "__context";
+    public final JavaExclusiveTable contextObj = new JavaExclusiveTable();
+    public static final ArrayList<String> apiNames = new ArrayList<>();
+    private static class CustomGlobals extends Globals{
+        @Override
+        public void hashset(LuaValue luaKey, LuaValue val) {
+            try{
+                var key=luaKey.checkjstring();
+                if(key.equals(contextIdentifier))
+                    throw new LuaError("Cannot overwrite "+contextIdentifier);
+                for(var name : apiNames){
+                    if(key.equals(name)) throw new LuaError("Cannot overwrite API "+name);
+                }
+            }catch(Exception ignored){}
+            super.hashset(luaKey, val);
+        }
+    }
     private static Globals unsafeGlobal(){
-        var toReturn = new Globals();
+        var toReturn = new CustomGlobals();
         toReturn.load(new JseBaseLib());
         toReturn.load(new PackageLib());//needed, trust me
         toReturn.load(new TableLib());
@@ -41,7 +65,7 @@ public class CustomScript {
         toReturn.set("print", new VarArgFunction() {
             @Override
             public Varargs invoke(Varargs args) {
-                return print(args);
+                return print(toReturn.get(contextIdentifier).get("env").optjstring("none"), args);
             }
         });
         toReturn.set("explore", new OneArgFunction() {
@@ -50,13 +74,26 @@ public class CustomScript {
                 return explore(value);
             }
         });
+        toReturn.set("loadclass", new OneArgFunction() {
+            @Override
+            public LuaValue call(LuaValue value) {
+                try {
+                    return loadclass(value.checkjstring());
+                }catch(LuaError e){
+                    return NIL;
+                }
+            }
+        });
 
-        toReturn.load(new PropertyAPI());
-        toReturn.load(new GuiAPI());
-        toReturn.load(new RegistryAPI());
+        toReturn.load(new CreateAPI());
         toReturn.load(new DatastoreAPI());
-        toReturn.load(new CreateApi());
+        toReturn.load(new EnumsAPI());
+        toReturn.load(new GuiAPI());
         toReturn.load(new MiscAPI());
+        toReturn.load(new PropertyAPI());
+        toReturn.load(new RedstoneAPI());
+        toReturn.load(new RegistryAPI());
+        toReturn.load(new SignalsAPI());
 
         return toReturn;
     }
@@ -83,7 +120,7 @@ public class CustomScript {
         return toReturn;
     }
 
-    static Varargs createVarArgs(Object... args){
+    public static Varargs createVarArgs(Object... args){
         var luaArgs = Arrays.stream(args).map(Utils::toLuaValue).toArray(LuaValue[]::new);
         return new Varargs() {
             @Override
@@ -111,28 +148,33 @@ public class CustomScript {
     static class Disabled extends VarArgFunction{
         @Override
         public Varargs invoke(Varargs args) {
-            print(LuaValue.valueOf("This value is disabled"));
+            print("client", LuaValue.valueOf("This value is disabled"));
             return NIL;
         }
     }
-    public static Varargs print(Varargs args){
+    public static MinecraftServer currentServer;
+    //can we autodetect environment?
+    public static Varargs print(String env, Varargs args){
         StringBuilder toPrint= new StringBuilder();
         for (int i = 1, length = args.narg(); i <= length; i++) {
-            if(args.narg()==1&&args.arg(1).isstring())
-                toPrint = new StringBuilder(args.arg(1).checkjstring());
-            else
-                toPrint.append(valueToString(args.arg(i), 0));
+            toPrint.append(i > 1 ? ", " : "").append(valueToString(args.arg(i), 0));
         }
         try {//CHANGE
-            MinecraftClient.getInstance().inGameHud.getChatHud()
-                    .addMessage(Text.of(toPrint.toString()));
+            var message = Text.of(toPrint.toString());
+            if (env.equals("server")) {
+                for (var player : currentServer.getPlayerManager().getPlayerList()) {
+                    if (player.hasPermissionLevel(1)) player.sendMessage(message);
+                }
+            } else {
+                MinecraftClient.getInstance().player.sendMessage(message);
+            }
         }catch(Exception e){
             System.out.println("m3we print: "+toPrint);
         }
         return NIL;
     }
-    public static void print(Object... args){
-        print(createVarArgs(args));
+    public static void print(String env, Object... args){
+        print(env, createVarArgs(args));
     }
     public static LuaValue explore(LuaValue value){
 
@@ -161,6 +203,20 @@ public class CustomScript {
         chatHud.addMessage(message);
         return NIL;
     }
+    public static LuaValue loadclass(String string){
+        Class<?> toReturn;
+        try {
+            var classToken=Arrays.stream(Translations.classesTranslations)
+                    .filter(token->token!=null&&token.longDeobfuscated.equals(string)).findFirst();
+            toReturn=Class.forName(classToken.isPresent()?
+                    (Translations.OBFUSCATED?classToken.get().longObfuscated:classToken.get().longDeobfuscated):
+                    string);
+        }catch(Exception e) {
+            e.printStackTrace();
+            return NIL;
+        }
+        return Utils.toLuaValue(toReturn);
+    }
 
     protected CustomScript(String name, boolean isFake){
         this.name=name;
@@ -176,12 +232,13 @@ public class CustomScript {
         this.name=fileName;
         this.isFake=false;
 
-        setScript(fileName);
+        this.setScript(fileName);
 
         scripts.add(this);
     }
     private void setScript(String fileName){
         this.runEnv = safeGlobal();
+        this.runEnv.set(contextIdentifier, this.contextObj);
 
         LoadState.install(this.runEnv);
         LuaC.install(this.runEnv);
@@ -205,19 +262,32 @@ public class CustomScript {
         }
     }
 
-    public void setContext(Object self){
+    public void setThis(Object self){
         if(this.isFake) return;
         this.runEnv.set("self",new LuaSurfaceObj(self));
     }
+    public void setStateWorldPos(BlockState state, World world, BlockPos pos){
+        if(this.isFake) return;
 
-    private static final LinkedList<CustomScript> scripts = new LinkedList<>();
+        this.contextObj.javaSet("blockState",Utils.toLuaValue(state));//should change these keys to constants
+        this.contextObj.javaSet("world",Utils.toLuaValue(world));
+        this.contextObj.javaSet("blockPos",Utils.toLuaValue(pos));
+    }
+    public void clearStateWorldPos() {
+        if(this.isFake) return;
+
+        this.contextObj.javaSet("blockState",NIL);
+        this.contextObj.javaSet("world",NIL);
+        this.contextObj.javaSet("blockPos",NIL);
+    }
+
+    public static final ArrayList<CustomScript> scripts = new ArrayList<>();
     public static void reloadScript(String name){
         for(CustomScript script : scripts){
             if(!(script.name+".lua").equals(name))
                 continue;
 
             script.setScript(script.name);
-            break;
         }
     }
 
@@ -248,8 +318,11 @@ public class CustomScript {
                 toReturn.append("java function: ")
                         .append(Utils.deobfuscate(refMethods[0].getName()));
 
-                for(Method m : refMethods) {
-                    var token = Translations.getToken(m);
+                for(Executable m : refMethods) {
+                    var token = m instanceof Method?
+                        Translations.getToken((Method)m):
+                        new Translations.MethodToken("<init>","<init>","type",
+                                new String[]{"p1","p2","p3"});
 
                     if (token.paramNames.length > 0) {
                         toReturn.append(" [takes parameters: ");
@@ -265,17 +338,31 @@ public class CustomScript {
                     }
                     toReturn.append(" and ");
 
-                    var returnClass = m.getReturnType();
-                    if (!returnClass.equals(Void.class)) {
-                        toReturn.append("returns with type ")
-                                .append(Utils.deobfuscate(returnClass.getSimpleName()))
+                    if(m instanceof Method method) {
+                        var returnClass = method.getReturnType();
+                        if (!returnClass.equals(Void.class)) {
+                            toReturn.append("returns with type ")
+                                    .append(Utils.deobfuscate(returnClass.getSimpleName()))
+                                    .append("]");
+                        } else {
+                            toReturn.append("does not return a value]");
+                        }
+                    }else{
+                        toReturn.append("and creates a new ")
+                                .append(((Constructor<?>)m).getDeclaringClass().getSimpleName())
                                 .append("]");
-                    } else {
-                        toReturn.append("does not return a value]");
                     }
                 }
             }
         }
         return toReturn.toString();
+    }
+
+    public static LuaValue finalizeAPI(String name, LuaValue api, LuaValue env){
+        apiNames.add(name);
+
+        env.set(name, api);
+        env.get("package").get("loaded").set(name, api);
+        return api;
     }
 }

@@ -7,12 +7,11 @@ import java.util.*;
 
 public class DynamicEnumProperty extends Property<String> {
     private final ImmutableSet<String> values;
-    //todo: for some reason, in the test block "north"/first property arent being saved
 
     protected DynamicEnumProperty(String name, String[] values) {
         super(name, String.class);
-
         this.values=ImmutableSet.copyOf(values);
+        //System.out.println(name);
     }
 
     @Override
@@ -22,12 +21,15 @@ public class DynamicEnumProperty extends Property<String> {
 
     @Override
     public String name(String value) {
+        //System.out.println(value);
         return value;
     }
 
     @Override
     public Optional<String> parse(String name) {
-        return values.contains(name) ? Optional.ofNullable(name) : Optional.empty();
+        //System.out.println(name);
+        //System.out.println((this.values.contains(name) ? Optional.ofNullable(name) : Optional.empty()).isPresent());
+        return this.values.contains(name) ? Optional.ofNullable(name) : Optional.empty();
     }
 
     @Override
@@ -40,10 +42,13 @@ public class DynamicEnumProperty extends Property<String> {
         if (this == object) {
             return true;
         }
-        if (object instanceof DynamicEnumProperty && super.equals(object)) {
-            return this.values.equals(((DynamicEnumProperty)object).values);
+        if (object instanceof DynamicEnumProperty prop) {
+            for(String value : this.values)
+                if (!prop.values.contains(value)) return false;
+        }else{
+            return false;
         }
-        return false;
+        return true;
     }
 
     //--

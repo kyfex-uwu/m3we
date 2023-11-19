@@ -159,6 +159,17 @@ public class Utils {
                 return null;
         }
     }
+    public static LuaTable cloneTable(LuaTable table, LuaTable cloneInto){
+        LuaTable finalCloneInto = cloneInto==null?new LuaTable():cloneInto;
+
+        Utils.forEach(table, (key, value)->{
+            if(value instanceof LuaTable)
+                value = cloneTable(table, null);
+            finalCloneInto.set(key.strvalue().checkjstring(), value);
+            return true;
+        });
+        return finalCloneInto;
+    }
 
     public static <T> T tryAndExecute(T dfault, CustomScript scriptContainer, String funcString, Object[] args, Function<LuaValue,T> transformFunc){
         try {

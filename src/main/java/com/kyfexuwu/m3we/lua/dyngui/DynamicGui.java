@@ -1,5 +1,6 @@
 package com.kyfexuwu.m3we.lua.dyngui;
 
+import com.kyfexuwu.m3we.lua.ScriptError;
 import com.kyfexuwu.m3we.lua.api.GuiAPI;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
@@ -162,7 +163,7 @@ public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
     }
 
     public ArrayList<GuiComponent> componentsToDraw = new ArrayList<>();
-    public GuiAPI.DrawingProps props;
+    public static GuiAPI.DrawingProps props = new GuiAPI.DrawingProps();
 
     @Override
     public void init(){ }
@@ -170,7 +171,7 @@ public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
     public int mouseX;
     public int mouseY;
 
-    Class[] guiComponentOrder = {RectGuiComponent.class, SlotGuiComponent.class, TextGuiComponent.class};
+    Class<?>[] guiComponentOrder = {RectGuiComponent.class, SlotGuiComponent.class, TextGuiComponent.class};
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -178,11 +179,11 @@ public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
         RenderSystem.setShaderTexture(0, TEXTURE);
 
         this.componentsToDraw.clear();
-        this.handler.gui.drawPrep.accept(this);
-        this.x=this.props.x;
-        this.y=this.props.y;
-        this.backgroundWidth=this.props.w;
-        this.backgroundHeight=this.props.h;
+        this.handler.builder.drawPrep.accept(this);
+        this.x=props.x;
+        this.y=props.y;
+        this.backgroundWidth=props.w;
+        this.backgroundHeight=props.h;
 
         this.mouseX=mouseX;
         this.mouseY=mouseY;
@@ -203,15 +204,16 @@ public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
             return c1Index-c2Index;
         });
         for(GuiComponent component : this.componentsToDraw) {
-            component.draw(matrices,this.x,this.y);
+            ScriptError.execute(()->component.draw(matrices,this.x,this.y));
         }
         for(GuiComponent component : this.componentsToDraw){
             if(component instanceof SlotGuiComponent)
-                ((SlotGuiComponent) component).drawItem(matrices, this.x, this.y,
-                        !this.handler.gui.hasPlayerInventory);
+                ScriptError.execute(()->
+                        ((SlotGuiComponent) component)
+                                .drawItem(matrices, this.x, this.y, !this.handler.builder.hasPlayerInventory));
         }
 
-        this.props.slotAmt=0;
+        props.slotAmt=0;
     }
 
     @Override

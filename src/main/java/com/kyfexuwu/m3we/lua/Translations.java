@@ -2,8 +2,8 @@ package com.kyfexuwu.m3we.lua;
 
 import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.m3we;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.*;
+import net.minecraft.server.MinecraftServer;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -15,7 +15,7 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 
 public class Translations {
-    public static final boolean OBFUSCATED = !MinecraftClient.class.getSimpleName().equals("MinecraftClient");
+    public static final boolean OBFUSCATED = !MinecraftServer.class.getSimpleName().equals("MinecraftServer");
     public static ClassToken[] classesTranslations;
     public static FieldToken[] fieldsTranslations;
     public static FieldToken[] compFieldsTranslations;
@@ -79,11 +79,16 @@ public class Translations {
     }
 
     public static class ClassToken extends Token{
-        public ClassToken(String obfuscated, String deobfuscated) {
+        public final String longObfuscated;
+        public final String longDeobfuscated;
+        public ClassToken(String obfuscated, String deobfuscated,
+                          String longObfuscated, String longDeobfuscated) {
             super(obfuscated, deobfuscated);
+            this.longObfuscated=longObfuscated;
+            this.longDeobfuscated=longDeobfuscated;
         }
         public ClassToken(String... args){
-            this(args[0],args[1]);
+            this(args[0],args[1],args[2],args[3]);
         }
     }
     public static class FieldToken extends Token{
