@@ -9,25 +9,26 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.util.TriConsumer;
 import org.luaj.vm2.*;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class DynamicGuiBuilder {
-    public final Consumer<DynamicGui> drawPrep;
+    public final TriConsumer<DynamicGui, Integer, Integer> drawPrep;
     public final Consumer<DynamicGuiHandler> guiBehavior;
     public final BiConsumer<DynamicGuiHandler, PlayerEntity> onClose;
     public int slotCount;
     public boolean hasPlayerInventory;
 
     public DynamicGuiBuilder(LuaValue globals, LuaValue value){
-        this.drawPrep = (gui) -> {
+        this.drawPrep = (gui, mX, mY) -> {
             ScriptError.execute(()->{
                 var ctxTable=(JavaExclusiveTable)globals.get(CustomScript.contextIdentifier);
                 ctxTable.javaSet("guiData",Utils.toLuaValue(gui));
 
-                value.get("onClient").call(Utils.toLuaValue(gui));
+                value.get("onClient").call(Utils.toLuaValue(gui), Utils.toLuaValue(mX), Utils.toLuaValue(mY));
 
                 ctxTable.javaSet("guiData", LuaValue.NIL);
             });

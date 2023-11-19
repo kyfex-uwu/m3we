@@ -113,8 +113,13 @@ public class Translations {
             this.paramClasses=new String[params.length];
             for(int i=0;i<params.length;i++){
                 String[] paramBroken = params[i].split(":");
-                this.paramNames[i] = paramBroken[0];
-                this.paramClasses[i] = paramBroken[1];
+                if(paramBroken.length==1){
+                    this.paramNames[i] = "param"+i;
+                    this.paramClasses[i] = paramBroken[0];
+                }else {
+                    this.paramNames[i] = paramBroken[0];
+                    this.paramClasses[i] = paramBroken[1];
+                }
             }
         }
         public MethodToken(String... args){

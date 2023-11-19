@@ -31,6 +31,7 @@ public class GuiAPI extends TwoArgFunction {
         thisApi.javaSet("setBounds", new setBounds(env));
         thisApi.javaSet("rect",new drawRect(env));
         thisApi.javaSet("slot",new drawSlot(env));
+        thisApi.javaSet("drawImg",new drawImg(env));
         thisApi.javaSet("text",new drawText(env));
         thisApi.javaSet("playerInventory",new drawInv(env));
 
@@ -168,6 +169,80 @@ public class GuiAPI extends TwoArgFunction {
                 return LuaValue.valueOf(toReturn);
             }
             return LuaValue.valueOf(-1);
+        }
+    }
+    static final class drawImg extends VarArgFunction {
+        private final LuaValue globals;
+        public drawImg(LuaValue globals){
+            super();
+            this.globals=globals;
+        }
+        @Override
+        public Varargs invoke(Varargs args) {
+            try {
+                var ctxTable=(JavaExclusiveTable) this.globals.get(CustomScript.contextIdentifier);
+                var gui = (DynamicGui) Utils.toObject(ctxTable.get("guiData"));
+                if(gui == null) throw outOfContextError;
+
+                int narg = args.narg();
+                if(!args.arg(1).isstring()) return NIL;
+                for(int i=1;i<narg;i++)
+                    if(!args.arg(i+1).isint()) return NIL;
+
+                if(narg<5){
+                    return NIL;
+                }else if(narg<7){
+                    draw(gui, args.arg(1).checkjstring(),
+                            args.arg(2).checkint(),
+                            args.arg(3).checkint(),
+                            args.arg(4).checkint(),
+                            args.arg(5).checkint());
+                }else if (narg<9) {
+                    draw(gui, args.arg(1).checkjstring(),
+                            args.arg(2).checkint(),
+                            args.arg(3).checkint(),
+                            args.arg(4).checkint(),
+                            args.arg(5).checkint(),
+                            args.arg(6).checkint(),
+                            args.arg(7).checkint());
+                }else if (narg<11) {
+                    draw(gui, args.arg(1).checkjstring(),
+                            args.arg(2).checkint(),
+                            args.arg(3).checkint(),
+                            args.arg(4).checkint(),
+                            args.arg(5).checkint(),
+                            args.arg(6).checkint(),
+                            args.arg(7).checkint(),
+                            args.arg(8).checkint(),
+                            args.arg(9).checkint());
+                } else {
+                    draw(gui, args.arg(1).checkjstring(),
+                            args.arg(2).checkint(),
+                            args.arg(3).checkint(),
+                            args.arg(4).checkint(),
+                            args.arg(5).checkint(),
+                            args.arg(6).checkint(),
+                            args.arg(7).checkint(),
+                            args.arg(8).checkint(),
+                            args.arg(9).checkint(),
+                            args.arg(10).checkint(),
+                            args.arg(11).checkint());
+                }
+            }catch(Exception ignored){}
+            return NIL;
+        }
+
+        private static void draw(DynamicGui gui, String name, int tW, int tH, int x, int y, int w, int h, int sx, int sy, int sw, int sh){
+            gui.componentsToDraw.add(new DynamicGui.ImgGuiComponent(name, tW, tH, x,y,w,h,sx,sy,sw,sh));
+        }
+        private static void draw(DynamicGui gui, String name, int tW, int tH, int x, int y, int sx, int sy, int sw, int sh){
+            draw(gui, name, tW, tH, x,y,sw,sh,sx,sy,sw,sh);
+        }
+        private static void draw(DynamicGui gui, String name, int tW, int tH, int x, int y, int w, int h){
+            draw(gui, name, tW, tH, x,y,w,h,0,0,tW, tH);
+        }
+        private static void draw(DynamicGui gui, String name, int tW, int tH, int x, int y){
+            draw(gui, name, tW, tH, x,y, tW, tH,0,0,tW, tH);
         }
     }
     static final class drawText extends ThreeArgFunction {

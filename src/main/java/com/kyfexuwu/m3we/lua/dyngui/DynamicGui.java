@@ -118,6 +118,7 @@ public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
             this.h=h;
         }
         public void draw(MatrixStack matrices, int x, int y){
+            RenderSystem.setShaderTexture(0, TEXTURE);
             drawRect(matrices, this.x+x,this.y+y,this.w,this.h);
         }
     }
@@ -132,6 +133,7 @@ public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
             this.isPlayerInv=isPlayerInv;
         }
         public void draw(MatrixStack matrices, int x, int y){
+            RenderSystem.setShaderTexture(0, TEXTURE);
             drawPiece(PieceType.SLOT,matrices,this.x+x,this.y+y);
         }
         public void drawItem(MatrixStack matrices, int x, int y, boolean noPlayerInv){
@@ -161,6 +163,37 @@ public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
             gui.textRenderer.draw(matrices, this.text, this.x+x,this.y+y, 0x404040);
         }
     }
+    public static class ImgGuiComponent extends GuiComponent{
+        public Identifier tex;
+        public int tW;
+        public int tH;
+        public int w;
+        public int h;
+        public int sx;
+        public int sy;
+        public int sw;
+        public int sh;
+        public ImgGuiComponent(String texName, int tW, int tH, int x, int y, int w, int h, int sx, int sy, int sw, int sh){
+            this.tex=new Identifier(texName);
+            this.tW=tW;
+            this.tH=tH;
+            this.x=x;
+            this.y=y;
+            this.w=w;
+            this.h=h;
+            this.sx=sx;
+            this.sy=sy;
+            this.sw=sw;
+            this.sh=sh;
+        }
+        public void draw(MatrixStack matrices, int x, int y){
+            RenderSystem.setShaderTexture(0, this.tex);
+            DrawableHelper.drawTexture(matrices,
+                    this.x+x, this.y+y, this.w, this.h,
+                    this.sx, this.sy, this.sw, this.sh,
+                    this.tW, this.tH);
+        }
+    }
 
     public ArrayList<GuiComponent> componentsToDraw = new ArrayList<>();
     public static GuiAPI.DrawingProps props = new GuiAPI.DrawingProps();
@@ -171,7 +204,6 @@ public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
     public int mouseX;
     public int mouseY;
 
-    Class<?>[] guiComponentOrder = {RectGuiComponent.class, SlotGuiComponent.class, TextGuiComponent.class};
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -179,7 +211,7 @@ public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
         RenderSystem.setShaderTexture(0, TEXTURE);
 
         this.componentsToDraw.clear();
-        this.handler.builder.drawPrep.accept(this);
+        this.handler.builder.drawPrep.accept(this, mouseX, mouseY);
         this.x=props.x;
         this.y=props.y;
         this.backgroundWidth=props.w;
@@ -187,25 +219,10 @@ public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
 
         this.mouseX=mouseX;
         this.mouseY=mouseY;
-        this.componentsToDraw.sort((c1,c2)->{
-            int c1Index=-1;
-            int c2Index=-1;
-            for(int i=0;i<this.guiComponentOrder.length;i++)
-                if(this.guiComponentOrder[i].isAssignableFrom(c1.getClass())){
-                    c1Index = i;
-                    break;
-                }
-            for(int i=0;i<this.guiComponentOrder.length;i++)
-                if(this.guiComponentOrder[i].isAssignableFrom(c2.getClass())){
-                    c2Index = i;
-                    break;
-                }
-
-            return c1Index-c2Index;
-        });
         for(GuiComponent component : this.componentsToDraw) {
             ScriptError.execute(()->component.draw(matrices,this.x,this.y));
         }
+
         for(GuiComponent component : this.componentsToDraw){
             if(component instanceof SlotGuiComponent)
                 ScriptError.execute(()->

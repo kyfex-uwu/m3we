@@ -304,21 +304,13 @@ public class CustomBlockMaker {
                                 var length = returnValue.narg();
                                 var luaKeys=((LuaTable)returnValue).keys();
                                 var stateToReturn = this.getDefaultState();
+
                                 for(int i=0;i<length;i++){//iterate over lua table
-                                    for(Property prop : props){//todo: redo this whole thing, it ugly
+                                    for(Property<?> prop : props){
                                         if(prop.getName().equals(luaKeys[i].toString())){
-                                            switch (prop.getType().getName()) {
-                                                case "java.lang.Integer" ->
-                                                        stateToReturn = stateToReturn.with(prop,
-                                                                returnValue.get(luaKeys[i]).checkint());
-                                                case "java.lang.Boolean" ->
-                                                        stateToReturn = stateToReturn.with(prop,
-                                                                returnValue.get(luaKeys[i]).checkboolean());
-                                                case "java.lang.String" ->
-                                                        stateToReturn = stateToReturn.with(prop,
-                                                                returnValue.get(luaKeys[i]).checkjstring());
-                                                //todo: add enum
-                                            }
+                                            var val = Utils.toObject(returnValue.get(luaKeys[i]));
+                                            processProp(prop, stateToReturn, val,
+                                                    val instanceof String && prop.getType().isEnum());
                                         }
                                     }
                                 }
@@ -543,5 +535,11 @@ public class CustomBlockMaker {
         }
 
         return new thisCustomBlock(settings);
+    }
+
+    private static <T extends Comparable<T>> BlockState processProp(Property<T> prop, BlockState state,
+                                                              Object setTo, boolean strToEnum){
+        if(strToEnum) return state.with(prop, (T) Enum.valueOf((Class<Enum>)(Object)prop.getType(), (String) setTo));
+        else return state.with(prop, (T) setTo);
     }
 }

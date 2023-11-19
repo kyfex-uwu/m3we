@@ -10,8 +10,8 @@ public class DynamicEnumProperty extends Property<String> {
 
     protected DynamicEnumProperty(String name, String[] values) {
         super(name, String.class);
+
         this.values=ImmutableSet.copyOf(values);
-        //System.out.println(name);
     }
 
     @Override
@@ -21,14 +21,11 @@ public class DynamicEnumProperty extends Property<String> {
 
     @Override
     public String name(String value) {
-        //System.out.println(value);
         return value;
     }
 
     @Override
     public Optional<String> parse(String name) {
-        //System.out.println(name);
-        //System.out.println((this.values.contains(name) ? Optional.ofNullable(name) : Optional.empty()).isPresent());
         return this.values.contains(name) ? Optional.ofNullable(name) : Optional.empty();
     }
 
