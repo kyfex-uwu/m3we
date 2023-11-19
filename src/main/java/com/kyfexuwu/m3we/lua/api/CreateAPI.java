@@ -5,8 +5,9 @@ import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.lua.JavaExclusiveTable;
 import com.kyfexuwu.m3we.lua.LuaSurfaceObj;
 import com.kyfexuwu.m3we.lua.UndecidedLuaFunction;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -46,7 +47,7 @@ public class CreateAPI extends TwoArgFunction {
         @Override
         public LuaValue call(LuaValue arg) {
             if(arg.isstring()&&arg.checkjstring().toLowerCase(Locale.ROOT).equals("empty")){
-                return Utils.toLuaValue(new ItemStack(Blocks.AIR));
+                return Utils.toLuaValue(Items.AIR.getDefaultStack());
             }
 
             var item = Registry.ITEM.get(new Identifier(arg.get("item").checkjstring()));
@@ -83,20 +84,23 @@ public class CreateAPI extends TwoArgFunction {
                     proposedProps.add(key.checkjstring());
                     return null;
                 });
-                for (Property prop : props.toArray(Property[]::new)) {
+                for (Property<?> prop : props) {
                     if (proposedProps.contains(prop.getName())) {
-                        var setTo = (Object) Utils.toObject(propTable.get(prop.getName()));
-                        if (setTo instanceof Double)
-                            stateToReturn = stateToReturn.with(prop, ((Double) setTo).intValue());
-                        if (setTo instanceof Boolean)
-                            stateToReturn = stateToReturn.with(prop, (Boolean) setTo);
-                        if (setTo instanceof String)
-                            stateToReturn = stateToReturn.with(prop, (String) setTo);
+                        var setTo = Utils.toObject(propTable.get(prop.getName()));
+                        try{
+                            stateToReturn= processProp(prop, setTo, stateToReturn,
+                                    setTo instanceof String && prop.getType().isEnum());
+                        }catch(Exception ignored){}
                     }
                 }
             }
 
             return Utils.toLuaValue(stateToReturn);
+        }
+        private static <T extends Comparable<T>> BlockState processProp(Property<T> prop, Object setTo, BlockState state,
+                                                                  boolean strToEnum){
+            if(strToEnum) return state.with(prop, (T) Enum.valueOf((Class<Enum>)prop.getType(), (String) setTo));
+            else return state.with(prop, (T)setTo);
         }
     }
 

@@ -4,6 +4,7 @@ import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.lua.JavaExclusiveTable;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.Direction;
 import org.luaj.vm2.LuaValue;
@@ -18,6 +19,7 @@ public class EnumsAPI extends TwoArgFunction {
 
         thisApi.javaSet("ActionResult", populate(ActionResult.values()));
         thisApi.javaSet("Direction", populate((StringIdentifiable[])Direction.values()));
+        thisApi.javaSet("Hand", populate(Hand.values()));
         thisApi.javaSet("RedstonePower", populate(new Boolean[]{true, false}, new String[]{"STRONG", "WEAK"}));
 
         return CustomScript.finalizeAPI("Enums",thisApi,env);
