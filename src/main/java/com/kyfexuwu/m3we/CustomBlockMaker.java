@@ -498,6 +498,7 @@ public class CustomBlockMaker {
                             try {
                                 var r = Utils.toObject(returnValue);
                                 if(r instanceof ActionResult) return (ActionResult) r;
+                                if(r==null) return ActionResult.PASS;
                                 return ActionResult.valueOf((String) r);
                             }catch(IllegalArgumentException e) {
                                 return ActionResult.PASS;

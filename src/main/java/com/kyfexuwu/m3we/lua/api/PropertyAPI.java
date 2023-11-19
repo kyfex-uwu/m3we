@@ -64,7 +64,8 @@ public class PropertyAPI extends TwoArgFunction {
         }
         private static <T extends Comparable<T>> void processProp(Property<T> prop, World world, BlockState state,
                                                                   BlockPos pos, Object setTo, boolean strToEnum){
-            if(strToEnum) world.setBlockState(pos, state.with(prop, (T) Enum.valueOf((Class<Enum>)prop.getType(), (String) setTo)));
+            if(strToEnum) world.setBlockState(pos,
+                    state.with(prop, (T) Enum.valueOf((Class<Enum>)(Object)prop.getType(), (String) setTo)));
             else world.setBlockState(pos, state.with(prop, (T) setTo));
         }
     }

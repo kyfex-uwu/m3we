@@ -99,7 +99,7 @@ public class CreateAPI extends TwoArgFunction {
         }
         private static <T extends Comparable<T>> BlockState processProp(Property<T> prop, Object setTo, BlockState state,
                                                                   boolean strToEnum){
-            if(strToEnum) return state.with(prop, (T) Enum.valueOf((Class<Enum>)prop.getType(), (String) setTo));
+            if(strToEnum) return state.with(prop, (T) Enum.valueOf((Class<Enum>)(Object)prop.getType(), (String) setTo));
             else return state.with(prop, (T)setTo);
         }
     }
