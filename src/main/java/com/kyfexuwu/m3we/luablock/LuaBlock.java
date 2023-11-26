@@ -48,7 +48,7 @@ public class LuaBlock extends BlockWithEntity implements OperatorBlock {
 
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, m3we.luaBlockEntity, LuaBlockEntity::tick);
+        return checkType(type, m3we.luaBlockEntityType, LuaBlockEntity::tick);
     }
 
     @Override

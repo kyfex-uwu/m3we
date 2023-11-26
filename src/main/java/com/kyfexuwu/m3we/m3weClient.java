@@ -14,7 +14,7 @@ import static com.kyfexuwu.m3we.lua.dyngui.DynamicGuiHandler.dynamicGuiHandler;
 public class m3weClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        m3we.jsonBlocks.forEach((name, block)->{
+        m3we.m3weBlocks.forEach((name, block)->{
             if(!block.getDefaultState().isOpaque())
                 BlockRenderLayerMap.INSTANCE.putBlock(block, RenderLayer.getCutout());
         });

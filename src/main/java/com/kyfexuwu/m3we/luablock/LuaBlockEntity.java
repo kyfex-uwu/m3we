@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 public class LuaBlockEntity extends BlockEntity {
 
     public LuaBlockEntity(BlockPos pos, BlockState state, boolean active) {
-        super(m3we.luaBlockEntity, pos, state);
+        super(m3we.luaBlockEntityType, pos, state);
         this.script = new LuaBlockScript(this);
         this.active=active;
     }

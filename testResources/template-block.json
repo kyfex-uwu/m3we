@@ -57,5 +57,6 @@
 		...
 	] OR "script:(state, world, pos, context) returnsTable", (if outlineShape is not specified, it defaults to blockShape)
 
-	"script": "template-script" (defaults to no script)
+	"script": "template-script", (defaults to no script)
+	"blockEntityScript": "template-blockentity-script", (defaults to no script)
 }

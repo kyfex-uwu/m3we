@@ -23,7 +23,7 @@ public class m3weResourcePackMixin {
             ),
             index = 1)
     private ResourcePackProvider[] addm3weResourcePack__m3we(ResourcePackProvider[] packs) {
-        File resourcesFolder = new File(m3we.JBFolder.getAbsolutePath()+"\\resources");
+        File resourcesFolder = new File(m3we.m3weFolder.getAbsolutePath()+"\\resources");
         resourcesFolder.mkdir();
 
         ResourcePackProvider[] toReturn = Arrays.copyOf(packs,packs.length+1);

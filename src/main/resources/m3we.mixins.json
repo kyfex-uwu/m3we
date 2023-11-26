@@ -7,11 +7,13 @@
     "ClientCustomPacketMixin",
     "CustomClickEventMixin",
     "DatastoreLoadMixin",
+    "HasBlockEntityMixin",
     "m3weDatapackMixinIntegrated",
     "m3weDatapackMixinServer",
     "m3weResourcePackMixin",
     "ServerCustomPacketMixin",
-    "ServerStartMixin"
+    "ServerStartMixin",
+    "SlotRepositioningMixin"
   ],
   "injectors": {
     "defaultRequire": 1

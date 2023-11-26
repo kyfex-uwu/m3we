@@ -25,7 +25,7 @@ public class m3weDatapackMixinServer {
             ),
             index = 1)
     private static ResourcePackProvider[] addm3weDataPackServer__m3we(ResourcePackProvider[] packs) {
-        File resourcesFolder = new File(m3we.JBFolder.getAbsolutePath()+"\\resources");
+        File resourcesFolder = new File(m3we.m3weFolder.getAbsolutePath()+"\\resources");
         resourcesFolder.mkdir();
 
         ResourcePackProvider[] toReturn = Arrays.copyOf(packs,packs.length+1);

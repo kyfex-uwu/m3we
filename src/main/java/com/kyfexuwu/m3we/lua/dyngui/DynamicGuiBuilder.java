@@ -33,24 +33,24 @@ public class DynamicGuiBuilder {
                 ctxTable.javaSet("guiData", LuaValue.NIL);
             });
         };
-        this.guiBehavior = (gui) -> {
+        this.guiBehavior = (guiHandler) -> {
             ScriptError.execute(()->{
                 var ctxTable=(JavaExclusiveTable)globals.get(CustomScript.contextIdentifier);
-                ctxTable.javaSet("guiData",Utils.toLuaValue(gui));
+                ctxTable.javaSet("guiHandler",Utils.toLuaValue(guiHandler));
 
-                value.get("onServer").call(Utils.toLuaValue(gui));
+                value.get("onServer").call(Utils.toLuaValue(guiHandler));
 
-                ctxTable.javaSet("guiData", LuaValue.NIL);
+                ctxTable.javaSet("guiHandler", LuaValue.NIL);
             });
         };
-        this.onClose = (gui,player) -> {
+        this.onClose = (guiHandler,player) -> {
             ScriptError.execute(()->{
                 var ctxTable=(JavaExclusiveTable)globals.get(CustomScript.contextIdentifier);
-                ctxTable.javaSet("guiData",Utils.toLuaValue(gui));
+                ctxTable.javaSet("guiHandler",Utils.toLuaValue(guiHandler));
 
-                value.get("onClose").call(Utils.toLuaValue(gui),Utils.toLuaValue(player));
+                value.get("onClose").call(Utils.toLuaValue(guiHandler),Utils.toLuaValue(player));
 
-                ctxTable.javaSet("guiData", LuaValue.NIL);
+                ctxTable.javaSet("guiHandler", LuaValue.NIL);
             });
         };
         ScriptError.execute(()->{

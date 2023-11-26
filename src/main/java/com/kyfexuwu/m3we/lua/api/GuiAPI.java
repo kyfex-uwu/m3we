@@ -145,7 +145,7 @@ public class GuiAPI extends TwoArgFunction {
             });
         }
     }
-    static final class drawSlot extends ThreeArgFunction {
+    static final class drawSlot extends VarArgFunction {
         private final LuaValue globals;
         public drawSlot(LuaValue globals){
             super();
@@ -153,7 +153,11 @@ public class GuiAPI extends TwoArgFunction {
         }
 
         @Override
-        public LuaValue call(LuaValue x, LuaValue y, LuaValue index){
+        public Varargs invoke(Varargs args) {
+            LuaValue x = args.arg(1);
+            LuaValue y = args.arg(2);
+            LuaValue index = args.arg(3);
+            LuaValue drawSlot = args.arg(4);
             var ctxTable=(JavaExclusiveTable) this.globals.get(CustomScript.contextIdentifier);
             var gui = (DynamicGui) Utils.toObject(ctxTable.get("guiData"));
             if(gui == null) throw outOfContextError;
@@ -161,7 +165,7 @@ public class GuiAPI extends TwoArgFunction {
             var success =  ScriptError.execute(()->{
                 gui.componentsToDraw.add(new DynamicGui.SlotGuiComponent(
                         x.checkint(),y.checkint(),
-                        index.checkint(), gui, false));
+                        index.checkint(), gui, false, drawSlot.isboolean()? (boolean) Utils.toObject(drawSlot) :true));
             });
             if(success.v){
                 var toReturn=DynamicGui.props.slotAmt+(gui.handler.builder.hasPlayerInventory?36:0);
@@ -293,14 +297,14 @@ public class GuiAPI extends TwoArgFunction {
                     for (int x = 0; x < 9; x++) {
                         gui.componentsToDraw.add(new DynamicGui.SlotGuiComponent(
                                 7+x*18 + xP.checkint(), 17+y*18 + yP.checkint(),
-                                index, gui, true));
+                                index, gui, true, true));
                         index++;
                     }
                 }
                 for (int i = 0; i < 9; i++) {
                     gui.componentsToDraw.add(new DynamicGui.SlotGuiComponent(
                             7+i*18 + xP.checkint(), 75 + yP.checkint(),
-                            index, gui, true));
+                            index, gui, true, true));
                     index++;
                 }
             });
@@ -318,13 +322,14 @@ public class GuiAPI extends TwoArgFunction {
             final Slot[] toReturn = new Slot[1];
             ScriptError.execute(()->{
                 var ctxTable=(JavaExclusiveTable) this.globals.get(CustomScript.contextIdentifier);
-                var handler = (DynamicGuiHandler) Utils.toObject(ctxTable.get("guiData"));
+                var handler = (DynamicGuiHandler) Utils.toObject(ctxTable.get("guiHandler"));
                 if(handler == null) throw outOfContextError;
 
+                int num = slotNum.checkint();
                 if(!invType.checkjstring().equals("player")&&handler.builder.hasPlayerInventory)
-                        slotNum.add(36);
+                    num+=36;
 
-                toReturn[0] = handler.slots.get(slotNum.checkint());
+                toReturn[0] = handler.slots.get(num);
             });
             if(toReturn[0] == null)
                 return NIL;
@@ -340,7 +345,7 @@ public class GuiAPI extends TwoArgFunction {
         public LuaValue call(LuaValue arg) {
             ScriptError.execute(()->{
                 var ctxTable=(JavaExclusiveTable) this.globals.get(CustomScript.contextIdentifier);
-                var handler = (DynamicGuiHandler) Utils.toObject(ctxTable.get("guiData"));
+                var handler = (DynamicGuiHandler) Utils.toObject(ctxTable.get("guiHandler"));
                 if(handler == null) throw outOfContextError;
 
                 handler.context.run((world, pos) ->

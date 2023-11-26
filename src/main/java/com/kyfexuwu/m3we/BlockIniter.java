@@ -118,10 +118,12 @@ public class BlockIniter {
         }
 
         //setting block name
-        String blockName = "invalid";
+        String blockName;
         try {
             blockName = blockJsonData.get("blockName").getAsString();
-        }catch(Exception ignored){}//i have no clue what this can throw lol
+        }catch(Exception ignored){
+            return new SuccessAndIdentifier(SuccessRate.BAD_JSON);
+        }
         if(!validPathName.matcher(blockName).matches())
             return new SuccessAndIdentifier(SuccessRate.BAD_JSON);
 
@@ -149,11 +151,15 @@ public class BlockIniter {
             blockStates = blockJsonData.get("blockStates").getAsJsonObject();
         if(blockJsonData.has("script"))
             script = blockJsonData.get("script").getAsString();
+
         thisBlock = CustomBlockMaker.from(
                 settings,
                 blockStates,
                 blockJsonData,
-                script
+                script,
+                (blockJsonData.has("blockEntityScript")?
+                        blockJsonData.get("blockEntityScript").getAsString():
+                        null)
         );
 
         var namespace="m3we";
@@ -167,7 +173,7 @@ public class BlockIniter {
                 thisId,
                 thisBlock
         );
-        m3we.jsonBlocks.put(namespace+":"+blockName,thisBlock);
+        m3we.m3weBlocks.put(namespace+":"+blockName,thisBlock);
 
         return new SuccessAndIdentifier(SuccessRate.YOU_DID_IT,thisId);
     }

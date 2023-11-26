@@ -114,7 +114,10 @@ public class LuaSurfaceObj extends LuaTable {
     @Override //now works with pairs :sugnlasses:
     public Varargs next( LuaValue keyAsValue ) {
         if(keyAsValue.isnil()) {
-            return LuaValue.valueOf(this.fields[0].deobf);
+            if(this.fields.length>0)
+                return LuaValue.valueOf(this.fields[0].deobf);
+            else if(this.methods.length>0)
+                return LuaValue.valueOf(this.methods[0].deobf);
         }
         String key = keyAsValue.toString();
         for(int i=0;i<this.fields.length-1;i++){
@@ -122,7 +125,7 @@ public class LuaSurfaceObj extends LuaTable {
                 return LuaValue.valueOf(this.fields[i+1].deobf);
             }
         }
-        if(key.equals(this.fields[this.fields.length-1].deobf)){
+        if(this.fields.length>0&&key.equals(this.fields[this.fields.length-1].deobf)){
             return LuaValue.valueOf(this.methods[0].deobf);
         }
         for(int i=0;i<this.methods.length-1;i++){

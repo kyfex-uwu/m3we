@@ -13,11 +13,9 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
-import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 @Environment(value= EnvType.CLIENT)
@@ -99,15 +97,6 @@ public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
         public DynamicGui gui;
         public abstract void draw(MatrixStack matrices, int x, int y);
     }
-    Field slotX;
-    Field slotY;{
-        try {
-            slotX=Slot.class.getField("x");
-            slotX.setAccessible(true);
-            slotY=Slot.class.getField("y");
-            slotY.setAccessible(true);
-        } catch (Exception ignored) { }
-    }
     public static class RectGuiComponent extends GuiComponent{
         public int w;
         public int h;
@@ -125,30 +114,23 @@ public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
     public static class SlotGuiComponent extends GuiComponent{
         public int index;
         public boolean isPlayerInv;
-        public SlotGuiComponent(int x, int y, int index, DynamicGui gui, boolean isPlayerInv){
+        public boolean draw;
+        public SlotGuiComponent(int x, int y, int index, DynamicGui gui, boolean isPlayerInv, boolean draw){
             this.x=x;
             this.y=y;
             this.index=index;
             this.gui=gui;
             this.isPlayerInv=isPlayerInv;
+            this.draw=draw;
         }
         public void draw(MatrixStack matrices, int x, int y){
+            if(!this.draw) return;
             RenderSystem.setShaderTexture(0, TEXTURE);
             drawPiece(PieceType.SLOT,matrices,this.x+x,this.y+y);
         }
-        public void drawItem(MatrixStack matrices, int x, int y, boolean noPlayerInv){
-            Slot slot;//big todo here
-            if(this.isPlayerInv || noPlayerInv)
-                slot=this.gui.handler.slots.get(this.index);
-            else
-                slot=this.gui.handler.slots.get(this.index+36);
-            if (slot.x != this.x + 1 && slot.y != this.y + 1) {
-                try {//TODO!!! CAN THIS BE A MIXIN
-                    this.gui.slotX.set(slot, this.x + 1);
-                    this.gui.slotY.set(slot, this.y + 1);
-                } catch (Exception ignored) {
-                }
-            }
+        public void setItemPos(MatrixStack matrices, int x, int y, boolean noPlayerInv){
+            ((RepositionableSlot)this.gui.handler.slots.get(this.index+(this.isPlayerInv || noPlayerInv?0:36)))
+                    .setPos(this.x + 1, this.y+1);
         }
     }
     public static class TextGuiComponent extends GuiComponent{
@@ -199,7 +181,9 @@ public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
     public static GuiAPI.DrawingProps props = new GuiAPI.DrawingProps();
 
     @Override
-    public void init(){ }
+    public void init(){
+
+    }
 
     public int mouseX;
     public int mouseY;
@@ -219,15 +203,14 @@ public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
 
         this.mouseX=mouseX;
         this.mouseY=mouseY;
-        for(GuiComponent component : this.componentsToDraw) {
-            ScriptError.execute(()->component.draw(matrices,this.x,this.y));
-        }
-
         for(GuiComponent component : this.componentsToDraw){
             if(component instanceof SlotGuiComponent)
                 ScriptError.execute(()->
                         ((SlotGuiComponent) component)
-                                .drawItem(matrices, this.x, this.y, !this.handler.builder.hasPlayerInventory));
+                                .setItemPos(matrices, this.x, this.y, !this.handler.builder.hasPlayerInventory));
+        }
+        for(GuiComponent component : this.componentsToDraw) {
+            ScriptError.execute(()->component.draw(matrices,this.x,this.y));
         }
 
         props.slotAmt=0;

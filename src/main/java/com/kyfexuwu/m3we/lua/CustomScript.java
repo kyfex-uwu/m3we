@@ -156,8 +156,12 @@ public class CustomScript {
     //can we autodetect environment?
     public static Varargs print(String env, Varargs args){
         StringBuilder toPrint= new StringBuilder();
-        for (int i = 1, length = args.narg(); i <= length; i++) {
-            toPrint.append(i > 1 ? ", " : "").append(valueToString(args.arg(i), 0));
+        if(args.narg()==1 && args.arg(1).isstring()){
+            toPrint.append(args.arg(1).checkjstring());
+        }else {
+            for (int i = 1, length = args.narg(); i <= length; i++) {
+                toPrint.append(i > 1 ? ", " : "").append(valueToString(args.arg(i), 0));
+            }
         }
         try {//CHANGE
             var message = Text.of(toPrint.toString());
@@ -177,29 +181,29 @@ public class CustomScript {
         print(env, createVarArgs(args));
     }
     public static LuaValue explore(LuaValue value){
+        MutableText message = Text.literal("");
+
+        try {
+            if (value.typename().equals("surfaceObj") || value.typename().equals("table")) {
+                LuaValue nextKey = (LuaValue) value.next(NIL);
+                //int maxProps=100;
+                do {
+                    LuaValue finalNextKey = nextKey;
+                    message.append(Text.literal(nextKey.toString() + ", ")
+                            .setStyle(Style.EMPTY.withClickEvent(new CustomClickEvent(() -> {
+                                explore(value.get(finalNextKey));
+                            })).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                    Text.literal(valueToString(value.get(finalNextKey), 0))))));
+
+                    nextKey = (LuaValue) value.next(nextKey);
+                    //maxProps--;
+                } while (nextKey != NIL /* &&maxProps>0 */);
+            } else {
+                message.append(Text.literal(value.toString()));
+            }
+        }catch(Exception e){ e.printStackTrace(); }
 
         var chatHud = MinecraftClient.getInstance().inGameHud.getChatHud();
-
-        MutableText message = Text.literal("\n");
-
-        if(value.typename().equals("surfaceObj") || value.typename().equals("table")) {
-            LuaValue nextKey = (LuaValue) value.next(NIL);
-            //int maxProps=100;
-            do {
-                LuaValue finalNextKey = nextKey;
-                message.append(Text.literal(nextKey.toString()+", ")
-                        .setStyle(Style.EMPTY.withClickEvent(new CustomClickEvent(()->{
-                            explore(value.get(finalNextKey));
-                        })).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                Text.literal(valueToString(value.get(finalNextKey),0))))));
-
-                nextKey = (LuaValue) value.next(nextKey);
-                //maxProps--;
-            } while (nextKey != NIL /* &&maxProps>0 */);
-        }else{
-            message.append(Text.literal(value.toString()));
-        }
-
         chatHud.addMessage(message);
         return NIL;
     }
@@ -244,7 +248,7 @@ public class CustomScript {
         LuaC.install(this.runEnv);
         try {
             this.runEnv.load(
-                    Files.readString(new File(m3we.JBFolder + "\\scripts\\" + fileName + ".lua").toPath())
+                    Files.readString(new File(m3we.m3weFolder + "\\scripts\\" + fileName + ".lua").toPath())
             ).call();
         }catch(IOException | LuaError e){
             System.out.println("script "+fileName+" not loaded... it was a "+e.getClass().getName()+" exception");

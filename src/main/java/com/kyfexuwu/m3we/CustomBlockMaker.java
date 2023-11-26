@@ -6,10 +6,9 @@ import com.google.gson.JsonObject;
 import com.kyfexuwu.m3we.lua.CustomBlock;
 import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.lua.DynamicEnumProperty;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
+import com.kyfexuwu.m3we.lua.m3weBlockEntity;
+import net.minecraft.block.*;
+import net.minecraft.block.entity.*;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -30,14 +29,17 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.*;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.event.listener.GameEventListener;
 import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
@@ -49,7 +51,7 @@ import static com.kyfexuwu.m3we.Utils.tryAndExecute;
 import static com.kyfexuwu.m3we.Utils.validPropertyName;
 
 public class CustomBlockMaker {
-    private enum DropBehavior{
+    public enum DropBehavior{
         UNSPECIFIED(""),
         SELF("self"),
         SILK_TOUCH("silk_touch");
@@ -101,7 +103,7 @@ public class CustomBlockMaker {
         }
     }
 
-    private static final Map<String, LootContextParameter<?>> lootParams = Map.ofEntries(
+    public static final Map<String, LootContextParameter<?>> lootParams = Map.ofEntries(
             Map.entry("thisEntity",LootContextParameters.THIS_ENTITY),
             Map.entry("lastDamagePlayer",LootContextParameters.LAST_DAMAGE_PLAYER),
             Map.entry("damageSource",LootContextParameters.DAMAGE_SOURCE),
@@ -113,15 +115,25 @@ public class CustomBlockMaker {
             Map.entry("tool",LootContextParameters.TOOL),
             Map.entry("explosionRadius",LootContextParameters.EXPLOSION_RADIUS));
 
+    public static final HashMap<Identifier, String> blockEntityScripts = new HashMap<>();
+
     public static Block from(AbstractBlock.Settings settings, JsonObject blockStates,
-                             JsonObject blockJson, String scriptName) {
+                             JsonObject blockJson, String scriptName, String blockEntityScriptName) {
         final var blockShapeJson = blockJson.get("blockShape");
         final var outlineShapeJson = blockJson.get("outlineShape");
         var dropsSelfTemp = blockJson.get("dropsSelf");
         final var dropSelfBehavior = (dropsSelfTemp!=null&&dropsSelfTemp.isJsonPrimitive())?
                 DropBehavior.get(dropsSelfTemp.getAsString()):DropBehavior.UNSPECIFIED;
 
-        class thisCustomBlock extends Block implements CustomBlock {
+        if(blockEntityScriptName!=null) {
+            String namespace = "m3we";
+            if (blockJson.has("namespace"))
+                namespace = blockJson.get("namespace").getAsString();
+            blockEntityScripts.put(new Identifier(namespace, blockJson.get("blockName").getAsString()),
+                    blockEntityScriptName);
+        }
+
+        class thisCustomBlock extends Block implements CustomBlock, BlockEntityProvider {
             public Property<?>[] props;
             public final VoxelShape blockShape;
             public final VoxelShape outlineShape;
@@ -199,7 +211,6 @@ public class CustomBlockMaker {
 
                 var defaultState = this.getStateManager().getDefaultState();
                 for (Property<?> prop : this.props) {
-                    System.out.println(prop.getName());
                     try {
                         var jsonDefault = blockStates.get(prop.getName()).getAsJsonObject().get("default");
                         if(prop instanceof IntProperty)
@@ -506,6 +517,11 @@ public class CustomBlockMaker {
                 serverScriptContainer.setStateWorldPos(state, world, pos);
 
                 Utils.tryAndExecute(serverScriptContainer,"onStateReplaced",new Object[]{state,world,pos,newState,moved});
+                BlockEntity blockEntity;
+                if(blockEntityScriptName!=null &&
+                        (blockEntity = world.getBlockEntity(pos)) instanceof m3weBlockEntity &&
+                        ((m3weBlockEntity) blockEntity).type.equals(Registry.BLOCK.getId(state.getBlock())))
+                    world.removeBlockEntity(pos);
                 serverScriptContainer.clearStateWorldPos();
             }
 
@@ -532,12 +548,35 @@ public class CustomBlockMaker {
                 Utils.tryAndExecute(container,"onPlaced",new Object[]{state,world,pos,placer,itemStack});
                 container.clearStateWorldPos();
             }
+
+            //todo: so many more methods lol
+
+            @Nullable
+            @Override
+            public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+                if(blockEntityScriptName==null) return null;
+                return new m3weBlockEntity(pos, state);
+            }
+
+            @Nullable
+            @Override
+            public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+                if(blockEntityScriptName==null || world.isClient) return null;
+                return type==m3we.m3weBlockEntityType ? m3weBlockEntity::tick : null;
+            }
+
+            @Nullable
+            @Override
+            public <T extends BlockEntity> GameEventListener getGameEventListener(ServerWorld world, T blockEntity) {
+                if(blockEntityScriptName==null || !(blockEntity instanceof m3weBlockEntity)) return null;
+                return (m3weBlockEntity)blockEntity;
+            }
         }
 
         return new thisCustomBlock(settings);
     }
 
-    private static <T extends Comparable<T>> BlockState processProp(Property<T> prop, BlockState state,
+    public static <T extends Comparable<T>> BlockState processProp(Property<T> prop, BlockState state,
                                                               Object setTo, boolean strToEnum){
         if(strToEnum) return state.with(prop, (T) Enum.valueOf((Class<Enum>)(Object)prop.getType(), (String) setTo));
         else return state.with(prop, (T) setTo);

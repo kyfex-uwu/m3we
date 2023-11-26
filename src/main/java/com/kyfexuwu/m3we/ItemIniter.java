@@ -126,7 +126,7 @@ public class ItemIniter {
         }catch(UnsupportedOperationException ignored){}
 
         Item.Settings settings = new Item.Settings();
-        settings.group(m3we.m3weItems);
+        settings.group(m3we.m3weItemGroup);
 
         for (ItemPropertyTranslator<?> propToTranslate : ItemIniter.itemPropertyMap) {
             if (!itemJsonData.has(propToTranslate.jsonProp))
@@ -155,7 +155,7 @@ public class ItemIniter {
                 thisId,
                 thisItem
         );
-        m3we.jsonItems.put(namespace+":"+itemName,thisItem);
+        m3we.m3weItems.put(namespace+":"+itemName,thisItem);
 
         return new SuccessAndIdentifier(SuccessRate.YOU_DID_IT,thisId);
     }

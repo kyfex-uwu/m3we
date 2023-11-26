@@ -2,6 +2,7 @@ package com.kyfexuwu.m3we;
 
 import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.lua.Translations;
+import com.kyfexuwu.m3we.lua.m3weBlockEntity;
 import com.kyfexuwu.m3we.luablock.*;
 import com.mojang.logging.LogUtils;
 import net.fabricmc.api.ModInitializer;
@@ -31,12 +32,13 @@ public class m3we implements ModInitializer {
     public static Logger LOGGER = LogUtils.getLogger();
 
     public static Block luaBlock = new LuaBlock(FabricBlockSettings.copyOf(Blocks.COMMAND_BLOCK));
-    public static final BlockEntityType<LuaBlockEntity> luaBlockEntity = Registry.register(
+    public static final BlockEntityType<LuaBlockEntity> luaBlockEntityType = Registry.register(
             Registry.BLOCK_ENTITY_TYPE,
             new Identifier(MOD_ID, "lua_block"),
             FabricBlockEntityTypeBuilder.create((pos,state)->
                     new LuaBlockEntity(pos,state,false),luaBlock).build()
     );
+    public static BlockEntityType<m3weBlockEntity> m3weBlockEntityType;
     static{
         Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "lua_block"),luaBlock);
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "lua_block"),
@@ -44,16 +46,16 @@ public class m3we implements ModInitializer {
         //.group(ItemGroup.OPERATOR);//1.20
     }
 
-    public static HashMap<String, Block> jsonBlocks= new HashMap<>();
-    public static HashMap<String, Item> jsonItems= new HashMap<>();
+    public static HashMap<String, Block> m3weBlocks = new HashMap<>();
+    public static HashMap<String, Item> m3weItems = new HashMap<>();
 
-    public static File JBFolder = new File(FabricLoader.getInstance().getConfigDir()//just inside the .minecraft folder
+    public static File m3weFolder = new File(FabricLoader.getInstance().getConfigDir()//just inside the .minecraft folder
             .toString()+"\\m3we");
-    public static File blocksFolder = new File(JBFolder.getAbsolutePath()+"\\blocks");
-    public static File itemsFolder = new File(JBFolder.getAbsolutePath()+"\\items");
-    public static File scriptsFolder = new File(JBFolder.getAbsolutePath()+"\\scripts");
+    public static File blocksFolder = new File(m3weFolder.getAbsolutePath()+"\\blocks");
+    public static File itemsFolder = new File(m3weFolder.getAbsolutePath()+"\\items");
+    public static File scriptsFolder = new File(m3weFolder.getAbsolutePath()+"\\scripts");
 
-    public static final ItemGroup m3weItems = FabricItemGroupBuilder.build(
+    public static final ItemGroup m3weItemGroup = FabricItemGroupBuilder.build(
             new Identifier(MOD_ID,"item_group"),
             ()->new ItemStack(Blocks.BEACON)
     );
@@ -66,13 +68,20 @@ public class m3we implements ModInitializer {
     public void onInitialize() {
         Translations.init();
 
-        JBFolder.mkdir();
+        m3weFolder.mkdir();
         blocksFolder.mkdir();
         itemsFolder.mkdir();
         scriptsFolder.mkdir();
 
         initObjects(blocksFolder, BlockIniter::blockFromFile,"");
         initObjects(itemsFolder, ItemIniter::itemFromFile,"");
+
+        m3weBlockEntityType = Registry.register(
+                Registry.BLOCK_ENTITY_TYPE,
+                new Identifier(MOD_ID, "m3we_block"),
+                FabricBlockEntityTypeBuilder.create(m3weBlockEntity::new,
+                        m3weBlocks.values().toArray(new Block[0])).build()
+        );
 
         //--
 
@@ -145,5 +154,5 @@ public class m3we implements ModInitializer {
         }
     }
 
-    public static File m3weResources = new File(JBFolder.getAbsolutePath()+"\\resources");
+    public static File m3weResources = new File(m3weFolder.getAbsolutePath()+"\\resources");
 }

@@ -6,12 +6,14 @@ import com.kyfexuwu.m3we.lua.JavaExclusiveTable;
 import com.kyfexuwu.m3we.lua.LuaSurfaceObj;
 import com.kyfexuwu.m3we.lua.UndecidedLuaFunction;
 import net.minecraft.block.BlockState;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
@@ -37,13 +39,16 @@ public class CreateAPI extends TwoArgFunction {
                 "Creates a new blockstate of block blockName, with the properties specified. To create a powered " +
                 "redstone lamp with this method, you'd use blockState({block=\"minecraft:redstone_lamp\", " +
                 "properties={lit=false}}).");
+        thisApi.apiMethodSet("inventory",new inventory(), "(size): " +
+                "Creates a new inventory with the specified size. This is useful for when trying to create a block " +
+                "with an inventory, like a chest or a crafting table.");
 
         thisApi.javaSet("fromClass",new fromClass());
 
         return CustomScript.finalizeAPI("Create",thisApi,env);
     }
 
-    public static class itemStack extends OneArgFunction{
+    static class itemStack extends OneArgFunction{
         @Override
         public LuaValue call(LuaValue arg) {
             if(arg.isstring()&&arg.checkjstring().toLowerCase(Locale.ROOT).equals("empty")){
@@ -56,7 +61,7 @@ public class CreateAPI extends TwoArgFunction {
             return Utils.toLuaValue(new ItemStack(item, count));
         }
     }
-    public static class blockState extends OneArgFunction{
+    static class blockState extends OneArgFunction{
 
         @Override
         public LuaValue call(LuaValue arg) {
@@ -103,8 +108,16 @@ public class CreateAPI extends TwoArgFunction {
             else return state.with(prop, (T)setTo);
         }
     }
+    static class inventory extends OneArgFunction{
 
-    public static class fromClass extends VarArgFunction{
+        @Override
+        public LuaValue call(LuaValue arg) {
+            if(arg.checkint()<0) throw new LuaError("Size must not be less than 0!");
+            return Utils.toLuaValue(new SimpleInventory(arg.checkint()));
+        }
+    }
+
+    static class fromClass extends VarArgFunction{
         @Override
         public LuaValue invoke(Varargs args) {
             var clazz = (Class<?>) ((LuaSurfaceObj)args.arg(1)).object;
