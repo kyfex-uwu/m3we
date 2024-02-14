@@ -3,14 +3,11 @@ package com.kyfexuwu.m3we.lua.api;
 import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.lua.JavaExclusiveTable;
-import com.kyfexuwu.m3we.lua.LuaSurfaceObj;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.TwoArgFunction;
-
-import static com.kyfexuwu.m3we.lua.CustomScript.contextIdentifier;
 
 public class BlockEntityAPI extends TwoArgFunction {
     @Override
@@ -21,21 +18,20 @@ public class BlockEntityAPI extends TwoArgFunction {
 
         return CustomScript.finalizeAPI("BlockEntity",thisApi,env);
     }
-    static final class getEntityFromPos extends APIFunctions.VarArgAPIFunc {
+    static final class getEntityFromPos extends APIFunctions.TwoArgAPIFunc {
         public getEntityFromPos(LuaValue globals) {
             super(globals);
         }
 
         @Override
-        public Varargs invoke(Varargs args) {
-            var arg1=args.arg(1);
-            var arg2=args.arg(2);
-            if(arg1 instanceof LuaSurfaceObj && ((LuaSurfaceObj) arg1).objClass == BlockPos.class){
-                var ctx=this.globals.get(contextIdentifier);
-                return Utils.toLuaValue(((World) Utils.toObject(ctx.get("world")))
-                        .getBlockEntity((BlockPos) Utils.toObject(arg1)));
-            }
-            return NONE;
+        public LuaValue call(LuaValue positionArg, LuaValue worldArg) {
+            BlockPos position = Utils.toObject(positionArg, BlockPos.class);
+            World world = Utils.toObject(worldArg, World.class);
+            BlockEntity toReturn = null;
+            try{
+                toReturn=world.getBlockEntity(position);
+            }catch(Exception ignored){}
+            return Utils.toLuaValue(toReturn);
         }
     }
 }

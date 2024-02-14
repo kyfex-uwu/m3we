@@ -3,6 +3,7 @@ package com.kyfexuwu.m3we;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.kyfexuwu.m3we.lua.CustomScript;
+import com.kyfexuwu.m3we.lua.LuaFunctionalInterface;
 import com.kyfexuwu.m3we.lua.LuaSurfaceObj;
 import com.kyfexuwu.m3we.lua.Translations;
 import net.minecraft.block.AbstractBlock;
@@ -127,6 +128,9 @@ public class Utils {
             }
             return cleanedToReturn;
         }
+
+        if(LuaFunctionalInterface.isFunctionalInterface(value.getClass()))
+            return LuaFunctionalInterface.createFunction(value);
 
         //not a bool, int, double, float, string, or array
         return new LuaSurfaceObj(value);

@@ -26,7 +26,9 @@ public class DynamicEnumProperty extends Property<String> {
 
     @Override
     public Optional<String> parse(String name) {
-        return this.values.contains(name) ? Optional.of(name) : Optional.empty();
+        for(var knownVal : this.values)
+            if(knownVal.equals(name)) return Optional.of(knownVal);
+        return Optional.empty();
     }
 
     @Override
