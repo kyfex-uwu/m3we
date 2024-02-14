@@ -38,7 +38,12 @@ public class DatastoreAPI extends TwoArgFunction {
 
                 var keys = ((NbtCompound)nbt).getKeys();
                 keys.forEach(key->{
-                    table.set(key, fromNBTVal(((NbtCompound) nbt).get(key), null));
+                    LuaTable tableToGive=null;
+                    if(tableToWrite!=null)
+                        try {
+                            tableToGive = tableToWrite.getClass().getConstructor().newInstance();
+                        } catch (Exception ignored) {}
+                    table.set(key, fromNBTVal(((NbtCompound) nbt).get(key), tableToGive));
                 });
 
                 return table;

@@ -8,7 +8,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import org.luaj.vm2.*;
-import org.luaj.vm2.lib.ThreeArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 
 import static com.kyfexuwu.m3we.lua.CustomScript.currentServer;
@@ -22,7 +21,7 @@ public class SignalsAPI extends TwoArgFunction {
         JavaExclusiveTable thisApi = new JavaExclusiveTable();
 
         thisApi.javaSet("registerEvent",new registerEvent(env));
-        thisApi.javaSet("__eventBus", new JavaExclusiveTable());
+        //thisApi.javaSet("__eventBus", new JavaExclusiveTable());
 
         thisApi.javaSet("send",new send(env));
 
@@ -30,11 +29,9 @@ public class SignalsAPI extends TwoArgFunction {
     }
 
     public static final Identifier signalsApiChannel = new Identifier("m3we","signals_api_message");
-    static final class registerEvent extends ThreeArgFunction {
-        private final LuaValue globals;
-        public registerEvent(LuaValue globals){
-            super();
-            this.globals=globals;
+    static final class registerEvent extends APIFunctions.ThreeArgAPIFunc {
+        public registerEvent(LuaValue globals) {
+            super(globals);
         }
 
         @Override
@@ -43,17 +40,16 @@ public class SignalsAPI extends TwoArgFunction {
             if(!(onClient instanceof LuaFunction) || !(onServer instanceof LuaFunction))
                 throw new LuaError("Event callback must be a function");
 
-            var eventBus=(JavaExclusiveTable)this.globals.get("Signals").get("__eventBus");
             var env = this.globals.get(CustomScript.contextIdentifier).get("env").optjstring("none");
-
-            if(env.equals("client")) {
-                eventBus.javaSet(eventName.checkjstring(), onClient);
-                return TRUE;
-            }else if(env.equals("server")) {
-                eventBus.javaSet(eventName.checkjstring(), onServer);
-                return TRUE;
+            switch (env) {
+                case "server" -> serverBus.javaSet(eventName.checkjstring(), onServer);
+                case "client" -> clientBus.javaSet(eventName.checkjstring(), onClient);
+                default -> {
+                    return FALSE;
+                }
             }
-            return FALSE;//not initialized yet
+
+            return TRUE;
         }
     }
     static final class send extends TwoArgFunction{
@@ -78,13 +74,11 @@ public class SignalsAPI extends TwoArgFunction {
                     if(type.checkjstring().equals("client"))
                         ClientPlayNetworking.send(signalsApiChannel, PacketByteBufs
                                 .create()
-                                .writeString(channel)
                                 .writeNbt(toSend));
                     else if(type.checkjstring().equals("server")) {
                         for(var player : currentServer.getPlayerManager().getPlayerList())
                             ServerPlayNetworking.send(player, signalsApiChannel, PacketByteBufs
                                     .create()
-                                    .writeString(channel)
                                     .writeNbt(toSend));
                     }
                 }

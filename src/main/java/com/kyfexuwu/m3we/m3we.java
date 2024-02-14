@@ -99,17 +99,17 @@ public class m3we implements ModInitializer {
                         }
                         if (!key.reset()) {
                             //ono this is invalid
-                            System.out.println("unable to can (this is a bad message)");
+                            m3we.LOGGER.error("unable to can (this is a bad message)");
                             break;
                         }
                     }
                 } catch (InterruptedException e) {
-                    System.out.println("oof ouch interrupted");
+                    m3we.LOGGER.error("oof ouch interrupted");
                 }
             });
             watcherThread.start();
         } catch (IOException e) {
-            System.out.println("something happened to the watcher");
+            m3we.LOGGER.error("something happened to the watcher");
             e.printStackTrace();
         }
 
@@ -145,9 +145,9 @@ public class m3we implements ModInitializer {
             if(FilenameUtils.isExtension(modFile.getName(),"json")) {
                 Utils.SuccessAndIdentifier modObject = func.apply(modFile);
                 switch (modObject.successRate) {
-                    case CANT_READ -> System.out.println("Can't read file "+prefix+modFile.getName());
-                    case BAD_JSON -> System.out.println("Bad JSON in file "+prefix+modFile.getName());
-                    case IDK -> System.out.println("Message me on discord KYFEX#3614 and tell me to fix my mod");
+                    case CANT_READ -> m3we.LOGGER.error("Can't read file "+prefix+modFile.getName());
+                    case BAD_JSON -> m3we.LOGGER.error("Bad JSON in file "+prefix+modFile.getName());
+                    case IDK -> m3we.LOGGER.error("Message me on discord @kyfexuwu and tell me to fix my mod");
                     case YOU_DID_IT -> m3weData.packNamespaces.add(modObject.identifier.getNamespace());
                 }
             }

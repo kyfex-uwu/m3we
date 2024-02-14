@@ -1,6 +1,7 @@
 package com.kyfexuwu.m3we.lua;
 
 import com.kyfexuwu.m3we.Utils;
+import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
@@ -85,6 +86,15 @@ public class UndecidedLuaFunction extends VarArgFunction {
                     //else
                     numParamsIndexes[numParamsAmt]=i;
                     numParamsAmt++;
+                }
+                //functional interface case
+                if(LuaFunctionalInterface.isFunctionalInterface(paramTypes[i])) {
+                    if(!(args[i] instanceof LuaFunction)){
+                        matches=false;
+                        break;
+                    }
+                    translatedArgs[i] = LuaFunctionalInterface.createFunctionalInterface((LuaFunction) args[i], paramTypes[i]);
+                    continue;
                 }
 
                 //regular case

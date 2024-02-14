@@ -226,7 +226,7 @@ public class CustomBlockMaker {
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                        System.out.println("Property " + prop.getName() + " has an invalid default value");
+                        m3we.LOGGER.error("Property " + prop.getName() + " has an invalid default value");
                     }
                 }
                 this.setDefaultState(defaultState);

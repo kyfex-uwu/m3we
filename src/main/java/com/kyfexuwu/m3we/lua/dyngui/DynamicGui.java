@@ -39,7 +39,7 @@ public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
 
             @Override
             public void onPropertyUpdate(ScreenHandler thisHandler, int property, int value) {
-                System.out.println(property+","+value);
+                //System.out.println(property+","+value);
             }
         });
     }
@@ -128,7 +128,7 @@ public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
             RenderSystem.setShaderTexture(0, TEXTURE);
             drawPiece(PieceType.SLOT,matrices,this.x+x,this.y+y);
         }
-        public void setItemPos(MatrixStack matrices, int x, int y, boolean noPlayerInv){
+        public void setItemPos(boolean noPlayerInv){
             ((RepositionableSlot)this.gui.handler.slots.get(this.index+(this.isPlayerInv || noPlayerInv?0:36)))
                     .setPos(this.x + 1, this.y+1);
         }
@@ -207,7 +207,7 @@ public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
             if(component instanceof SlotGuiComponent)
                 ScriptError.execute(()->
                         ((SlotGuiComponent) component)
-                                .setItemPos(matrices, this.x, this.y, !this.handler.builder.hasPlayerInventory));
+                                .setItemPos(!this.handler.builder.hasPlayerInventory));
         }
         for(GuiComponent component : this.componentsToDraw) {
             ScriptError.execute(()->component.draw(matrices,this.x,this.y));

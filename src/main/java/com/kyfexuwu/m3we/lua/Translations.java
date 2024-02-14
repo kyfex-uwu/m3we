@@ -134,7 +134,7 @@ public class Translations {
             try {
                 return DefaultResourcePack.class.getResourceAsStream("/m3we_mappings/"+name+".txt");
             } catch (Exception e) {
-                System.out.println("loading error");
+                m3we.LOGGER.error("loading error");
                 e.printStackTrace();
                 throw new FileNotFoundException();
             }

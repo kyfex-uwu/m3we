@@ -73,19 +73,18 @@ public class ServerCustomPacketMixin {
     }
     @Unique
     private void onSignalsC2SPacket__m3we(CustomPayloadC2SPacket packet){
-        var data = packet.getData();
-        var eventName = data.readString();
-        var eventData = (LuaTable) DatastoreAPI.DatastoreTable.fromNBTVal(data.readNbt(), new LuaTable());
-        for(var script : CustomScript.scripts){
-            try {
-                if (script.contextObj.get("env").checkjstring().equals("server")) {
-                    LuaFunction eventHandler =
-                            (LuaFunction) script.runEnv.get("Signals").get("__eventBus").get(eventName);
-                    if(!eventHandler.isnil()){
-                        eventHandler.invoke(CustomScript.createVarArgs(Utils.cloneTable(eventData,null)));
+        var data = packet.getData().readNbt();
+        try {
+            var eventName = data.getKeys().stream().findFirst().get();
+            var eventData = (LuaTable) DatastoreAPI.DatastoreTable.fromNBTVal(data.get(eventName), new LuaTable());
+            for (var script : CustomScript.scripts) {
+                try {
+                    if (script.contextObj.get("env").checkjstring().equals("server")) {
+                        LuaFunction eventHandler = (LuaFunction) SignalsAPI.serverBus.get(eventName);
+                        if (!eventHandler.isnil()) eventHandler.invoke(Utils.cloneTable(eventData, null));
                     }
-                }
-            }catch(Exception ignored){}
-        }
+                } catch (Exception ignored) {}
+            }
+        }catch(Exception ignored){}
     }
 }

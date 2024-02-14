@@ -85,6 +85,7 @@ public class CustomScript {
             }
         });
 
+        toReturn.load(new BlockEntityAPI());
         toReturn.load(new CreateAPI());
         toReturn.load(new DatastoreAPI());
         toReturn.load(new EnumsAPI());
@@ -173,7 +174,7 @@ public class CustomScript {
                 MinecraftClient.getInstance().player.sendMessage(message);
             }
         }catch(Exception e){
-            System.out.println("m3we print: "+toPrint);
+            m3we.LOGGER.debug("m3we print: "+toPrint);
         }
         return NIL;
     }
@@ -251,7 +252,7 @@ public class CustomScript {
                     Files.readString(new File(m3we.m3weFolder + "\\scripts\\" + fileName + ".lua").toPath())
             ).call();
         }catch(IOException | LuaError e){
-            System.out.println("script "+fileName+" not loaded... it was a "+e.getClass().getName()+" exception");
+            m3we.LOGGER.error("script "+fileName+" not loaded... it was a "+e.getClass().getName()+" exception");
             e.printStackTrace();
         }
     }

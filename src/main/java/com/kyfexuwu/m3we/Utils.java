@@ -66,8 +66,8 @@ public class Utils {
             try {
                 return this.toJavaFunc.apply(settings, this.transformFunc.apply(new ScriptAndValue(script, value.get(this.jsonProp))));
             }catch(UnsupportedOperationException e) {
-                System.out.println("Property " + this.jsonProp + " failed to load, check your json!");
                 e.printStackTrace();
+                m3we.LOGGER.error("Property " + this.jsonProp + " failed to load, check your json!");
                 return settings;
             }
         }
@@ -132,31 +132,35 @@ public class Utils {
         return new LuaSurfaceObj(value);
     }
     public static Object toObject(LuaValue value){
-        switch(value.typename()){
-            case "boolean":
+        switch (value.typename()) {
+            case "boolean" -> {
                 return value.toboolean();
-            case "number":
+            }
+            case "number" -> {
                 return value.todouble();
-            case "string":
+            }
+            case "string" -> {
                 return value.toString();
-            case "table":
+            }
+            case "table" -> {
                 var toReturn = new Object[value.length()];
-                for(int i=0;i<toReturn.length;i++){
-                    toReturn[i]=toObject(value.get(i));
+                for (int i = 0; i < toReturn.length; i++) {
+                    toReturn[i] = toObject(value.get(i));
                     //please dont crash please dont crash please dont crash please dont crash please dont crash please d
                 }
                 return toReturn;
+            }
             //case "function": //todo :blensive:
             //case "userdata": //no
             //case "thread": //no: pt. 2
             /*case "undecidedFunc":
                 return ((UndecidedLuaFunction)value).methods[0];*/
-            case "surfaceObj":
-                return ((LuaSurfaceObj)value).object;
-
-            case "nil":
-            default:
+            case "surfaceObj" -> {
+                return ((LuaSurfaceObj) value).object;
+            }
+            default -> {
                 return null;
+            }
         }
     }
     public static LuaTable cloneTable(LuaTable table, LuaTable cloneInto){
@@ -175,23 +179,33 @@ public class Utils {
         try {
             if (scriptContainer.isFake) return dfault;
             var func = scriptContainer.runEnv.get(funcString);
-            if (func.isnil())
+            if (!func.isfunction())
                 return dfault;
 
+            return tryAndExecute(dfault, (LuaFunction) func, args, transformFunc);
+        }catch(LuaError e){
+            m3we.LOGGER.error("env failure: "+e.getMessage());
+            return dfault;
+        }
+    }
+    public static <T> T tryAndExecute(T dfault, LuaFunction func, Object[] args, Function<LuaValue,T> transformFunc){
+        if(args==null) args=new Object[]{};
+        try {
             var luaArgs = new LuaValue[args.length];
             for (int i = 0; i < luaArgs.length; i++) {
                 luaArgs[i] = Utils.toLuaValue(args[i]);
             }
-
             return transformFunc.apply(func.invoke(luaArgs).arg1());
         }catch(LuaError e){
-            System.out.println(e.getMessage());
+            m3we.LOGGER.error("function failure: "+e.getMessage());
             return dfault;
         }
     }
-    public static void tryAndExecute(CustomScript scriptContainer, String funcString,Object[] args){
-        tryAndExecute(null,scriptContainer, funcString, args, returnValue -> null);
-        //calls tryAndExecute, but always returns null
+    public static void tryAndExecute(CustomScript scriptContainer, String funcString, Object[] args){
+        tryAndExecute(null, scriptContainer, funcString, args, returnValue -> null);
+    }
+    public static void tryAndExecute(LuaFunction func, Object[] args){
+        tryAndExecute(null, func, args, returnValue -> null);
     }
 
     public static String deobfuscate(String obfuscated){
