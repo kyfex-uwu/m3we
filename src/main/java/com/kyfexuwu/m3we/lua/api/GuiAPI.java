@@ -52,23 +52,23 @@ public class GuiAPI extends TwoArgFunction {
 
         public int slotAmt=0;
     }
-    static final class openGui extends TwoArgFunction {
-        private final LuaValue globals;
+    static final class openGui extends APIFunctions.VarArgAPIFunc {
         public openGui(LuaValue globals){
-            this.globals=globals;
+            super(globals);
         }
 
         @Override
-        public LuaValue call(LuaValue luaPlayer, LuaValue guiName) {
+        public Varargs invoke(Varargs args) {
+            LuaValue luaPlayer = args.arg(1);
+            LuaValue guiName = args.arg(2);
+            LuaValue world = args.arg(3);
+            LuaValue pos = args.arg(4);
+
             PlayerEntity player;
-            World world;
-            BlockPos pos;
             String thisGui;
             try {
                 var ctxTable=(JavaExclusiveTable) this.globals.get(CustomScript.contextIdentifier);
                 if(!ctxTable.get("env").checkjstring().equals("server")) return FALSE;
-                world = (World) Utils.toObject(ctxTable.get("world"));
-                pos = (BlockPos) Utils.toObject(ctxTable.get("blockPos"));
 
                 player = (PlayerEntity) Utils.toObject(luaPlayer);
                 thisGui = guiName.checkjstring();
@@ -81,7 +81,8 @@ public class GuiAPI extends TwoArgFunction {
                     @Nullable
                     @Override
                     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                        return RegistryAPI.getGui(thisGui).build(syncId,inv,player,world,pos,thisGui);
+                        return RegistryAPI.getGui(thisGui).build(syncId,inv,player,
+                                Utils.toObject(world, World.class),Utils.toObject(pos, BlockPos.class),thisGui);
                     }
 
                     @Override

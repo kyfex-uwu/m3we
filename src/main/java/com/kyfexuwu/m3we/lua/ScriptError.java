@@ -15,7 +15,7 @@ public class ScriptError {
          return execute(toRun,(e)->{
              if(log){
                  e.printStackTrace();
-                 CustomScript.print("client", "Lua Error: "+e.getMessage());
+                 CustomScript.print("client", e.getMessage().replaceAll("/\r/g",""));
              }
          });
     }

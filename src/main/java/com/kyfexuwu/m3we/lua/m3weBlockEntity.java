@@ -33,7 +33,6 @@ public class m3weBlockEntity extends BlockEntity implements GameEventListener {
                 .get(Registry.BLOCK.getId(state.getBlock())));
         this.positionSource = new BlockPositionSource(pos);
 
-        this.scriptContainer.setThis(this);
         this.scriptContainer.setStateWorldPos(state, null, pos);
         this.type = Registry.BLOCK.getId(state.getBlock());
     }

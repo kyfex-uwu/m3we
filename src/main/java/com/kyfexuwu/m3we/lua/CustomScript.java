@@ -249,11 +249,11 @@ public class CustomScript {
         LuaC.install(this.runEnv);
         try {
             this.runEnv.load(
-                    Files.readString(new File(m3we.m3weFolder + "\\scripts\\" + fileName + ".lua").toPath())
+                Files.readString(new File(m3we.m3weFolder + "\\scripts\\" + fileName + ".lua").toPath())
             ).call();
         }catch(IOException | LuaError e){
             m3we.LOGGER.error("script "+fileName+" not loaded... it was a "+e.getClass().getName()+" exception");
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
     public void remove(){
@@ -266,11 +266,6 @@ public class CustomScript {
             }
         }
     }
-
-    public void setThis(Object self){
-        if(this.isFake) return;
-        this.runEnv.set("self",new LuaSurfaceObj(self));
-    }
     public void setStateWorldPos(BlockState state, World world, BlockPos pos){
         if(this.isFake) return;
 
@@ -279,11 +274,7 @@ public class CustomScript {
         this.contextObj.javaSet("blockPos",Utils.toLuaValue(pos));
     }
     public void clearStateWorldPos() {
-        if(this.isFake) return;
-
-        this.contextObj.javaSet("blockState",NIL);
-        this.contextObj.javaSet("world",NIL);
-        this.contextObj.javaSet("blockPos",NIL);
+        this.setStateWorldPos(null, null, null);
     }
 
     public static final ArrayList<CustomScript> scripts = new ArrayList<>();
@@ -330,7 +321,7 @@ public class CustomScript {
                                 new String[]{"p1","p2","p3"});
 
                     if (token.paramNames.length > 0) {
-                        toReturn.append(" [takes parameters: ");
+                        toReturn.append("\n • [takes parameters: ");
                         for (int i=0;i<token.paramNames.length;i++) {
                             if(i>0) toReturn.append(", ");
                             toReturn.append(token.paramNames[i])

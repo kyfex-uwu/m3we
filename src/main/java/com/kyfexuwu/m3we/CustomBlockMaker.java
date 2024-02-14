@@ -3,10 +3,7 @@ package com.kyfexuwu.m3we;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.kyfexuwu.m3we.lua.CustomBlock;
-import com.kyfexuwu.m3we.lua.CustomScript;
-import com.kyfexuwu.m3we.lua.DynamicEnumProperty;
-import com.kyfexuwu.m3we.lua.m3weBlockEntity;
+import com.kyfexuwu.m3we.lua.*;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.enchantment.Enchantments;
@@ -148,9 +145,14 @@ public class CustomBlockMaker {
                 super(settings);
 
                 this.clientScriptContainer=new CustomScript(scriptName);
+                this.clientScriptContainer.contextObj.javaSet("env",Utils.toLuaValue("client"));
+                if(!this.clientScriptContainer.isFake)
+                    this.clientScriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
+
                 this.serverScriptContainer=new CustomScript(scriptName);
-                clientScriptContainer.contextObj.javaSet("env",Utils.toLuaValue("client"));
-                serverScriptContainer.contextObj.javaSet("env",Utils.toLuaValue("server"));
+                this.serverScriptContainer.contextObj.javaSet("env",Utils.toLuaValue("server"));
+                if(!this.serverScriptContainer.isFake)
+                    this.serverScriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
 
                 //shape
                 if(blockShapeJson.isJsonArray()) {
@@ -279,7 +281,7 @@ public class CustomBlockMaker {
                     return dropSelfBehavior.getDrops(state,lootContext);
                 }
 
-                if(serverScriptContainer.isFake || !serverScriptContainer.runEnv.get("getDrops").isfunction()){
+                if(this.serverScriptContainer.isFake || !this.serverScriptContainer.runEnv.get("getDrops").isfunction()){
                     return super.getDroppedStacks(state, builder);
                 }
 
@@ -290,23 +292,21 @@ public class CustomBlockMaker {
                         paramsTable.set(entry.getKey(), Utils.toLuaValue(param));
                 }
 
-                serverScriptContainer.setThis(this);
-                serverScriptContainer.setStateWorldPos(state, null, null);
-                List<ItemStack> toReturn = Utils.tryAndExecute(new ArrayList<>(), serverScriptContainer, "getDrops",
+                this.serverScriptContainer.setStateWorldPos(state, null, null);
+                List<ItemStack> toReturn = Utils.tryAndExecute(new ArrayList<>(), this.serverScriptContainer, "getDrops",
                         new Object[]{paramsTable}, returnVal -> {
                             if (!(returnVal instanceof LuaTable)) throw new LuaError("wanted a table qwq");
 
                             return new ArrayList<>();
                         });
-                serverScriptContainer.clearStateWorldPos();
+                this.serverScriptContainer.clearStateWorldPos();
                 return toReturn;
             }
 
             @Override
             public BlockState getPlacementState(ItemPlacementContext ctx){
                 var container=ctx.getWorld() instanceof ServerWorld?
-                        serverScriptContainer : clientScriptContainer;
-                container.setThis(this);
+                        this.serverScriptContainer : this.clientScriptContainer;
                 container.setStateWorldPos(null,ctx.getWorld(),ctx.getBlockPos());
 
                 var toReturn = Utils.tryAndExecute(this.getDefaultState(),container,"getStateOnPlace",
@@ -340,13 +340,12 @@ public class CustomBlockMaker {
                     if(this.outlineScriptString==null)
                         return this.outlineShape!=null ? this.outlineShape : this.getCollisionShape(state, world, pos, context);
 
-                    serverScriptContainer.setThis(this);
-                    serverScriptContainer.setStateWorldPos(state, null, pos);
+                    this.serverScriptContainer.setStateWorldPos(state, null, pos);
 
                     var finalToReturn = tryAndExecute(
                         VoxelShapes.empty(),
-                        serverScriptContainer,
-                        outlineScriptString,
+                        this.serverScriptContainer,
+                        this.outlineScriptString,
                         new Object[]{state, world, pos, context},
                         value -> {
                             var toReturn = VoxelShapes.empty();
@@ -375,7 +374,7 @@ public class CustomBlockMaker {
                             return toReturn;
                         }
                     );
-                    serverScriptContainer.clearStateWorldPos();
+                    this.serverScriptContainer.clearStateWorldPos();
                     return finalToReturn;
                 }else{
                     return this.outlineShape!=null ? this.outlineShape : this.getCollisionShape(state,world,pos,context);
@@ -384,14 +383,13 @@ public class CustomBlockMaker {
             @Override
             public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
                 if(this.shapeIsScript){
-                    if(shapeScriptString==null) return VoxelShapes.fullCube();
-                    serverScriptContainer.setThis(this);
-                    serverScriptContainer.setStateWorldPos(state, null, pos);
+                    if(this.shapeScriptString==null) return VoxelShapes.fullCube();
+                    this.serverScriptContainer.setStateWorldPos(state, null, pos);
 
                     var finalToReturn = tryAndExecute(
                             VoxelShapes.empty(),
-                            serverScriptContainer,
-                            shapeScriptString,
+                            this.serverScriptContainer,
+                            this.shapeScriptString,
                             new Object[]{state, world, pos, context},
                             value -> {
                                 var toReturn = VoxelShapes.empty();
@@ -422,7 +420,7 @@ public class CustomBlockMaker {
                                 return toReturn;
                             }
                     );
-                    serverScriptContainer.clearStateWorldPos();
+                    this.serverScriptContainer.clearStateWorldPos();
                     return finalToReturn;
                 }else{
                     return this.blockShape;
@@ -431,29 +429,26 @@ public class CustomBlockMaker {
 
             @Override
             public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-                serverScriptContainer.setThis(this);
-                serverScriptContainer.setStateWorldPos(state, world, pos);
+                this.serverScriptContainer.setStateWorldPos(state, world, pos);
 
                 Utils.tryAndExecute(serverScriptContainer,"randomTick",new Object[]{state,world,pos,random});
-                serverScriptContainer.clearStateWorldPos();
+                this.serverScriptContainer.clearStateWorldPos();
             }
 
             @Override
             public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-                clientScriptContainer.setThis(this);
-                clientScriptContainer.setStateWorldPos(state, world, pos);
+                this.clientScriptContainer.setStateWorldPos(state, world, pos);
 
-                Utils.tryAndExecute(clientScriptContainer,"randomDisplayTick",new Object[]{state,world,pos,random});
-                clientScriptContainer.clearStateWorldPos();
+                Utils.tryAndExecute(this.clientScriptContainer,"randomDisplayTick",new Object[]{state,world,pos,random});
+                this.clientScriptContainer.clearStateWorldPos();
             }
 
             @Override
             public void neighborUpdate(BlockState state, World world, BlockPos pos,
                                        Block sourceBlock, BlockPos sourcePos, boolean notify) {
                 var container=world instanceof ServerWorld?
-                        serverScriptContainer : clientScriptContainer;
+                        this.serverScriptContainer : this.clientScriptContainer;
 
-                container.setThis(this);
                 container.setStateWorldPos(state, world, pos);
 
                 Utils.tryAndExecute(container,"neighborUpdate",
@@ -463,38 +458,35 @@ public class CustomBlockMaker {
 
             @Override
             public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-                serverScriptContainer.setThis(this);
-                serverScriptContainer.setStateWorldPos(state, world, pos);
+                this.serverScriptContainer.setStateWorldPos(state, world, pos);
 
-                Utils.tryAndExecute(serverScriptContainer,"scheduledTick",new Object[]{state,world,pos,random});
-                serverScriptContainer.clearStateWorldPos();
+                Utils.tryAndExecute(this.serverScriptContainer,"scheduledTick",new Object[]{state,world,pos,random});
+                this.serverScriptContainer.clearStateWorldPos();
             }
 
             @Override
             public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction){
-                serverScriptContainer.setThis(this);
-                serverScriptContainer.setStateWorldPos(state, null, pos);
+                this.serverScriptContainer.setStateWorldPos(state, null, pos);
 
-                var toReturn = Utils.tryAndExecute(0,serverScriptContainer,"getStrongRedstonePower",
+                var toReturn = Utils.tryAndExecute(0,this.serverScriptContainer,"getStrongRedstonePower",
                         new Object[]{state,world,pos,direction}, LuaValue::checkint);
-                serverScriptContainer.clearStateWorldPos();
+                this.serverScriptContainer.clearStateWorldPos();
                 return toReturn;
             }
             @Override
             public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction){
-                serverScriptContainer.setThis(this);
-                serverScriptContainer.setStateWorldPos(state, null, pos);
+                this.serverScriptContainer.setStateWorldPos(state, null, pos);
 
-                var toReturn = Utils.tryAndExecute(0,serverScriptContainer,"getWeakRedstonePower",
+                var toReturn = Utils.tryAndExecute(0,this.serverScriptContainer,"getWeakRedstonePower",
                         new Object[]{state,world,pos,direction}, LuaValue::checkint);
-                serverScriptContainer.clearStateWorldPos();
+                this.serverScriptContainer.clearStateWorldPos();
                 return toReturn;
             }
 
             @Override
             public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
                 var container=world instanceof ServerWorld?
-                        serverScriptContainer : clientScriptContainer;
+                        this.serverScriptContainer : this.clientScriptContainer;
 
                 var toReturn = Utils.tryAndExecute(ActionResult.PASS,container,"onUse",
                         new Object[]{state,world,pos,player,hand,hit}, returnValue->{
@@ -513,24 +505,22 @@ public class CustomBlockMaker {
 
             @Override
             public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved){
-                serverScriptContainer.setThis(this);
-                serverScriptContainer.setStateWorldPos(state, world, pos);
+                this.serverScriptContainer.setStateWorldPos(state, world, pos);
 
-                Utils.tryAndExecute(serverScriptContainer,"onStateReplaced",new Object[]{state,world,pos,newState,moved});
+                Utils.tryAndExecute(this.serverScriptContainer,"onStateReplaced",new Object[]{state,world,pos,newState,moved});
                 BlockEntity blockEntity;
                 if(blockEntityScriptName!=null &&
                         (blockEntity = world.getBlockEntity(pos)) instanceof m3weBlockEntity &&
                         ((m3weBlockEntity) blockEntity).type.equals(Registry.BLOCK.getId(state.getBlock())))
                     world.removeBlockEntity(pos);
-                serverScriptContainer.clearStateWorldPos();
+                this.serverScriptContainer.clearStateWorldPos();
             }
 
             @Override
             public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
                 var container=world instanceof ServerWorld?
-                        serverScriptContainer : clientScriptContainer;
+                        this.serverScriptContainer : this.clientScriptContainer;
 
-                container.setThis(this);
                 container.setStateWorldPos(state, world, pos);
 
                 Utils.tryAndExecute(container,"onSteppedOn",new Object[]{state,world,pos,entity});
@@ -540,9 +530,8 @@ public class CustomBlockMaker {
             @Override
             public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
                 var container=world instanceof ServerWorld?
-                        serverScriptContainer : clientScriptContainer;
+                        this.serverScriptContainer : this.clientScriptContainer;
 
-                container.setThis(this);
                 container.setStateWorldPos(state, world, pos);
 
                 Utils.tryAndExecute(container,"onPlaced",new Object[]{state,world,pos,placer,itemStack});

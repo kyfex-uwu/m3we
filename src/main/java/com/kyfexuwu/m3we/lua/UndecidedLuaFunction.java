@@ -1,6 +1,7 @@
 package com.kyfexuwu.m3we.lua;
 
 import com.kyfexuwu.m3we.Utils;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
@@ -51,6 +52,15 @@ public class UndecidedLuaFunction extends VarArgFunction {
             int[] numParamsIndexes=new int[args.length];
             boolean matches=true;
             for(int i=0;i<args.length;i++){
+                //functional interface case
+                if(LuaFunctionalInterface.isFunctionalInterface(paramTypes[i])) {
+                    if(!(args[i] instanceof LuaFunction)){
+                        matches=false;
+                        break;
+                    }
+                    translatedArgs[i] = LuaFunctionalInterface.createFunctionalInterface((LuaFunction) args[i], paramTypes[i]);
+                    continue;
+                }
                 //null case
                 if(translatedArgs[i]==null)
                     continue;
@@ -87,15 +97,6 @@ public class UndecidedLuaFunction extends VarArgFunction {
                     numParamsIndexes[numParamsAmt]=i;
                     numParamsAmt++;
                 }
-                //functional interface case
-                if(LuaFunctionalInterface.isFunctionalInterface(paramTypes[i])) {
-                    if(!(args[i] instanceof LuaFunction)){
-                        matches=false;
-                        break;
-                    }
-                    translatedArgs[i] = LuaFunctionalInterface.createFunctionalInterface((LuaFunction) args[i], paramTypes[i]);
-                    continue;
-                }
 
                 //regular case
                 if(!paramTypes[i].isAssignableFrom(translatedArgs[i].getClass())){
@@ -125,7 +126,8 @@ public class UndecidedLuaFunction extends VarArgFunction {
                 }
             }
         }
-        return NIL;
+
+        throw new LuaError("Function \""+this.methods[0].getName()+"\" called with incorrect arguments");
     }
 
     public String toString(){

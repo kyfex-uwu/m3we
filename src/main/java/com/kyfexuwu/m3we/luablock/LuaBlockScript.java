@@ -1,6 +1,7 @@
 package com.kyfexuwu.m3we.luablock;
 
 import com.kyfexuwu.m3we.lua.CustomScript;
+import com.kyfexuwu.m3we.lua.LuaSurfaceObj;
 import com.kyfexuwu.m3we.lua.ScriptError;
 import org.luaj.vm2.LoadState;
 import org.luaj.vm2.compiler.LuaC;
@@ -19,11 +20,11 @@ public class LuaBlockScript extends CustomScript {
         this.runEnv = CustomScript.safeGlobal();
         LoadState.install(this.runEnv);
         LuaC.install(this.runEnv);
-        this.revision=(this.revision+1)%100;
+        this.revision=(this.revision+1)%Integer.MAX_VALUE;
 
         var world = this.self.getWorld();
         if(world!=null&&!world.isClient) {
-            this.setThis(this.self);
+            if(!this.isFake) this.runEnv.set("self", new LuaSurfaceObj(this.self));
             ScriptError.execute(() -> this.runEnv.load(script).call());
         }
     }

@@ -15,7 +15,6 @@ public class RegistryAPI extends TwoArgFunction {
     public LuaValue call(LuaValue modname, LuaValue env) {
         JavaExclusiveTable thisApi = new JavaExclusiveTable();
         thisApi.javaSet("registerGui",new registerGUI(env));
-        thisApi.javaSet("getGui",new getGUI());
 
         return CustomScript.finalizeAPI("Registry",thisApi,env);
     }
@@ -35,14 +34,6 @@ public class RegistryAPI extends TwoArgFunction {
                 e.printStackTrace();
                 return FALSE;
             }
-        }
-    }
-    static final class getGUI extends OneArgFunction {
-        @Override
-        public LuaValue call(LuaValue guiName) {
-            var toReturn = getGui(guiName.tojstring());
-            if(toReturn==null) return NIL;
-            return Utils.toLuaValue(toReturn);
         }
     }
     public static DynamicGuiBuilder getGui(String name){

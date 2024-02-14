@@ -150,7 +150,7 @@ public class Utils {
                 }
                 return toReturn;
             }
-            //case "function": //todo :blensive:
+            //case "function": //no: after some hard thinking
             //case "userdata": //no
             //case "thread": //no: pt. 2
             /*case "undecidedFunc":
@@ -162,6 +162,12 @@ public class Utils {
                 return null;
             }
         }
+    }
+    public static <T> T toObject(LuaValue value, Class<T> clazz){
+        var toReturn = toObject(value);
+        try{
+            return (T)toReturn;
+        }catch(Exception e){ return null; }
     }
     public static LuaTable cloneTable(LuaTable table, LuaTable cloneInto){
         LuaTable finalCloneInto = cloneInto==null?new LuaTable():cloneInto;
