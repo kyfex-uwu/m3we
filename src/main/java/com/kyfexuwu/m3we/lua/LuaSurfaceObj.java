@@ -1,7 +1,6 @@
 package com.kyfexuwu.m3we.lua;
 
 import com.kyfexuwu.m3we.Utils;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.TwoArgFunction;
@@ -140,14 +139,12 @@ public class LuaSurfaceObj extends LuaTable {
 
     @Override
     public void set(LuaValue key, LuaValue value){
-        MinecraftClient.getInstance().inGameHud.getChatHud()
-                .addMessage(Text.of("You can't set properties on Java objects directly," +
-                        "see if there's a helper function instead! (this should change soon)"));
+        ChatMessage.message(Text.of("You can't set properties on Java objects directly," +
+                "see if there's a helper function instead! (this should change soon)"));
     }
     @Override
     public void rawset(LuaValue key, LuaValue value){
-        MinecraftClient.getInstance().inGameHud.getChatHud()
-                .addMessage(Text.of("bruh"));
+        ChatMessage.message(Text.of("bruh"));
     }
 
     public String toString(){

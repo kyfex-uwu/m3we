@@ -4,7 +4,6 @@ import com.kyfexuwu.m3we.m3we;
 import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.lua.api.*;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.*;
 import net.minecraft.util.math.BlockPos;
@@ -184,7 +183,7 @@ public class CustomScript {
                     if (player.hasPermissionLevel(1)) player.sendMessage(message);
                 }
             } else {
-                MinecraftClient.getInstance().player.sendMessage(message);
+                ChatMessage.message(message);
             }
         }catch(Exception e){
             m3we.LOGGER.debug("m3we print: "+toPrint);
@@ -217,8 +216,7 @@ public class CustomScript {
             }
         }catch(Exception e){ e.printStackTrace(); }
 
-        var chatHud = MinecraftClient.getInstance().inGameHud.getChatHud();
-        chatHud.addMessage(message);
+        ChatMessage.message(message);
         return NIL;
     }
     public static LuaValue loadclass(String string){
