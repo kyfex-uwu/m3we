@@ -6,14 +6,20 @@ import com.kyfexuwu.m3we.lua.JavaExclusiveTable;
 import com.kyfexuwu.m3we.lua.ScriptError;
 import com.kyfexuwu.m3we.lua.dyngui.DynamicGui;
 import com.kyfexuwu.m3we.lua.dyngui.DynamicGuiHandler;
+import com.kyfexuwu.m3we.lua.dyngui.DynamicInventory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventories;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -59,30 +65,23 @@ public class GuiAPI extends TwoArgFunction {
 
         @Override
         public Varargs invoke(Varargs args) {
-            LuaValue luaPlayer = args.arg(1);
-            LuaValue guiName = args.arg(2);
-            LuaValue world = args.arg(3);
-            LuaValue pos = args.arg(4);
+            var player = Utils.toObject(args.arg(1), PlayerEntity.class);
+            var guiName = Utils.toObject(args.arg(2), String.class);
+            var world = Utils.toObject(args.arg(3), World.class);
+            var pos = Utils.toObject(args.arg(4), BlockPos.class);
+            Inventory serverInv = Utils.toObject(args.arg(5), Inventory.class);
+            if(serverInv==null) serverInv = new DynamicInventory();
 
-            PlayerEntity player;
-            String thisGui;
-            try {
-                var ctxTable=(JavaExclusiveTable) this.globals.get(CustomScript.contextIdentifier);
-                if(!ctxTable.get("env").checkjstring().equals("server")) return FALSE;
-
-                player = (PlayerEntity) Utils.toObject(luaPlayer);
-                thisGui = guiName.checkjstring();
-            }catch(Exception e){
-                return FALSE;
-            }
+            var ctxTable=(JavaExclusiveTable) this.globals.get(CustomScript.contextIdentifier);
+            if(!ctxTable.get("env").checkjstring().equals("server")) return FALSE;
 
             try {
+                Inventory finalServerInv = serverInv;
                 player.openHandledScreen(new ExtendedScreenHandlerFactory() {
                     @Nullable
                     @Override
                     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                        return RegistryAPI.getGui(thisGui).build(syncId,inv,player,
-                                Utils.toObject(world, World.class),Utils.toObject(pos, BlockPos.class),thisGui);
+                        return RegistryAPI.getGui(guiName).build(syncId,inv, finalServerInv,world,pos,guiName);
                     }
 
                     @Override
@@ -92,7 +91,7 @@ public class GuiAPI extends TwoArgFunction {
 
                     @Override
                     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-                        buf.writeString(thisGui);
+                        buf.writeString(guiName);
                     }
                 });
             }catch(Exception e){

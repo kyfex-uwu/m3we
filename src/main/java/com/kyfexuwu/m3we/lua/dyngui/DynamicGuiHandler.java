@@ -4,6 +4,7 @@ import com.kyfexuwu.m3we.lua.api.RegistryAPI;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
@@ -21,8 +22,8 @@ public class DynamicGuiHandler extends ScreenHandler {
                     new ExtendedScreenHandlerType<>(DynamicGuiHandler::new));
 
     public final DynamicGuiBuilder builder;
-    public DynamicInventory inv= new DynamicInventory();
-    public ScreenHandlerContext context;
+    public final Inventory inv;
+    public final ScreenHandlerContext context;
 
     //client
     public DynamicGuiHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf packet) {
@@ -30,11 +31,15 @@ public class DynamicGuiHandler extends ScreenHandler {
     }
     //server
     public DynamicGuiHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context, String guiName) {
+        this(syncId, playerInventory, new DynamicInventory(), context, guiName);
+    }
+    public DynamicGuiHandler(int syncId, PlayerInventory playerInventory, Inventory inv, ScreenHandlerContext context, String guiName) {
         super(dynamicGuiHandler, syncId);
         this.builder = RegistryAPI.getGui(guiName);
         this.context = context;
 
-        this.inv.setSize(this.builder.slotCount);
+        this.inv = inv;
+        if(inv instanceof DynamicInventory dynInv) dynInv.setSize(this.builder.slotCount);
         this.inv.onOpen(playerInventory.player);
 
         if(this.builder.hasPlayerInventory){

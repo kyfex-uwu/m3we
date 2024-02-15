@@ -194,7 +194,7 @@ public class Utils {
 
             return tryAndExecute(dfault, (LuaFunction) func, args, transformFunc);
         }catch(LuaError e){
-            m3we.LOGGER.error("env failure: "+e.getMessage());
+            m3we.LOGGER.error("env failure: \n"+e.getMessage());
             return dfault;
         }
     }
@@ -207,7 +207,7 @@ public class Utils {
             }
             return transformFunc.apply(func.invoke(luaArgs).arg1());
         }catch(LuaError e){
-            m3we.LOGGER.error("function failure: "+e.getMessage());
+            m3we.LOGGER.error("function failure: \n"+e.getMessage());
             return dfault;
         }
     }

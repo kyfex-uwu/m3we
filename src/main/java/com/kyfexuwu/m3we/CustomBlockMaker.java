@@ -43,6 +43,7 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 import static com.kyfexuwu.m3we.Utils.tryAndExecute;
 import static com.kyfexuwu.m3we.Utils.validPropertyName;
@@ -145,14 +146,22 @@ public class CustomBlockMaker {
                 super(settings);
 
                 this.clientScriptContainer=new CustomScript(scriptName);
-                this.clientScriptContainer.contextObj.javaSet("env",Utils.toLuaValue("client"));
-                if(!this.clientScriptContainer.isFake)
-                    this.clientScriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
+                Consumer<CustomScript> clientListener = script->{
+                    this.clientScriptContainer.contextObj.javaSet("env",Utils.toLuaValue("client"));
+                    if(!this.clientScriptContainer.isFake)
+                        this.clientScriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
+                };
+                clientListener.accept(this.clientScriptContainer);
+                this.clientScriptContainer.updateListeners.add(clientListener);
 
                 this.serverScriptContainer=new CustomScript(scriptName);
-                this.serverScriptContainer.contextObj.javaSet("env",Utils.toLuaValue("server"));
-                if(!this.serverScriptContainer.isFake)
-                    this.serverScriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
+                Consumer<CustomScript> serverListener = script->{
+                    this.serverScriptContainer.contextObj.javaSet("env",Utils.toLuaValue("server"));
+                    if(!this.serverScriptContainer.isFake)
+                        this.serverScriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
+                };
+                serverListener.accept(this.serverScriptContainer);
+                this.serverScriptContainer.updateListeners.add(clientListener);
 
                 //shape
                 if(blockShapeJson.isJsonArray()) {

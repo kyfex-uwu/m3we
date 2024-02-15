@@ -6,6 +6,7 @@ import com.kyfexuwu.m3we.lua.JavaExclusiveTable;
 import com.kyfexuwu.m3we.lua.ScriptError;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -61,8 +62,8 @@ public class DynamicGuiBuilder {
         });
     }
 
-    public DynamicGuiHandler build(int syncId, PlayerInventory inventory, PlayerEntity player,
+    public DynamicGuiHandler build(int syncId, PlayerInventory inventory, Inventory serverInventory,
                                    World world, BlockPos pos, String guiName){
-        return new DynamicGuiHandler(syncId, inventory, ScreenHandlerContext.create(world, pos), guiName);
+        return new DynamicGuiHandler(syncId, inventory, serverInventory, ScreenHandlerContext.create(world, pos), guiName);
     }
 }

@@ -23,6 +23,9 @@ import java.lang.reflect.Method;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 import static org.luaj.vm2.LuaValue.NIL;
 
@@ -54,6 +57,7 @@ public class CustomScript {
             super.hashset(luaKey, val);
         }
     }
+    private static final Logger printLogger = Logger.getLogger("m3we-consoleprint");
     private static Globals unsafeGlobal(){
         var toReturn = new CustomGlobals();
         toReturn.load(new JseBaseLib());
@@ -66,6 +70,15 @@ public class CustomScript {
             @Override
             public Varargs invoke(Varargs args) {
                 return print(toReturn.get(contextIdentifier).get("env").optjstring("none"), args);
+            }
+        });
+        toReturn.set("consoleprint", new VarArgFunction() {
+            @Override
+            public Varargs invoke(Varargs args) {
+                var toPrint = new StringBuilder();
+                for(int i=0;i<args.narg()-1;i++) toPrint.append(args.arg(i+1)).append(", ");
+                printLogger.info(toPrint.append(args.arg(args.narg())).toString());
+                return NONE;
             }
         });
         toReturn.set("explore", new OneArgFunction() {
@@ -165,7 +178,7 @@ public class CustomScript {
             }
         }
         try {//CHANGE
-            var message = Text.of(toPrint.toString());
+            var message = Text.of(toPrint.toString().replace("\r",""));
             if (env.equals("server")) {
                 for (var player : currentServer.getPlayerManager().getPlayerList()) {
                     if (player.hasPermissionLevel(1)) player.sendMessage(message);
@@ -182,7 +195,7 @@ public class CustomScript {
         print(env, createVarArgs(args));
     }
     public static LuaValue explore(LuaValue value){
-        MutableText message = Text.literal("");
+        MutableText message = Text.literal(Utils.deobfuscate(Utils.toObject(value).getClass().getSimpleName())+": ");
 
         try {
             if (value.typename().equals("surfaceObj") || value.typename().equals("table")) {
@@ -241,6 +254,7 @@ public class CustomScript {
 
         scripts.add(this);
     }
+    public final List<Consumer<CustomScript>> updateListeners = new ArrayList<>();
     private void setScript(String fileName){
         this.runEnv = safeGlobal();
         this.runEnv.set(contextIdentifier, this.contextObj);
@@ -251,6 +265,7 @@ public class CustomScript {
             this.runEnv.load(
                 Files.readString(new File(m3we.m3weFolder + "\\scripts\\" + fileName + ".lua").toPath())
             ).call();
+            for(var listener : this.updateListeners) listener.accept(this);
         }catch(IOException | LuaError e){
             m3we.LOGGER.error("script "+fileName+" not loaded... it was a "+e.getClass().getName()+" exception");
             //e.printStackTrace();

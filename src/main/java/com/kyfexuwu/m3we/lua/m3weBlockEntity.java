@@ -18,6 +18,9 @@ import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.listener.GameEventListener;
+import org.luaj.vm2.LuaTable;
+
+import java.util.function.Consumer;
 
 import static com.kyfexuwu.m3we.m3we.m3weBlockEntityType;
 
@@ -33,6 +36,12 @@ public class m3weBlockEntity extends BlockEntity implements GameEventListener {
                 .get(Registry.BLOCK.getId(state.getBlock())));
         this.positionSource = new BlockPositionSource(pos);
 
+        Consumer<CustomScript> listener = script->{
+            if(!this.scriptContainer.isFake)
+                this.scriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
+        };
+        listener.accept(this.scriptContainer);
+        this.scriptContainer.updateListeners.add(listener);
         this.scriptContainer.setStateWorldPos(state, null, pos);
         this.type = Registry.BLOCK.getId(state.getBlock());
     }
@@ -78,17 +87,21 @@ public class m3weBlockEntity extends BlockEntity implements GameEventListener {
                 r-> r.isboolean() && r.checkboolean());
     }
 
+    public LuaTable getEnv(){
+        return this.scriptContainer.runEnv;
+    }
+
     //--
 
     @Override
     protected void writeNbt(NbtCompound nbt) {
-        //nbt.putString("lua", this.lua);
-        super.writeNbt(nbt);
+        Utils.tryAndExecute(this.scriptContainer, "saveToNBT", new Object[]{nbt});
+        this.markDirty();
     }
     @Override
     public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
-        //this.lua = nbt.getString("lua");
+        //nbt coming in is valid
+        Utils.tryAndExecute(this.scriptContainer, "readFromNBT", new Object[]{nbt});
     }
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {

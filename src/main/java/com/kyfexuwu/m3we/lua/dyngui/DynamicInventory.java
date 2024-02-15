@@ -6,10 +6,18 @@ import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DynamicInventory implements Inventory {
     private final ArrayList<ItemStack> items = new ArrayList<>();
     private ArrayList<InventoryChangedListener> listeners = new ArrayList<>();
+    public DynamicInventory(List<ItemStack> stacks){
+        super();
+        this.items.addAll(stacks);
+    }
+    public DynamicInventory(){
+        super();
+    }
 
     //todo: size property
 
