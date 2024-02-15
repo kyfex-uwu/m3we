@@ -6,6 +6,7 @@ import com.kyfexuwu.m3we.lua.JavaExclusiveTable;
 import com.kyfexuwu.m3we.lua.LuaSurfaceObj;
 import com.kyfexuwu.m3we.lua.UndecidedLuaFunction;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -13,6 +14,7 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -42,6 +44,30 @@ public class CreateAPI extends TwoArgFunction {
         thisApi.apiMethodSet("inventory",new inventory(), "(size): " +
                 "Creates a new inventory with the specified size. This is useful for when trying to create a block " +
                 "with an inventory, like a chest or a crafting table.");
+
+        var entityTable = new JavaExclusiveTable();
+        thisApi.javaSet("entity", entityTable);
+        entityTable.apiMethodSet("item", MethodWrapper.inst.varCreate(args->{
+            //world xyz stack v(xyz)
+            var world = Utils.toObject(args.arg(1), World.class);
+            double x = Utils.toObject(args.arg(2), Double.class);
+            double y = Utils.toObject(args.arg(3), Double.class);
+            double z = Utils.toObject(args.arg(4), Double.class);
+            var stack = Utils.toObject(args.arg(5), ItemStack.class);
+
+            var itemEntity = new ItemEntity(world, x, y, z, stack);;
+            try{
+                double vx = Utils.toObject(args.arg(6), Double.class);
+                double vy = Utils.toObject(args.arg(7), Double.class);
+                double vz = Utils.toObject(args.arg(8), Double.class);
+                itemEntity = new ItemEntity(world, x, y, z, stack, vx, vy, vz);
+            }catch(Exception ignored){}
+
+            world.spawnEntity(itemEntity);
+            return null;
+        }), "(world, x, y, z, itemStack, xVelocity, yVelocity, zVelocity): " +
+                "Spawns a new itemstack entity into the world with the specified position and velocity. " +
+                "If the velocity is not specified, it will be given a default velocity.");
 
         thisApi.javaSet("fromClass",new fromClass());
 

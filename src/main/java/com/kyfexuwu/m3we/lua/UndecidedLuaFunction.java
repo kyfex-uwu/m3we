@@ -68,7 +68,7 @@ public class UndecidedLuaFunction extends VarArgFunction {
                 if(translatedArgs[i] instanceof Boolean&&paramTypes[i].equals(boolean.class))
                     continue;
                 //enum case
-                if(translatedArgs[i]instanceof String&&Enum.class.isAssignableFrom(paramTypes[i])){
+                if(translatedArgs[i] instanceof String&&Enum.class.isAssignableFrom(paramTypes[i])){
                     var enums = paramTypes[i].getEnumConstants();
                     for(var val : enums){
                         if(((Enum<?>)val).name().toLowerCase(Locale.ROOT).equals(
@@ -79,8 +79,14 @@ public class UndecidedLuaFunction extends VarArgFunction {
                     }
                     continue;
                 }
+                //char case
+                if(translatedArgs[i] instanceof String&&paramTypes[i].equals(char.class)&&
+                        ((String)translatedArgs[i]).length()==1) {
+                    translatedArgs[i] = ((String)translatedArgs[i]).charAt(0);
+                    continue;
+                }
                 //number cases
-                if(translatedArgs[i].getClass().equals(Double.class)){
+                if(translatedArgs[i] instanceof Double){
                     if(paramTypes[i].equals(int.class)){
                         translatedArgs[i] = ((Double)translatedArgs[i]).intValue();
                         continue;
@@ -90,7 +96,19 @@ public class UndecidedLuaFunction extends VarArgFunction {
                         continue;
                     }
                     if(paramTypes[i].equals(double.class)){
-                        translatedArgs[i] = (double) translatedArgs[i];
+                        translatedArgs[i] = (Double) translatedArgs[i];
+                        continue;
+                    }
+                    if(paramTypes[i].equals(long.class)){
+                        translatedArgs[i] = ((Double)translatedArgs[i]).longValue();
+                        continue;
+                    }
+                    if(paramTypes[i].equals(short.class)){
+                        translatedArgs[i] = ((Double)translatedArgs[i]).shortValue();
+                        continue;
+                    }
+                    if(paramTypes[i].equals(byte.class)){
+                        translatedArgs[i] = ((Double)translatedArgs[i]).byteValue();
                         continue;
                     }
                     //else
@@ -105,15 +123,18 @@ public class UndecidedLuaFunction extends VarArgFunction {
                 }
             }
             if(matches){
-                int amtOfTries = (int)Math.pow(3,numParamsAmt);
+                int amtOfTries = (int)Math.pow(6,numParamsAmt);
                 for(int i=0;i<amtOfTries;i++) {
                     var changeableArgs = Arrays.copyOf(translatedArgs,translatedArgs.length);
                     //number type brute forcing
                     for(int j=0;j<numParamsAmt;j++){
-                        switch (i / (int) Math.pow(3, j) % 3) {
+                        switch (i / (int) Math.pow(6, j) % 6) {
                             case 0 -> changeableArgs[numParamsIndexes[j]] = ((Double) changeableArgs[numParamsIndexes[j]]).doubleValue();
                             case 1 -> changeableArgs[numParamsIndexes[j]] = ((Double) changeableArgs[numParamsIndexes[j]]).floatValue();
                             case 2 -> changeableArgs[numParamsIndexes[j]] = ((Double) changeableArgs[numParamsIndexes[j]]).intValue();
+                            case 3 -> changeableArgs[numParamsIndexes[j]] = ((Double) changeableArgs[numParamsIndexes[j]]).longValue();
+                            case 4 -> changeableArgs[numParamsIndexes[j]] = ((Double) changeableArgs[numParamsIndexes[j]]).byteValue();
+                            case 5 -> changeableArgs[numParamsIndexes[j]] = ((Double) changeableArgs[numParamsIndexes[j]]).shortValue();
                         }
                     }
 

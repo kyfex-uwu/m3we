@@ -2,6 +2,7 @@ package com.kyfexuwu.m3we.lua.api;
 
 import com.kyfexuwu.m3we.Utils;
 import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.*;
 
 import java.util.function.BiFunction;
@@ -51,6 +52,14 @@ public class MethodWrapper {
                         (A1) Utils.toObject(luaValue),
                         (A2) Utils.toObject(luaValue2),
                         (A3) Utils.toObject(luaValue3)));
+            }
+        };
+    }
+    public LibFunction varCreate(Function<Varargs,Object> func){
+        return new VarArgFunction(){
+            @Override
+            public LuaValue invoke(Varargs args) {
+                return Utils.toLuaValue(func.apply(args));
             }
         };
     }

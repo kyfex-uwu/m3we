@@ -9,6 +9,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -23,7 +24,9 @@ public class BlockEntityAPI extends TwoArgFunction {
         thisApi.javaSet("getEntityFromPos", new getEntityFromPos(env));
 
         thisApi.javaSet("NBTToInventory",MethodWrapper.inst.create((NbtCompound nbt) -> {
-            DefaultedList<ItemStack> inv = DefaultedList.of();
+            var items = nbt.getList("Items", NbtElement.COMPOUND_TYPE);
+            DefaultedList<ItemStack> inv = DefaultedList.ofSize(
+                    items.getCompound(items.size()-1).getByte("Slot")+1, ItemStack.EMPTY);
             Inventories.readNbt(nbt, inv);
             return new DynamicInventory(inv);
         }));

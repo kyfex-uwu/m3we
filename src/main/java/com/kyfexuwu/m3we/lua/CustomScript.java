@@ -57,7 +57,7 @@ public class CustomScript {
             super.hashset(luaKey, val);
         }
     }
-    private static final Logger printLogger = Logger.getLogger("m3we-consoleprint");
+    private static final Logger printLogger = Logger.getLogger("m3we-print");
     private static Globals unsafeGlobal(){
         var toReturn = new CustomGlobals();
         toReturn.load(new JseBaseLib());
