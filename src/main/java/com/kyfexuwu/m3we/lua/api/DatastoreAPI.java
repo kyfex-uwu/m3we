@@ -31,7 +31,7 @@ public class DatastoreAPI extends TwoArgFunction {
             else if(nbt instanceof NbtDouble) return LuaValue.valueOf(((NbtDouble) nbt).doubleValue());
             else if(nbt instanceof NbtFloat) return LuaValue.valueOf(((NbtFloat) nbt).doubleValue());
             else if(nbt instanceof NbtInt) return LuaValue.valueOf(((NbtInt) nbt).doubleValue());
-            else if(nbt instanceof NbtByte) return LuaValue.valueOf(((NbtByte) nbt).byteValue()!=0);
+            else if(nbt instanceof NbtByte) return LuaValue.valueOf(((NbtByte) nbt).doubleValue());
             else if(nbt instanceof NbtCompound){
                 var table = tableToWrite==null ?
                         new DatastoreTable() : tableToWrite;

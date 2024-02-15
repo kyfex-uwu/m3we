@@ -13,15 +13,17 @@ import org.luaj.vm2.lib.TwoArgFunction;
 import static com.kyfexuwu.m3we.lua.CustomScript.currentServer;
 
 public class SignalsAPI extends TwoArgFunction {
-    public static JavaExclusiveTable clientBus = new JavaExclusiveTable();
-    public static JavaExclusiveTable serverBus = new JavaExclusiveTable();
 
     @Override
     public LuaValue call(LuaValue modname, LuaValue env) {
         JavaExclusiveTable thisApi = new JavaExclusiveTable();
 
         thisApi.javaSet("registerEvent",new registerEvent(env));
-        //thisApi.javaSet("__eventBus", new JavaExclusiveTable());
+
+        var eventBus = new JavaExclusiveTable();
+        eventBus.javaSet("client", new JavaExclusiveTable());
+        eventBus.javaSet("server", new JavaExclusiveTable());
+        thisApi.javaSet("__eventBus", eventBus);
 
         thisApi.javaSet("send",new send(env));
 
@@ -40,16 +42,11 @@ public class SignalsAPI extends TwoArgFunction {
             if(!(onClient instanceof LuaFunction) || !(onServer instanceof LuaFunction))
                 throw new LuaError("Event callback must be a function");
 
-            var env = this.globals.get(CustomScript.contextIdentifier).get("env").optjstring("none");
-            switch (env) {
-                case "server" -> serverBus.javaSet(eventName.checkjstring(), onServer);
-                case "client" -> clientBus.javaSet(eventName.checkjstring(), onClient);
-                default -> {
-                    return FALSE;
-                }
-            }
+            var buses = this.globals.get("Signals").get("__eventBus");
+            ((JavaExclusiveTable)buses.get("server")).javaSet(eventName.checkjstring(), onServer);
+            ((JavaExclusiveTable)buses.get("client")).javaSet(eventName.checkjstring(), onClient);
 
-            return TRUE;
+            return NONE;
         }
     }
     static final class send extends TwoArgFunction{

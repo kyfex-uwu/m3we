@@ -11,8 +11,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.network.NetworkThreadUtils;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
-import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,20 +28,26 @@ public class ClientCustomPacketMixin {
 
     @Shadow private ClientWorld world;
 
-    @Inject(method = "onCustomPayload", at = @At("HEAD"))
+    @Inject(method = "onCustomPayload", at = @At("HEAD"), cancellable = true)
     private void customPayload__m3we(CustomPayloadS2CPacket packet, CallbackInfo ci) {
         var channel = packet.getChannel();
-        if(channel.equals(m3we.giveLuaCodePacket)) onLuaCodePacket__m3we(packet);
-        else if(channel.equals(SignalsAPI.signalsApiChannel)) onSignalsS2CPacket__m3we(packet);
+        var buffer = packet.getData();
+        var shouldCancel=false;
+        var thisObj = (ClientPlayNetworkHandler) (Object) this;
+        NetworkThreadUtils.forceMainThread(packet, thisObj, this.client);
+
+        if(channel.equals(m3we.giveLuaCodePacket)){
+            shouldCancel=true;
+            onLuaCodePacket__m3we(buffer);
+        }else if(channel.equals(SignalsAPI.signalsApiChannel)){
+            shouldCancel=true;
+            onSignalsS2CPacket__m3we(buffer);
+        }
+        if(shouldCancel) ci.cancel();
     }
 
     @Unique
-    private void onLuaCodePacket__m3we(CustomPayloadS2CPacket packet){
-        var buffer = packet.getData();
-
-        var thisObj = (ClientPlayNetworkHandler) (Object) this;
-
-        NetworkThreadUtils.forceMainThread(packet, thisObj, this.client);
+    private void onLuaCodePacket__m3we(PacketByteBuf buffer){
         var pos = buffer.readBlockPos();
 
         var luaBlockEntity = this.world.getBlockEntity(pos);
@@ -56,19 +62,26 @@ public class ClientCustomPacketMixin {
     }
 
     @Unique
-    private void onSignalsS2CPacket__m3we(CustomPayloadS2CPacket packet){
-        var data = packet.getData().readNbt();
+    private void onSignalsS2CPacket__m3we(PacketByteBuf buffer){
+        var data = buffer.readNbt();
         try {
             var eventName = data.getKeys().stream().findFirst().get();
-            var eventData = (LuaTable) DatastoreAPI.DatastoreTable.fromNBTVal(data.get(eventName), new LuaTable());
+            var eventData = DatastoreAPI.DatastoreTable.fromNBTVal(data.get(eventName), new LuaTable());
             for (var script : CustomScript.scripts) {
                 try {
-                    if (script.contextObj.get("env").checkjstring().equals("client")) {
-                        LuaFunction eventHandler = (LuaFunction) SignalsAPI.clientBus.get(eventName);
-                        if (!eventHandler.isnil()) eventHandler.invoke(Utils.cloneTable(eventData, null));
+                    var env = script.contextObj.get("env");
+                    if(env.isnil()) continue;
+                    if (env.checkjstring().equals("client")) {
+                        var eventHandler = script.runEnv.get("Signals").get("__eventBus").get("client").get(eventName);
+                        if (!eventHandler.isnil()){
+                            if(eventData instanceof LuaTable eventTable)
+                                eventHandler.invoke(Utils.cloneTable(eventTable, null));
+                            else
+                                eventHandler.invoke(eventData);
+                        }
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) { }
             }
-        }catch(Exception ignored){}
+        }catch(Exception ignored){ }
     }
 }
