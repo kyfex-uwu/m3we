@@ -24,7 +24,6 @@ import java.util.function.Consumer;
 
 import static com.kyfexuwu.m3we.m3we.m3weBlockEntityType;
 
-//todo: add serializing/deserializing
 public class m3weBlockEntity extends BlockEntity implements GameEventListener {
     private final CustomScript scriptContainer;
     private final PositionSource positionSource;
