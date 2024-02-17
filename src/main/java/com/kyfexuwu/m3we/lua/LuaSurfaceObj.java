@@ -26,14 +26,7 @@ public class LuaSurfaceObj extends LuaTable {
         }
     };
 
-    public static class Token{
-        public final String obf;
-        public final String deobf;
-        public Token(String obf, String deobf){
-            this.obf=obf;
-            this.deobf=deobf;
-        }
-    }
+    public record Token(String obf, String deobf) {}
 
     public LuaSurfaceObj(Object object){
         LuaTable thisMT = new LuaTable();

@@ -4,7 +4,7 @@ import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.m3we;
 import net.minecraft.resource.DefaultResourcePack;
 import net.minecraft.resource.Resource;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -16,7 +16,7 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 
 public class Translations {
-    public static final boolean OBFUSCATED = !MinecraftServer.class.getSimpleName().equals("MinecraftServer");
+    public static final boolean OBFUSCATED = !BlockPos.class.getSimpleName().equals("BlockPos");
     public static ClassToken[] classesTranslations;
     public static FieldToken[] fieldsTranslations;
     public static FieldToken[] compFieldsTranslations;
@@ -115,7 +115,7 @@ public class Translations {
             for(int i=0;i<params.length;i++){
                 String[] paramBroken = params[i].split(":");
                 if(paramBroken.length==1){
-                    this.paramNames[i] = "param"+i;
+                    this.paramNames[i] = "arg"+(i+1);
                     this.paramClasses[i] = paramBroken[0];
                 }else {
                     this.paramNames[i] = paramBroken[0];
