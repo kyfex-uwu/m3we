@@ -2,7 +2,8 @@ package com.kyfexuwu.m3we.lua;
 
 import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.m3we;
-import net.minecraft.resource.*;
+import net.minecraft.resource.DefaultResourcePack;
+import net.minecraft.resource.Resource;
 import net.minecraft.server.MinecraftServer;
 
 import java.io.FileNotFoundException;

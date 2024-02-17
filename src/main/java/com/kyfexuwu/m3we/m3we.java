@@ -3,7 +3,8 @@ package com.kyfexuwu.m3we;
 import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.lua.Translations;
 import com.kyfexuwu.m3we.lua.m3weBlockEntity;
-import com.kyfexuwu.m3we.luablock.*;
+import com.kyfexuwu.m3we.luablock.LuaBlock;
+import com.kyfexuwu.m3we.luablock.LuaBlockEntity;
 import com.mojang.logging.LogUtils;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
@@ -11,7 +12,8 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -22,9 +24,11 @@ import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.function.Function;
 
 public class m3we implements ModInitializer {

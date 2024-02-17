@@ -4,19 +4,22 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.kyfexuwu.m3we.lua.CustomScript;
-import net.minecraft.block.*;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.Material;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.luaj.vm2.LuaValue;
-
-import static com.kyfexuwu.m3we.Utils.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import static com.kyfexuwu.m3we.Utils.*;
 
 
 public class BlockIniter {

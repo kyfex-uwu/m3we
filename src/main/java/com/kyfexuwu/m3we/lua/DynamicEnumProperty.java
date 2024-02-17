@@ -3,7 +3,8 @@ package com.kyfexuwu.m3we.lua;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.state.property.Property;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Optional;
 
 public class DynamicEnumProperty extends Property<String> {
     private final ImmutableSet<String> values;

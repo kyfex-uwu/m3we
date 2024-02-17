@@ -2,7 +2,9 @@ package com.kyfexuwu.m3we.lua;
 
 import com.kyfexuwu.m3we.Utils;
 import net.minecraft.text.Text;
-import org.luaj.vm2.*;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.TwoArgFunction;
 
 import java.lang.reflect.Field;

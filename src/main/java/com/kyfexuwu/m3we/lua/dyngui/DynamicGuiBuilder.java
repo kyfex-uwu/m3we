@@ -11,7 +11,7 @@ import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.util.TriConsumer;
-import org.luaj.vm2.*;
+import org.luaj.vm2.LuaValue;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;

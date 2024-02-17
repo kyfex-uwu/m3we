@@ -1,8 +1,8 @@
 package com.kyfexuwu.m3we.luablock;
 
-import com.kyfexuwu.m3we.m3we;
 import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.lua.ScriptError;
+import com.kyfexuwu.m3we.m3we;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
