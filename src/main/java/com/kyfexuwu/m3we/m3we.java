@@ -8,6 +8,7 @@ import com.kyfexuwu.m3we.luablock.LuaBlockEntity;
 import com.mojang.logging.LogUtils;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
@@ -19,6 +20,8 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.FilenameUtils;
@@ -67,7 +70,6 @@ public class m3we implements ModInitializer {
     public static final Identifier updateLuaBlockPacket = new Identifier("m3we","update_lua_block");
     public static final Identifier askForLuaCodePacket = new Identifier("m3we","get_lua_code");
     public static final Identifier giveLuaCodePacket = new Identifier("m3we","give_lua_code");
-
     @Override
     public void onInitialize() {
         Translations.init();
@@ -120,6 +122,20 @@ public class m3we implements ModInitializer {
         //--
 
         m3weResources.mkdir();
+        initReloadables();
+
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
+                dispatcher.register(CommandManager.literal("m3we:reload").executes(context -> {
+                    initReloadables();
+                    context.getSource().sendFeedback(Text.literal("Reloaded"), false);
+                    return 1;
+                })));
+    }
+
+    public static void initReloadables(){
+        m3weData.packResources.clear();
+        m3weData.packData.clear();
+
         for (File packDir : m3weResources.listFiles()) {
             if(!packDir.isDirectory()) continue;
             var dirs = Arrays.asList(packDir.list());

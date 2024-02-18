@@ -1,0 +1,1 @@
+Drop any datapacks/resource packs in this folder, no editing needed!
