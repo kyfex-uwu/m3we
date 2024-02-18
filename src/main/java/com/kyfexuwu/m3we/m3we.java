@@ -1,5 +1,8 @@
 package com.kyfexuwu.m3we;
 
+import com.kyfexuwu.m3we.initializers.BlockIniter;
+import com.kyfexuwu.m3we.initializers.InitUtils;
+import com.kyfexuwu.m3we.initializers.ItemIniter;
 import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.lua.Translations;
 import com.kyfexuwu.m3we.lua.m3weBlockEntity;
@@ -30,6 +33,7 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.function.Function;
@@ -79,8 +83,8 @@ public class m3we implements ModInitializer {
         itemsFolder.mkdir();
         scriptsFolder.mkdir();
 
-        initObjects(blocksFolder, BlockIniter::blockFromFile,"");
-        initObjects(itemsFolder, ItemIniter::itemFromFile,"");
+        initObjects(blocksFolder, BlockIniter::blockFromFile);
+        initObjects(itemsFolder, ItemIniter::itemFromFile);
 
         m3weBlockEntityType = Registry.register(
                 Registry.BLOCK_ENTITY_TYPE,
@@ -155,21 +159,41 @@ public class m3we implements ModInitializer {
         }
     }
 
-    private static void initObjects(File folder,Function<File, Utils.SuccessAndIdentifier> func, String prefix){
-        prefix+=folder.getName()+"/";
+    private static ArrayList<File> getFiles(File folder){
+        var toReturn = new ArrayList<File>();
+        for(var file : folder.listFiles()){
+            if(file.isDirectory())
+                toReturn.addAll(getFiles(file));
+            if(FilenameUtils.isExtension(file.getName(),"json"))
+                toReturn.add(file);
+        }
+        return toReturn;
+    }
+    private static void initObjects(File folder, Function<File, InitUtils.SuccessAndIdentifier> func){
+        var prefixLength = folder.getAbsolutePath().length();
 
-        for (File modFile : folder.listFiles()) {
-            if(modFile.isDirectory())
-                initObjects(modFile,func,prefix);
+        var toProcess = getFiles(folder);
+        int consecutiveComeBackLaters=0;
+        while(toProcess.size()>0){
+            var modFile = toProcess.get(0);
 
-            if(FilenameUtils.isExtension(modFile.getName(),"json")) {
-                Utils.SuccessAndIdentifier modObject = func.apply(modFile);
-                switch (modObject.successRate) {
-                    case CANT_READ -> m3we.LOGGER.error("Can't read file "+prefix+modFile.getName());
-                    case BAD_JSON -> m3we.LOGGER.error("Bad JSON in file "+prefix+modFile.getName());
-                    case IDK -> m3we.LOGGER.error("Message me on discord @kyfexuwu and tell me to fix my mod");
-                    case YOU_DID_IT -> m3weData.packNamespaces.add(modObject.identifier.getNamespace());
-                }
+            InitUtils.SuccessAndIdentifier modObject = func.apply(modFile);
+            switch (modObject.successRate) {
+                case CANT_READ -> m3we.LOGGER.error("Can't read file "+modFile.getAbsolutePath().substring(prefixLength));
+                case BAD_JSON -> m3we.LOGGER.error("Bad JSON in file "+modFile.getAbsolutePath().substring(prefixLength));
+                case IDK -> m3we.LOGGER.error("Message me on discord @kyfexuwu and tell me to fix my mod");
+                case YOU_DID_IT -> m3weData.packNamespaces.add(modObject.identifier.getNamespace());
+                case COME_BACK_LATER -> toProcess.add(modFile);
+            }
+            toProcess.remove(0);
+
+            if(modObject.successRate==InitUtils.SuccessRate.COME_BACK_LATER) consecutiveComeBackLaters++;
+            else consecutiveComeBackLaters=0;
+            if(consecutiveComeBackLaters==toProcess.size()){
+                m3we.LOGGER.error("Circular loop detected in initializing objects that use \"copyFrom\", " +
+                        "those objects not be initialized:\n"+toProcess.stream()
+                        .map(file->file.getAbsolutePath().substring(prefixLength)));
+                break;
             }
         }
     }

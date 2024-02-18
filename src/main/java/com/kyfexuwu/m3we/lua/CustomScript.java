@@ -242,7 +242,7 @@ public class CustomScript {
         this.isFake=isFake;
     }
     public CustomScript(String fileName){
-        if(fileName==null) {
+        if(fileName==null||fileName.isEmpty()) {
             this.name = "fake";
             this.isFake = true;
             return;

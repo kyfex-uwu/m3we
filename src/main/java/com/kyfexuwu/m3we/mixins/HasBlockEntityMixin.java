@@ -1,6 +1,6 @@
 package com.kyfexuwu.m3we.mixins;
 
-import com.kyfexuwu.m3we.CustomBlockMaker;
+import com.kyfexuwu.m3we.initializers.CustomBlockMaker;
 import com.kyfexuwu.m3we.lua.CustomBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;

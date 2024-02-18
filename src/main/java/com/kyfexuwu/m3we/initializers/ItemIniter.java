@@ -1,9 +1,10 @@
-package com.kyfexuwu.m3we;
+package com.kyfexuwu.m3we.initializers;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.kyfexuwu.m3we.lua.CustomScript;
+import com.kyfexuwu.m3we.m3we;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -21,27 +22,30 @@ import java.nio.file.Files;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static com.kyfexuwu.m3we.Utils.*;
+import static com.kyfexuwu.m3we.initializers.InitUtils.*;
 
 public class ItemIniter {
 
-    private static class ItemPropertyTranslator<T> extends PropertyTranslator<T, Item.Settings> {
+    private static class ItemPropertyTranslator<T> extends InitUtils.PropertyTranslator<T, Item.Settings, Item> {
         public ItemPropertyTranslator(String jsonProp,
-                                       BiFunction<Item.Settings, T, Item.Settings> toJavaFunc,
-                                       Function<ScriptAndValue, T> transformFunc) {
-            super(jsonProp, toJavaFunc, transformFunc);
+                                      BiFunction<Item.Settings, T, Item.Settings> toJavaFunc,
+                                      Function<InitUtils.ScriptAndValue, T> transformFunc,
+                                      Function<Item, T> getDefaultFunc) {
+            super(jsonProp, toJavaFunc, transformFunc, getDefaultFunc);
         }
     }
 
     private static final ItemPropertyTranslator<?>[] itemPropertyMap = {
-            new ItemPropertyTranslator<>("maxCount",Item.Settings::maxCount,IntTransformFunc),
-            new ItemPropertyTranslator<>("maxDamage",Item.Settings::maxDamage,IntTransformFunc),
+            new ItemPropertyTranslator<>("maxCount",Item.Settings::maxCount,IntTransformFunc,
+                    Item::getMaxCount),
+            new ItemPropertyTranslator<>("maxDamage",Item.Settings::maxDamage,IntTransformFunc,
+                    Item::getMaxDamage),
             new ItemPropertyTranslator<>("recipeRemainder",Item.Settings::recipeRemainder,
                     (ScriptAndValue SAV) ->{
                         String id = SAV.value.getAsString();
                         if(!id.contains(":")) id = "minecraft:"+id;
                         return Registry.ITEM.get(new Identifier(id));
-            }),
+            }, Item::getRecipeRemainder),
             new ItemPropertyTranslator<>("itemGroup",Item.Settings::group,
                     (ScriptAndValue SAV) -> {
                         try {
@@ -49,7 +53,7 @@ public class ItemIniter {
                         } catch (Exception e) {
                             return ItemGroup.MISC;
                         }
-            }),
+            }, Item::getGroup),
             new ItemPropertyTranslator<>("rarity",Item.Settings::rarity,
                     (ScriptAndValue SAV) -> {
                         try {
@@ -57,7 +61,7 @@ public class ItemIniter {
                         }catch(IllegalArgumentException e){
                             return Rarity.COMMON;
                         }
-            }),
+            }, item -> item.getRarity(item.getDefaultStack())),
             new ItemPropertyTranslator<>("foodComponent",Item.Settings::food,
                     (ScriptAndValue SAV) -> {
                         var thisObj = SAV.value.getAsJsonObject();
@@ -103,9 +107,10 @@ public class ItemIniter {
                         }
 
                         return toReturn.build();
-            }),
+            }, Item::getFoodComponent),
             new ItemPropertyTranslator<>("isFireproof", (settings, fireproof) ->
-                    fireproof ? settings.fireproof() : settings, BoolTransformFunc),
+                    fireproof ? settings.fireproof() : settings, BoolTransformFunc,
+                    Item::isFireproof),
     };
 
     public static SuccessAndIdentifier itemFromFile(File file) {

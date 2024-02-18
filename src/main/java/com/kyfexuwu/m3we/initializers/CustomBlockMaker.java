@@ -1,9 +1,11 @@
-package com.kyfexuwu.m3we;
+package com.kyfexuwu.m3we.initializers;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.lua.*;
+import com.kyfexuwu.m3we.m3we;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -43,6 +45,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.event.listener.GameEventListener;
 import org.jetbrains.annotations.Nullable;
@@ -54,7 +57,6 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import static com.kyfexuwu.m3we.Utils.tryAndExecute;
-import static com.kyfexuwu.m3we.Utils.validPropertyName;
 
 public class CustomBlockMaker {
     public enum DropBehavior{
@@ -123,7 +125,7 @@ public class CustomBlockMaker {
 
     public static final HashMap<Identifier, String> blockEntityScripts = new HashMap<>();
 
-    public static Block from(AbstractBlock.Settings settings, JsonObject blockStates,
+    public static Block from(AbstractBlock.Settings settings, Block copyFrom, JsonObject blockStates,
                              JsonObject blockJson, String scriptName, String blockEntityScriptName) {
         final var blockShapeJson = blockJson.get("blockShape");
         final var outlineShapeJson = blockJson.get("outlineShape");
@@ -155,7 +157,7 @@ public class CustomBlockMaker {
 
                 this.clientScriptContainer=new CustomScript(scriptName);
                 Consumer<CustomScript> clientListener = script->{
-                    this.clientScriptContainer.contextObj.javaSet("env",Utils.toLuaValue("client"));
+                    this.clientScriptContainer.contextObj.javaSet("env", Utils.toLuaValue("client"));
                     if(!this.clientScriptContainer.isFake)
                         this.clientScriptContainer.runEnv.set("self",new LuaSurfaceObj(this));
                 };
@@ -172,7 +174,7 @@ public class CustomBlockMaker {
                 this.serverScriptContainer.updateListeners.add(clientListener);
 
                 //shape
-                if(blockShapeJson.isJsonArray()) {
+                if(blockShapeJson!=null&&blockShapeJson.isJsonArray()) {
                     var blockShapeToGive = VoxelShapes.empty();
                     for (JsonElement element : (JsonArray) blockShapeJson) {
                         if (!element.isJsonArray())
@@ -194,9 +196,20 @@ public class CustomBlockMaker {
                     this.shapeIsScript=false;
                     this.shapeScriptString=null;
                 }else{
-                    this.blockShape = VoxelShapes.empty();
-                    this.shapeIsScript=blockShapeJson.getAsString().startsWith("script:");
-                    this.shapeScriptString=this.shapeIsScript?blockShapeJson.getAsString().substring(7):null;
+                    if(blockShapeJson!=null){
+                        this.blockShape = VoxelShapes.empty();
+                        this.shapeIsScript = blockShapeJson.getAsString().startsWith("script:");
+                        this.shapeScriptString = this.shapeIsScript ? blockShapeJson.getAsString().substring(7) : null;
+                    }else if(copyFrom!=null){
+                        this.blockShape = copyFrom.getDefaultState()
+                                .getCollisionShape(EmptyBlockView.INSTANCE,BlockPos.ORIGIN);
+                        this.shapeIsScript = false;
+                        this.shapeScriptString = null;
+                    }else{
+                        this.blockShape = VoxelShapes.empty();
+                        this.shapeIsScript = false;
+                        this.shapeScriptString = null;
+                    }
                 }
                 if(outlineShapeJson == null){
                     this.outlineShape=this.blockShape;
@@ -256,7 +269,7 @@ public class CustomBlockMaker {
                 if(blockStates!=null) {
                     var propsList = new ArrayList<Property<?>>();
                     for (String propName : blockStates.keySet()) {
-                        if (!validPropertyName.matcher(propName).matches()) continue;
+                        if (!InitUtils.validPropertyName.matcher(propName).matches()) continue;
                         var thisState = blockStates.get(propName).getAsJsonObject();
                         switch (thisState.get("type").getAsString()) {
                             case "int" -> propsList.add(IntProperty.of(
