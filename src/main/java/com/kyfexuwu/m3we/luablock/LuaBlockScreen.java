@@ -1,6 +1,7 @@
 package com.kyfexuwu.m3we.luablock;
 
 import com.kyfexuwu.m3we.m3we;
+import com.kyfexuwu.m3we.m3weData;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -19,7 +20,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.Arrays;
 
 public class LuaBlockScreen extends Screen {
-    private static final Identifier TEXTURE = new Identifier("m3we", "textures/gui/lua_code.png");
+    private static final Identifier TEXTURE = new Identifier("m3we","textures/gui/lua_code.png");
     private static final Text title = Text.translatable("m3we.lua_script");
 
     final BlockPos pos;

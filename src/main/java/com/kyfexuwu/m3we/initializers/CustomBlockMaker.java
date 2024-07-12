@@ -2,6 +2,7 @@ package com.kyfexuwu.m3we.initializers;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.lua.*;
@@ -32,6 +33,7 @@ import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.ActionResult;
@@ -57,6 +59,8 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import static com.kyfexuwu.m3we.Utils.tryAndExecute;
+import static com.kyfexuwu.m3we.initializers.InitUtils.getOr;
+import static com.kyfexuwu.m3we.lua.api.PropertyAPI.processProp;
 
 public class CustomBlockMaker {
     public enum DropBehavior{
@@ -125,13 +129,15 @@ public class CustomBlockMaker {
 
     public static final HashMap<Identifier, String> blockEntityScripts = new HashMap<>();
 
-    public static Block from(AbstractBlock.Settings settings, Block copyFrom, JsonObject blockStates,
+    public static Block from(AbstractBlock.Settings settings, Block copyFrom,
                              JsonObject blockJson, String scriptName, String blockEntityScriptName) {
         final var blockShapeJson = blockJson.get("blockShape");
         final var outlineShapeJson = blockJson.get("outlineShape");
         var dropsSelfTemp = blockJson.get("dropsSelf");
         final var dropSelfBehavior = (dropsSelfTemp!=null&&dropsSelfTemp.isJsonPrimitive())?
                 DropBehavior.get(dropsSelfTemp.getAsString()):DropBehavior.UNSPECIFIED;
+
+        final var blockStates = getOr(blockJson, "blockStates", new JsonObject());
 
         if(blockEntityScriptName!=null) {
             String namespace = "m3we";
@@ -350,7 +356,7 @@ public class CustomBlockMaker {
                                     for(Property<?> prop : props){
                                         if(prop.getName().equals(luaKeys[i].toString())){
                                             var val = Utils.toObject(returnValue.get(luaKeys[i]));
-                                            processProp(prop, stateToReturn, val,
+                                            stateToReturn=processProp(prop, stateToReturn, val,
                                                     val instanceof String && prop.getType().isEnum());
                                         }
                                     }
@@ -593,11 +599,5 @@ public class CustomBlockMaker {
         }
 
         return new thisCustomBlock(settings);
-    }
-
-    public static <T extends Comparable<T>> BlockState processProp(Property<T> prop, BlockState state,
-                                                              Object setTo, boolean strToEnum){
-        if(strToEnum) return state.with(prop, (T) Enum.valueOf((Class<Enum>)(Object)prop.getType(), (String) setTo));
-        else return state.with(prop, (T) setTo);
     }
 }

@@ -2,6 +2,7 @@ package com.kyfexuwu.m3we.lua.dyngui;
 
 import com.kyfexuwu.m3we.lua.ScriptError;
 import com.kyfexuwu.m3we.lua.api.GuiAPI;
+import com.kyfexuwu.m3we.m3weData;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -22,7 +23,8 @@ import java.util.ArrayList;
 public class DynamicGui extends HandledScreen<DynamicGuiHandler> {
     //todo: widget support
     // net.minecraft.client.gui.widget
-    public static final Identifier TEXTURE = new Identifier("m3we", "textures/gui/gui_maker.png");
+    public static final Identifier TEXTURE = new Identifier("m3we","textures/gui/gui_maker.png");
+
 
     public DynamicGuiHandler handler;
     public PlayerInventory playerInventory;

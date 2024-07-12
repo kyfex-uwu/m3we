@@ -48,8 +48,4 @@ public class JavaExclusiveTable extends LuaTable {
     public void javaSet(String key, LuaValue value){
         this.javaSet(Utils.toLuaValue(key), value);
     }
-    public void apiMethodSet(String name, LuaValue method, String desc) {
-        this.javaSet(name+"__desc", Utils.toLuaValue(desc));
-        this.javaSet(name, method);
-    }
 }

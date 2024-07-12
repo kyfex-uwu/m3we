@@ -53,8 +53,8 @@ public class BlockIniter {
                     return BlockSoundGroup.STONE;
                 }
             },block->block.getDefaultState().getSoundGroup()),
-            new BlockPropertyTranslator<>("isOpaque",(settings, isOpaque) ->
-                    isOpaque ? settings : settings.nonOpaque(), BoolTransformFunc,
+            new BlockPropertyTranslator<>("hasTransparentTexture",(settings, isTransparent) ->
+                    isTransparent ? settings.nonOpaque() : settings, BoolTransformFunc,
                     block->block.getDefaultState().isOpaque()),
             new BlockPropertyTranslator<>("luminance", AbstractBlock.Settings::luminance, (ScriptAndValue SAV) -> {
                 if (SAV.value.getAsString().startsWith("script:")) {
@@ -175,7 +175,6 @@ public class BlockIniter {
         var thisBlock = CustomBlockMaker.from(
                 settings,
                 copyFrom,
-                getOr(blockJsonData, "blockStates", new JsonObject()),
                 blockJsonData,
                 scriptName,
                 (blockJsonData.has("blockEntityScript")?

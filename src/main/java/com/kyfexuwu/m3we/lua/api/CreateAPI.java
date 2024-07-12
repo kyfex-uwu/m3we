@@ -31,43 +31,32 @@ public class CreateAPI extends TwoArgFunction {
     public LuaValue call(LuaValue modname, LuaValue env) {
         JavaExclusiveTable thisApi = new JavaExclusiveTable();
 
-        thisApi.apiMethodSet("itemStack",new itemStack(), "({item=stackItem, count=stackCount} data): " +
-                "Creates a new itemstack of the type stackItem, with count stackCount. Alternatively, " +
-                "if data is \"empty\" this will create an itemstack of air (empty).");
-        thisApi.apiMethodSet("blockPos",MethodWrapper.inst.create((Integer x, Integer y, Integer z)->new BlockPos(x,y,z)),
-                "(int x, int y, int z): " +
-                "Returns a block position of (x,y,z).");
-        thisApi.apiMethodSet("blockState",new blockState(), "({block=blockName, properties={...}} data): " +
-                "Creates a new blockstate of block blockName, with the properties specified. To create a powered " +
-                "redstone lamp with this method, you'd use blockState({block=\"minecraft:redstone_lamp\", " +
-                "properties={lit=false}}).");
-        thisApi.apiMethodSet("inventory",new inventory(), "(size): " +
-                "Creates a new inventory with the specified size. This is useful for when trying to create a block " +
-                "with an inventory, like a chest or a crafting table.");
+        thisApi.javaSet("itemStack",new itemStack());
+        thisApi.javaSet("blockPos",MethodWrapper.create((Integer x, Integer y, Integer z)->new BlockPos(x,y,z)));
+        thisApi.javaSet("blockState",new blockState());
+        thisApi.javaSet("inventory",new inventory());
 
         var entityTable = new JavaExclusiveTable();
         thisApi.javaSet("entity", entityTable);
-        entityTable.apiMethodSet("item", MethodWrapper.inst.varCreate(args->{
+        entityTable.javaSet("item", MethodWrapper.varCreate(args->{
             //world xyz stack v(xyz)
-            var world = Utils.toObject(args.arg(1), World.class);
-            double x = Utils.toObject(args.arg(2), Double.class);
-            double y = Utils.toObject(args.arg(3), Double.class);
-            double z = Utils.toObject(args.arg(4), Double.class);
-            var stack = Utils.toObject(args.arg(5), ItemStack.class);
+            var world = Utils.toObject(args.get(0), World.class);
+            double x = Utils.toObject(args.get(1), Double.class);
+            double y = Utils.toObject(args.get(2), Double.class);
+            double z = Utils.toObject(args.get(3), Double.class);
+            var stack = Utils.toObject(args.get(4), ItemStack.class);
 
-            var itemEntity = new ItemEntity(world, x, y, z, stack);;
+            var itemEntity = new ItemEntity(world, x, y, z, stack);
             try{
-                double vx = Utils.toObject(args.arg(6), Double.class);
-                double vy = Utils.toObject(args.arg(7), Double.class);
-                double vz = Utils.toObject(args.arg(8), Double.class);
+                double vx = Utils.toObject(args.get(5), Double.class);
+                double vy = Utils.toObject(args.get(6), Double.class);
+                double vz = Utils.toObject(args.get(7), Double.class);
                 itemEntity = new ItemEntity(world, x, y, z, stack, vx, vy, vz);
             }catch(Exception ignored){}
 
             world.spawnEntity(itemEntity);
             return null;
-        }), "(world, x, y, z, itemStack, xVelocity, yVelocity, zVelocity): " +
-                "Spawns a new itemstack entity into the world with the specified position and velocity. " +
-                "If the velocity is not specified, it will be given a default velocity.");
+        }));
 
         thisApi.javaSet("fromClass",new fromClass());
 
@@ -119,7 +108,7 @@ public class CreateAPI extends TwoArgFunction {
                     if (proposedProps.contains(prop.getName())) {
                         var setTo = Utils.toObject(propTable.get(prop.getName()));
                         try{
-                            stateToReturn= processProp(prop, setTo, stateToReturn,
+                            stateToReturn=PropertyAPI.processProp(prop, stateToReturn, setTo,
                                     setTo instanceof String && prop.getType().isEnum());
                         }catch(Exception ignored){}
                     }
@@ -127,11 +116,6 @@ public class CreateAPI extends TwoArgFunction {
             }
 
             return Utils.toLuaValue(stateToReturn);
-        }
-        private static <T extends Comparable<T>> BlockState processProp(Property<T> prop, Object setTo, BlockState state,
-                                                                  boolean strToEnum){
-            if(strToEnum) return state.with(prop, (T) Enum.valueOf((Class<Enum>)(Object)prop.getType(), (String) setTo));
-            else return state.with(prop, (T)setTo);
         }
     }
     static class inventory extends OneArgFunction{

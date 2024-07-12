@@ -6,6 +6,7 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.TwoArgFunction;
+import org.luaj.vm2.lib.VarArgFunction;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -17,14 +18,11 @@ public class LuaSurfaceObj extends LuaTable {
     public final Class<?> objClass;
     private final Token[] fields;
     private final Token[] methods;
-    public static final TwoArgFunction eqFunc=new TwoArgFunction() {
-        @Override
-        public LuaValue call(LuaValue one, LuaValue two) {
-            if(!(one instanceof LuaSurfaceObj && two instanceof LuaSurfaceObj))
-                return FALSE;
-            return LuaValue.valueOf(((LuaSurfaceObj)one).object.equals(((LuaSurfaceObj)two).object));
-        }
-    };
+    public static final VarArgFunction eqFunc=LuaFunc.func(args->{
+        if(!(args.get(0) instanceof LuaSurfaceObj one && args.get(1) instanceof LuaSurfaceObj two))
+            return FALSE;
+        return LuaValue.valueOf(one.object.equals(two.object));
+    });
 
     public record Token(String obf, String deobf) {}
 

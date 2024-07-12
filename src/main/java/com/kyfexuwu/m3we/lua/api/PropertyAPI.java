@@ -2,6 +2,7 @@ package com.kyfexuwu.m3we.lua.api;
 
 import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.lua.CustomScript;
+import com.kyfexuwu.m3we.lua.DynamicEnumProperty;
 import com.kyfexuwu.m3we.lua.JavaExclusiveTable;
 import com.kyfexuwu.m3we.lua.LuaSurfaceObj;
 import net.minecraft.block.BlockState;
@@ -55,18 +56,20 @@ public class PropertyAPI extends TwoArgFunction {
                 if (prop.getName().equals(propNameStr)&&(
                         prop.getValues().contains(setTo)||(strToEnum=(prop.getType().isEnum()&&setTo instanceof String)))) {
                     try {
-                        processProp(prop, world, state, pos, setTo, strToEnum);
+                        world.setBlockState(pos,processProp(prop, state, setTo, strToEnum));
                         return TRUE;
                     }catch(Exception ignored){}
                 }
             }
             return FALSE;
         }
-        private static <T extends Comparable<T>> void processProp(Property<T> prop, World world, BlockState state,
-                                                                  BlockPos pos, Object setTo, boolean strToEnum){
-            if(strToEnum) world.setBlockState(pos,
-                    state.with(prop, (T) Enum.valueOf((Class<Enum>)(Object)prop.getType(), (String) setTo)));
-            else world.setBlockState(pos, state.with(prop, (T) setTo));
-        }
+    }
+    public static <T extends Comparable<T>> BlockState processProp(Property<T> prop, BlockState state,
+                                                                   Object setTo, boolean strToEnum){
+        if(strToEnum)
+            return state.with(prop, (T) Enum.valueOf((Class<Enum>)(Object)prop.getType(), (String) setTo));
+        else if(prop instanceof DynamicEnumProperty dynProp)
+            return state.with(prop, (T) dynProp.parse((String) setTo).get());
+        else return state.with(prop, (T) setTo);
     }
 }

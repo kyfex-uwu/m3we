@@ -2,6 +2,7 @@ package com.kyfexuwu.m3we.lua;
 
 import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.m3we;
+import com.kyfexuwu.m3we.m3weData;
 import net.minecraft.resource.DefaultResourcePack;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.math.BlockPos;
@@ -21,7 +22,7 @@ public class Translations {
     public static FieldToken[] fieldsTranslations;
     public static FieldToken[] compFieldsTranslations;
     public static MethodToken[] methodsTranslations;
-    public static final Pattern obfuscatedPattern = Pattern.compile("(class|field|method|comp)_\\d+");
+    public static final Pattern obfuscatedPattern = Pattern.compile("(class|field|method|comp)_\\d+(\\[])?");
 
     public static MethodToken getToken(Method method){
         String methodName = method.getName();

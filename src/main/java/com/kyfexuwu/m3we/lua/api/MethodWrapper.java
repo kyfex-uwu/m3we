@@ -1,10 +1,12 @@
 package com.kyfexuwu.m3we.lua.api;
 
 import com.kyfexuwu.m3we.Utils;
+import com.kyfexuwu.m3we.lua.LuaFunc;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.*;
 
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -14,53 +16,26 @@ public class MethodWrapper {
     interface TriFunction<A1,A2,A3,R>{
         R apply(A1 a1, A2 a2, A3 a3);
     }
-    public static final MethodWrapper inst = new MethodWrapper();
-    private MethodWrapper(){}
 
-    public LibFunction create(Supplier<Object> func){
-        return new ZeroArgFunction(){
-            @Override
-            public LuaValue call() {
-                return Utils.toLuaValue(func.get());
-            }
-        };
+    public static LibFunction create(Supplier<Object> func){
+        return LuaFunc.func(args->Utils.toLuaValue(func.get()));
     }
-    public <A1> LibFunction create(Function<A1,Object> func){
-        return new OneArgFunction(){
-            @Override
-            public LuaValue call(LuaValue luaValue) {
-                return Utils.toLuaValue(func.apply(
-                        (A1) Utils.toObject(luaValue)));
-            }
-        };
+    public static <A1> LibFunction create(Function<A1,Object> func){
+        return LuaFunc.func(args->Utils.toLuaValue(func.apply(
+                (A1) Utils.toObject(args.get(0)))));
     }
-    public <A1,A2> LibFunction create(BiFunction<A1,A2,Object> func){
-        return new TwoArgFunction(){
-            @Override
-            public LuaValue call(LuaValue luaValue, LuaValue luaValue2) {
-                return Utils.toLuaValue(func.apply(
-                        (A1) Utils.toObject(luaValue),
-                        (A2) Utils.toObject(luaValue2)));
-            }
-        };
+    public static <A1,A2> LibFunction create(BiFunction<A1,A2,Object> func){
+        return LuaFunc.func(args->Utils.toLuaValue(func.apply(
+                (A1) Utils.toObject(args.get(0)),
+                (A2) Utils.toObject(args.get(1)))));
     }
-    public <A1,A2,A3> LibFunction create(TriFunction<A1,A2,A3,Object> func){
-        return new ThreeArgFunction(){
-            @Override
-            public LuaValue call(LuaValue luaValue, LuaValue luaValue2, LuaValue luaValue3) {
-                return Utils.toLuaValue(func.apply(
-                        (A1) Utils.toObject(luaValue),
-                        (A2) Utils.toObject(luaValue2),
-                        (A3) Utils.toObject(luaValue3)));
-            }
-        };
+    public static <A1,A2,A3> LibFunction create(TriFunction<A1,A2,A3,Object> func){
+        return LuaFunc.func(args->Utils.toLuaValue(func.apply(
+                (A1) Utils.toObject(args.get(0)),
+                (A2) Utils.toObject(args.get(1)),
+                (A3) Utils.toObject(args.get(2)))));
     }
-    public LibFunction varCreate(Function<Varargs,Object> func){
-        return new VarArgFunction(){
-            @Override
-            public LuaValue invoke(Varargs args) {
-                return Utils.toLuaValue(func.apply(args));
-            }
-        };
+    public static LibFunction varCreate(Function<List<LuaValue>,Object> func){
+        return LuaFunc.func(args->Utils.toLuaValue(func.apply(args)));
     }
 }

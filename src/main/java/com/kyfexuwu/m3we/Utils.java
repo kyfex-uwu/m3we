@@ -142,7 +142,9 @@ public class Utils {
     public static String deobfuscate(String obfuscated){
         if(!Translations.OBFUSCATED || !Translations.obfuscatedPattern.matcher(obfuscated).matches()) return obfuscated;
 
-        int endingNum=Integer.parseInt(obfuscated.substring(obfuscated.indexOf('_')+1));
+        var isArray = obfuscated.endsWith("[]");
+        int endingNum=Integer.parseInt(obfuscated.substring(obfuscated.indexOf('_')+1,
+                obfuscated.length()-(isArray?2:0)));
 
         var token =  switch (obfuscated.charAt(1)) {
             case 'l' -> //class
@@ -156,6 +158,6 @@ public class Utils {
             default -> null;
         };
 
-        return token!=null ? token.deobfuscated : obfuscated;
+        return token!=null ? token.deobfuscated+(isArray?"[]":"") : obfuscated;
     }
 }

@@ -148,7 +148,7 @@ public class UndecidedLuaFunction extends VarArgFunction {
             }
         }
 
-        throw new LuaError("Function \""+this.methods[0].getName()+"\" called with incorrect arguments");
+        throw new LuaError("Function \""+Utils.deobfuscate(this.methods[0].getName())+"\" called with incorrect arguments");
     }
 
     public String toString(){

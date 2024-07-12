@@ -3,6 +3,7 @@ package com.kyfexuwu.m3we.lua;
 import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.lua.api.*;
 import com.kyfexuwu.m3we.m3we;
+import com.kyfexuwu.m3we.m3weData;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.HoverEvent;
@@ -23,6 +24,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,6 +32,7 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import static org.luaj.vm2.LuaValue.NIL;
+import static org.luaj.vm2.LuaValue.NONE;
 
 public class CustomScript {
 
@@ -68,37 +71,24 @@ public class CustomScript {
         toReturn.load(new StringLib());
         toReturn.load(new JseMathLib());
 
-        toReturn.set("print", new VarArgFunction() {
-            @Override
-            public Varargs invoke(Varargs args) {
-                return print(toReturn.get(contextIdentifier).get("env").optjstring("none"), args);
+        toReturn.set("print", LuaFunc.func(args->{
+            print(toReturn.get(contextIdentifier).get("env").optjstring("none"), args);
+            return NONE;
+        }));
+        toReturn.set("consoleprint", LuaFunc.func(args->{
+            var toPrint = new StringBuilder();
+            for(int i=0;i<args.size()-1;i++) toPrint.append(args.get(i)).append(", ");
+            printLogger.info(toPrint.append(args.get(args.size()-1)).toString());
+            return NONE;
+        }));
+        toReturn.set("explore", LuaFunc.func(values->explore(values.get(0))));
+        toReturn.set("loadclass", LuaFunc.func(args->{
+            try {
+                return loadclass(args.get(0).checkjstring());
+            }catch(LuaError e){
+                return NIL;
             }
-        });
-        toReturn.set("consoleprint", new VarArgFunction() {
-            @Override
-            public Varargs invoke(Varargs args) {
-                var toPrint = new StringBuilder();
-                for(int i=0;i<args.narg()-1;i++) toPrint.append(args.arg(i+1)).append(", ");
-                printLogger.info(toPrint.append(args.arg(args.narg())).toString());
-                return NONE;
-            }
-        });
-        toReturn.set("explore", new OneArgFunction() {
-            @Override
-            public LuaValue call(LuaValue value) {
-                return explore(value);
-            }
-        });
-        toReturn.set("loadclass", new OneArgFunction() {
-            @Override
-            public LuaValue call(LuaValue value) {
-                try {
-                    return loadclass(value.checkjstring());
-                }catch(LuaError e){
-                    return NIL;
-                }
-            }
-        });
+        }));
 
         toReturn.load(new BlockEntityAPI());
         toReturn.load(new CreateAPI());
@@ -117,17 +107,15 @@ public class CustomScript {
         var toReturn = unsafeGlobal();
 
         var load = toReturn.get("load");
-        toReturn.set("loadLib", new OneArgFunction() {
-            @Override
-            public LuaValue call(LuaValue arg) {
-                if(!arg.isstring() || arg.checkjstring().contains("..")) return NIL;
-                try{
-                    return load.call(Files.readString(new File(m3we.scriptsFolder.getAbsolutePath() +
-                            "\\" + arg.checkjstring() + ".lua").toPath())).call();
-                }catch(Exception ignored){}
-                return NIL;
-            }
-        });
+        toReturn.set("loadLib", LuaFunc.func(args -> {
+            var arg = args.get(0);
+            if (!arg.isstring() || arg.checkjstring().contains("..")) return NIL;
+            try {
+                //return load.call(Files.readString(new File(m3we.scriptsFolder.getAbsolutePath() +
+                //        "\\" + arg.checkjstring() + ".lua").toPath())).call();
+            } catch (Exception ignored) {}
+            return NIL;
+        }));
         toReturn.set("require",disabled);
         toReturn.set("load",disabled);
         toReturn.set("dofile",disabled);
@@ -137,6 +125,14 @@ public class CustomScript {
     }
 
     public static Varargs createVarArgs(Object... args){
+        if(args.length==1&&args[0] instanceof LuaFunc.ArrayListWithNil arg1){
+            var size=arg1.size();
+            var newArgs = new Object[size];
+            for(int i=0;i<size;i++)
+                newArgs[i]=arg1.get(i);
+            return createVarArgs(newArgs);
+        }
+
         var luaArgs = Arrays.stream(args).map(Utils::toLuaValue).toArray(LuaValue[]::new);
         return new Varargs() {
             @Override
@@ -197,7 +193,13 @@ public class CustomScript {
         print(env, createVarArgs(args));
     }
     public static LuaValue explore(LuaValue value){
-        MutableText message = Text.literal(Utils.deobfuscate(Utils.toObject(value).getClass().getSimpleName())+": ");
+        var obj = Utils.toObject(value);
+        if(obj==null){
+            ChatMessage.message(Text.literal("null"));
+            return NIL;
+        }
+
+        MutableText message = Text.literal(Utils.deobfuscate(obj.getClass().getSimpleName())+": ");
 
         try {
             if (value.typename().equals("surfaceObj") || value.typename().equals("table")) {
@@ -263,8 +265,10 @@ public class CustomScript {
         LoadState.install(this.runEnv);
         LuaC.install(this.runEnv);
         try {
+            var parts = fileName.split(":");
             this.runEnv.load(
-                Files.readString(new File(m3we.m3weFolder + "\\scripts\\" + fileName + ".lua").toPath())
+                Files.readString(new File(m3weData.filePath(m3we.m3weFolder.getAbsolutePath(), parts[0],
+                        "scripts", parts[1]+".lua")).toPath())
             ).call();
             for(var listener : this.updateListeners) listener.accept(this);
         }catch(IOException | LuaError e){
@@ -299,6 +303,11 @@ public class CustomScript {
             if(!(script.name+".lua").equals(name))
                 continue;
 
+            script.setScript(script.name);
+        }
+    }
+    public static void reloadAll(){
+        for(CustomScript script : scripts){
             script.setScript(script.name);
         }
     }

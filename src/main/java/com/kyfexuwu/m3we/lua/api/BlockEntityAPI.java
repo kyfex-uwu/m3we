@@ -23,14 +23,14 @@ public class BlockEntityAPI extends TwoArgFunction {
 
         thisApi.javaSet("getEntityFromPos", new getEntityFromPos(env));
 
-        thisApi.javaSet("NBTToInventory",MethodWrapper.inst.create((NbtCompound nbt) -> {
+        thisApi.javaSet("NBTToInventory",MethodWrapper.create((NbtCompound nbt) -> {
             var items = nbt.getList("Items", NbtElement.COMPOUND_TYPE);
             DefaultedList<ItemStack> inv = DefaultedList.ofSize(
                     items.getCompound(items.size()-1).getByte("Slot")+1, ItemStack.EMPTY);
             Inventories.readNbt(nbt, inv);
             return new DynamicInventory(inv);
         }));
-        thisApi.javaSet("writeInventory",MethodWrapper.inst.create((Inventory inv, NbtCompound nbt) -> {
+        thisApi.javaSet("writeInventory",MethodWrapper.create((Inventory inv, NbtCompound nbt) -> {
             DefaultedList<ItemStack> stacks = DefaultedList.of();
             for(int i=0;i<inv.size();i++)
                 stacks.add(inv.getStack(i));

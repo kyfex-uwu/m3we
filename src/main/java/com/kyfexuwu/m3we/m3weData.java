@@ -13,10 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class m3weData {
@@ -40,6 +37,9 @@ public class m3weData {
             }
         }
     }
+    public static String filePath(String... parts){
+        return String.join(File.separator, List.of(parts));
+    }
     public static final ResourcePack resourcePack = new ResourcePack() {
         private HashMap<String, String> getPack(ResourceType type){
             return type==ResourceType.CLIENT_RESOURCES?packResources:packData;
@@ -58,7 +58,13 @@ public class m3weData {
 
         @Override//done
         public InputStream open(ResourceType type, Identifier id) throws IOException {
-            return new FileInputStream(m3we.m3weResources.getAbsolutePath()+"/"+ getPack(type).get(id.toString()));
+            for(var folder : m3we.resourceFolders) {
+                var maybeFile = new File(folder.getRight().getAbsolutePath()+getPack(type).get(id.toString()));
+                if(maybeFile.exists())
+                    return new FileInputStream(maybeFile);
+            }
+
+            throw new IOException("file not found :( "+type+" "+id);
         }
 
         @Override//done
@@ -67,7 +73,6 @@ public class m3weData {
             getPack(type).forEach((key,path)->{
                 if(key.startsWith(namespace+":"+prefix)){
                     toReturn.add(new Identifier(key));
-                    //System.out.println(new Identifier(key));
                 }
             });
             return toReturn;
