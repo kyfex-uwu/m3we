@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.net.Proxy;
 
 @Mixin(MinecraftServer.class)
-public class ServerStartMixin {
+public abstract class ServerStartMixin {
     @Inject(method="<init>", at=@At("RETURN"))
     public void saveCurrentServer__m3we(Thread serverThread, LevelStorage.Session session,
                                         ResourcePackManager dataPackManager, SaveLoader saveLoader,

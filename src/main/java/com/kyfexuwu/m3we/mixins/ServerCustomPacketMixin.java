@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayNetworkHandler.class)
-public class ServerCustomPacketMixin {
+public abstract class ServerCustomPacketMixin {
     @Inject(method = "onCustomPayload", at = @At("HEAD"), cancellable = true)
     private void updateLuaBlock__m3we(CustomPayloadC2SPacket packet, CallbackInfo ci) {
         var channel=packet.getChannel();

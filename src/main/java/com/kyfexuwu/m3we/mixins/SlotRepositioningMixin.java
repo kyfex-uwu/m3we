@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Slot.class)
-public class SlotRepositioningMixin implements RepositionableSlot {
+public abstract class SlotRepositioningMixin implements RepositionableSlot {
     @Shadow @Final @Mutable
     public int x;
     @Shadow @Final @Mutable

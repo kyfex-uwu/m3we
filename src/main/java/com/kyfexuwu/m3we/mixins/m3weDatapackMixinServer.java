@@ -14,7 +14,7 @@ import java.io.File;
 import java.util.Arrays;
 
 @Mixin(Main.class)
-public class m3weDatapackMixinServer {
+public abstract class m3weDatapackMixinServer {
     @ModifyArg(
             method = "main",
             at = @At(

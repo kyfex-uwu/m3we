@@ -3,7 +3,6 @@ package com.kyfexuwu.m3we.lua.api;
 import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.lua.LuaFunc;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.*;
 
 import java.util.List;
@@ -17,6 +16,7 @@ public class MethodWrapper {
         R apply(A1 a1, A2 a2, A3 a3);
     }
 
+    //these fail when an arg is a number type :( todo
     public static LibFunction create(Supplier<Object> func){
         return LuaFunc.func(args->Utils.toLuaValue(func.get()));
     }

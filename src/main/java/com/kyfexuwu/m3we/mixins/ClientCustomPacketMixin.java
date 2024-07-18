@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPlayNetworkHandler.class)
-public class ClientCustomPacketMixin {
+public abstract class ClientCustomPacketMixin {
     @Shadow @Final private MinecraftClient client;
 
     @Shadow private ClientWorld world;

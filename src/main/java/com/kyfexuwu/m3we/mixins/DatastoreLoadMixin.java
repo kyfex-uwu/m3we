@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MinecraftServer.class)
-public class DatastoreLoadMixin {
+public abstract class DatastoreLoadMixin {
     @Shadow @Final protected LevelStorage.Session session;
 
     @Inject(method="save", at=@At(value = "RETURN"))

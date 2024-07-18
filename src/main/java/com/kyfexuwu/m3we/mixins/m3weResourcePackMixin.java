@@ -14,7 +14,7 @@ import java.io.File;
 import java.util.Arrays;
 
 @Mixin(MinecraftClient.class)
-public class m3weResourcePackMixin {
+public abstract class m3weResourcePackMixin {
     @ModifyArg(
             method = "<init>",
             at = @At(
