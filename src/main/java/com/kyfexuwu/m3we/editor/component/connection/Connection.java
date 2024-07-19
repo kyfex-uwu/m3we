@@ -1,8 +1,8 @@
 package com.kyfexuwu.m3we.editor.component.connection;
 
 import com.kyfexuwu.m3we.editor.Block;
+import com.kyfexuwu.m3we.editor.Vec2d;
 import com.kyfexuwu.m3we.editor.component.Component;
-import net.minecraft.util.math.Vec2f;
 
 public abstract class Connection extends Component {
     protected Connection connected;
@@ -27,19 +27,19 @@ public abstract class Connection extends Component {
     }
     public boolean isConnected(){ return this.connected!=null; }
     public Connection getConnection(){ return this.connected; }
-    protected final Vec2f getConnPos(float x, float y) {
+    protected final Vec2d getConnPos(double x, double y) {
         var toReturn = this.globalPos();
-        return new Vec2f(toReturn.x+x,toReturn.y+y);
+        return new Vec2d(toReturn.x+x,toReturn.y+y);
     }
-    public abstract Vec2f connPos();
+    public abstract Vec2d connPos();
 
-    public static Vec2f getOffset(Connection connection){//todo: remove this
+    public static Vec2d getOffset(Connection connection){//todo: remove this
         if(connection instanceof SeqOutConnection){
-            return new Vec2f(0, connection.height());
+            return new Vec2d(0, connection.height());
         }else if(connection instanceof InlineInputInConnection){
-            return new Vec2f(5, connection.connected.y());
+            return new Vec2d(5, connection.connected.y());
         }else if(connection instanceof InputInConnection){
-            return new Vec2f(5,0);
+            return new Vec2d(5,0);
         }
         return null;
     }

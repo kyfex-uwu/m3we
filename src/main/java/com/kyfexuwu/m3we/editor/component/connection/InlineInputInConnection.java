@@ -3,31 +3,31 @@ package com.kyfexuwu.m3we.editor.component.connection;
 import com.kyfexuwu.m3we.editor.Block;
 import com.kyfexuwu.m3we.editor.BlockDrawHelper;
 import com.kyfexuwu.m3we.editor.Color;
+import com.kyfexuwu.m3we.editor.Vec2d;
 import com.kyfexuwu.m3we.editor.component.Component;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Vec2f;
 
 public class InlineInputInConnection extends InputInConnection {
     public InlineInputInConnection(Block parent, String name) { super(parent, name); }
 
     @Override
-    public boolean mouseable(float localX, float localY) {
+    public boolean mouseable(double localX, double localY) {
         return localX<5;
     }
 
     @Override
-    public float width(boolean isolated) {
+    public double width(boolean isolated) {
         if(this.connected==null) return 10;
 
-        float width=0;
+        double width=0;
         for(var row : this.connected.parent.components)
             width=Math.max(width, Component.rowWidth(row));
         return width+5;
     }
 
     @Override
-    public float height(boolean isolated) {
+    public double height(boolean isolated) {
         var childHeight=0f;
         if(this.connected!=null){
             for(var row : this.connected.parent.components)
@@ -38,7 +38,7 @@ public class InlineInputInConnection extends InputInConnection {
     }
 
     @Override
-    public Vec2f connPos() {
+    public Vec2d connPos() {
         return super.getConnPos(5,10);
     }
 

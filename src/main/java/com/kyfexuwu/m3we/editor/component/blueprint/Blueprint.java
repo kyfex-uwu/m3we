@@ -3,14 +3,12 @@ package com.kyfexuwu.m3we.editor.component.blueprint;
 import com.kyfexuwu.m3we.editor.Block;
 import com.kyfexuwu.m3we.editor.BlockDrawHelper;
 import com.kyfexuwu.m3we.editor.Color;
+import com.kyfexuwu.m3we.editor.Vec2d;
 import com.kyfexuwu.m3we.editor.component.*;
 import com.kyfexuwu.m3we.editor.component.connection.*;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Vec2f;
 import org.apache.commons.lang3.NotImplementedException;
-
-import static net.minecraft.client.gui.DrawableHelper.drawTexture;
 
 public class Blueprint {
     public enum Type{
@@ -79,17 +77,17 @@ public class Blueprint {
 
     //--
     private enum Corner{
-        TL(new Vec2f(0,5), new Vec2f(5,5), new Vec2f(5,0),
-                new Vec2f(3,0), new Vec2f(1,1), new Vec2f(0,3)),
-        TR(new Vec2f(0,0), new Vec2f(0,5), new Vec2f(5,5),
-                new Vec2f(5,3), new Vec2f(4,1), new Vec2f(2,0)),
-        BL(new Vec2f(5,5), new Vec2f(5,0), new Vec2f(0,0),
-                new Vec2f(0,2), new Vec2f(1,4), new Vec2f(3,5)),
-        BR(new Vec2f(5,0), new Vec2f(0,0), new Vec2f(0,5),
-                new Vec2f(2,5), new Vec2f(4,4), new Vec2f(5,2));
+        TL(new Vec2d(0,5), new Vec2d(5,5), new Vec2d(5,0),
+                new Vec2d(3,0), new Vec2d(1,1), new Vec2d(0,3)),
+        TR(new Vec2d(0,0), new Vec2d(0,5), new Vec2d(5,5),
+                new Vec2d(5,3), new Vec2d(4,1), new Vec2d(2,0)),
+        BL(new Vec2d(5,5), new Vec2d(5,0), new Vec2d(0,0),
+                new Vec2d(0,2), new Vec2d(1,4), new Vec2d(3,5)),
+        BR(new Vec2d(5,0), new Vec2d(0,0), new Vec2d(0,5),
+                new Vec2d(2,5), new Vec2d(4,4), new Vec2d(5,2));
 
-        public final Vec2f[] points;
-        Corner(Vec2f... points){
+        public final Vec2d[] points;
+        Corner(Vec2d... points){
             this.points=points;
         }
     }
@@ -119,10 +117,12 @@ public class Blueprint {
         @Override
         public void draw(MatrixStack matrices, TextRenderer text, Color color) {
             BlockDrawHelper.vertexes(matrices, color, c->{
+                var height=this.height();
+                var width=this.width();
                 c.vertex(0,0);
-                c.vertex(0,this.height());
-                c.vertex(this.width(),this.height());
-                c.vertex(this.width(),0);
+                c.vertex(0,height);
+                c.vertex(width,height);
+                c.vertex(width,0);
             });
         }
     }
@@ -152,11 +152,13 @@ public class Blueprint {
 
         @Override
         public void draw(MatrixStack matrices, TextRenderer text, Color color) {
+            var height=this.height();
+            var width=this.width();
             BlockDrawHelper.vertexes(matrices, color, c->{
                 c.vertex(0,0);
-                c.vertex(0,this.height());
-                c.vertex(this.width(),this.height());
-                c.vertex(this.width(),0);
+                c.vertex(0,height);
+                c.vertex(width,height);
+                c.vertex(width,0);
             });
         }
     }

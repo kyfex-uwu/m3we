@@ -3,21 +3,19 @@ package com.kyfexuwu.m3we.editor.component.connection;
 import com.kyfexuwu.m3we.editor.Block;
 import com.kyfexuwu.m3we.editor.BlockDrawHelper;
 import com.kyfexuwu.m3we.editor.Color;
+import com.kyfexuwu.m3we.editor.Vec2d;
 import com.kyfexuwu.m3we.editor.component.Component;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Vec2f;
-
-import static net.minecraft.client.gui.DrawableHelper.drawTexture;
 
 public class InputOutConnection extends Connection{
     public InputOutConnection(Block parent, String name) { super(parent, name); }
 
     @Override
-    public float width(boolean isolated) { return 5; }
+    public double width(boolean isolated) { return 5; }
 
     @Override
-    public float height(boolean isolated) {
+    public double height(boolean isolated) {
         return Math.max(8, Component.fillRowHeight(this,isolated, 8));
     }
 
@@ -40,6 +38,6 @@ public class InputOutConnection extends Connection{
     }
 
     @Override
-    public Vec2f connPos() { return super.getConnPos(0,5); }
+    public Vec2d connPos() { return super.getConnPos(0,5); }
 
 }

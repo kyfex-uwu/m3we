@@ -3,20 +3,18 @@ package com.kyfexuwu.m3we.editor.component.connection;
 import com.kyfexuwu.m3we.editor.Block;
 import com.kyfexuwu.m3we.editor.BlockDrawHelper;
 import com.kyfexuwu.m3we.editor.Color;
+import com.kyfexuwu.m3we.editor.Vec2d;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Vec2f;
-
-import static net.minecraft.client.gui.DrawableHelper.drawTexture;
 
 public class SeqInConnection extends Connection{
     public SeqInConnection(Block parent, String name) { super(parent, name); }
 
     @Override
-    public float width(boolean isolated) { return 8; }
+    public double width(boolean isolated) { return 8; }
 
     @Override
-    public float height(boolean isolated) { return 5; }
+    public double height(boolean isolated) { return 5; }
 
     @Override
     public void draw(MatrixStack matrices, TextRenderer text, Color color) {
@@ -39,6 +37,6 @@ public class SeqInConnection extends Connection{
     }
 
     @Override
-    public Vec2f connPos() { return super.getConnPos(4, 0); }
+    public Vec2d connPos() { return super.getConnPos(4, 0); }
 
 }

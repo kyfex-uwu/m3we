@@ -1,12 +1,11 @@
 package com.kyfexuwu.m3we.editor.component;
 
 import com.kyfexuwu.m3we.editor.Block;
-import com.kyfexuwu.m3we.editor.Color;
 
 public abstract class FillingComponent extends Component{
-    private final float minWidth;
-    private final float minHeight;
-    public FillingComponent(Block parent, float minWidth, float minHeight) {
+    private final double minWidth;
+    private final double minHeight;
+    public FillingComponent(Block parent, double minWidth, double minHeight) {
         super(parent);
         this.minWidth=minWidth;
         this.minHeight=minHeight;
@@ -16,11 +15,11 @@ public abstract class FillingComponent extends Component{
     }
 
     @Override
-    public float width(boolean isolated){
+    public double width(boolean isolated){
         if(isolated) return this.minWidth;
 
         var width = this.minWidth;
-        float restOfRow=0;
+        double restOfRow=0;
         for(var row : this.parent.components)
             if(Component.arrContains(this, row)) restOfRow = Component.rowWidth(row)-this.width();
         for(var row : this.parent.components){
@@ -30,11 +29,11 @@ public abstract class FillingComponent extends Component{
         return width;
     }
     @Override
-    public float height(boolean isolated){
-        if(isolated) return 0;
+    public double height(boolean isolated){
+        if(isolated) return this.minHeight;
 
         for(var row : this.parent.components)
             if(Component.arrContains(this, row)) return Component.rowHeight(row);
-        return 0;
+        return this.minHeight;
     }
 }

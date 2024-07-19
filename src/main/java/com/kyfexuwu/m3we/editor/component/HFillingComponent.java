@@ -1,23 +1,22 @@
 package com.kyfexuwu.m3we.editor.component;
 
 import com.kyfexuwu.m3we.editor.Block;
-import com.kyfexuwu.m3we.editor.Color;
 
 public abstract class HFillingComponent extends Component{
-    private final float _height;
-    private final float minWidth;
-    public HFillingComponent(Block parent, float height, float minWidth) {
+    private final double _height;
+    private final double minWidth;
+    public HFillingComponent(Block parent, double height, double minWidth) {
         super(parent);
         this.minWidth=minWidth;
         this._height=height;
     }
-    public HFillingComponent(Block parent, float height) {
+    public HFillingComponent(Block parent, double height) {
         this(parent, height, 0);
     }
 
     @Override
-    public float width(boolean isolated){ return Math.max(this.minWidth,
+    public double width(boolean isolated){ return Math.max(this.minWidth,
             Component.fillRowWidth(this, isolated, this.minWidth)); }
     @Override
-    public float height(boolean isolated){ return this._height; }
+    public double height(boolean isolated){ return this._height; }
 }

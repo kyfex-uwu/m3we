@@ -5,9 +5,11 @@ import com.kyfexuwu.m3we.editor.component.blueprint.Blueprint;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 
-public class BlockOptions {
+public class BlockOptions implements BlockFactory{
+
     public enum Type{
         SEQ,
         SEQ_IN,
@@ -15,12 +17,17 @@ public class BlockOptions {
         NONE
     }
     private Color color = new Color(200,200,200);
+    private static Function<Block, String> defaultFunc = b->"";
+    private Function<Block, String> exportFunc=defaultFunc;
     private ArrayList<ArrayList<Blueprint>> components = new ArrayList<>();
     private final Type type;
     public BlockOptions(Type type){
         this.type=type;
     }
     public BlockOptions color(Color color){ this.color=color; return this; }
+    public Color color(){ return this.color; }
+    public BlockOptions export(Function<Block, String> exportFunc){ this.exportFunc=exportFunc; return this; }
+    public Function<Block, String> export(){ return this.exportFunc; }
     public BlockOptions components(ArrayList<ArrayList<Blueprint>> components){
         this.components = components;
         return this;
@@ -29,19 +36,33 @@ public class BlockOptions {
         this.components.add(index,row);
         return this;
     }
+    public BlockOptions insertRow(int index, Blueprint... row){
+        return this.insertRow(index,BlockOptions.fromArr(row));
+    }
     public BlockOptions replaceRow(int index, ArrayList<Blueprint> row){
         this.components.set(index,row);
         return this;
+    }
+    public BlockOptions replaceRow(int index, Blueprint... row){
+        return this.replaceRow(index,BlockOptions.fromArr(row));
     }
     public BlockOptions appendRow(ArrayList<Blueprint> row){
         this.components.add(row);
         return this;
     }
+    public BlockOptions appendRow(Blueprint... row){
+        return this.appendRow(BlockOptions.fromArr(row));
+    }
 
     public static ArrayList<Blueprint> fromArr(Blueprint[] arr){
         return new ArrayList<>(List.of(arr));
     }
-    public Block create(){
+    private boolean precreated=false;
+    private Blueprint[][] blueprintArr;
+    public BlockOptions preCreate(){
+        if(this.precreated) return this;
+        this.precreated=true;
+
         //top
         var l1=fromArr(new Blueprint[]{ Blueprint.SOLID, Blueprint.SOLID,Blueprint.SOLID });
         if(this.type==Type.SEQ_IN||this.type==Type.SEQ)
@@ -54,7 +75,7 @@ public class BlockOptions {
             l2.add(1,Blueprint.seq("next"));
         this.appendRow(l2);
 
-        var arr = new Blueprint[this.components.size()][];
+        //inner
         for(var y=0;y<this.components.size();y++){
             var row = this.components.get(y);
             //if there is not input in edges, fill with wall
@@ -66,9 +87,26 @@ public class BlockOptions {
                 if ((!(last instanceof Blueprint.InputMarker)&&!last.equals(Blueprint.SOLID))||
                         (firstIsInput&&row.size()==1)) row.add(Blueprint.SOLID);
             }
-            arr[y]=new Blueprint[row.size()];
-            for(var x=0;x<row.size();x++) arr[y][x]=row.get(x);
         }
-        return new Block(this.color,arr);
+
+        //array
+        this.blueprintArr = new Blueprint[this.components.size()][];
+        for(var y=0;y<this.components.size();y++){
+            var row = this.components.get(y);
+
+            this.blueprintArr[y]=new Blueprint[row.size()];
+            for(var x=0;x<row.size();x++)
+                this.blueprintArr[y][x]=row.get(x);
+        }
+
+        return this;
+    }
+    public Blueprint[][] blueprintArr() {
+        this.preCreate();
+        return this.blueprintArr;
+    }
+    public Block create(){
+        this.preCreate();
+        return new Block(this.color,this.blueprintArr(),this.exportFunc);
     }
 }

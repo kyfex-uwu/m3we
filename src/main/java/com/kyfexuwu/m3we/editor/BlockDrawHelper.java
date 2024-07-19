@@ -17,8 +17,8 @@ public class BlockDrawHelper {
             this.matrix=matrix;
             this.color=color;
         }
-        public void vertex(float x, float y){
-            this.color.setColor(this.builder.vertex(this.matrix, x, y, 0.0f)).next();
+        public void vertex(double x, double y){
+            this.color.setColor(this.builder.vertex(this.matrix, (float)x, (float)y, 0.0f)).next();
         }
     }
     public static void vertexes(MatrixStack matrices, Color color, Consumer<Context>... funcs){

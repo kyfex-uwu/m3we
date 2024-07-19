@@ -4,21 +4,22 @@ import com.kyfexuwu.m3we.editor.component.Component;
 import com.kyfexuwu.m3we.editor.component.blueprint.Blueprint;
 import com.kyfexuwu.m3we.editor.component.connection.Connection;
 import com.kyfexuwu.m3we.editor.component.connection.InputOutConnection;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Vec2f;
 
 import java.util.HashMap;
+import java.util.function.Function;
 
 public class Block {
     private final Color color;
     public final Component[][] components;
     public final HashMap<String, Connection> connections = new HashMap<>();
-    private Vec2f offs = new Vec2f(0,0);
+    private final Function<Block, String> exportFunc;
+    private Vec2d offs = new Vec2d(0,0);
 
-    public Block(Color color, Blueprint[][] components){
+    public Block(Color color, Blueprint[][] components, Function<Block, String> export){
         this.color=color;
+        this.exportFunc=export;
         this.components=new Component[components.length][];
         for(int y=0;y<components.length;y++) {
             this.components[y]=new Component[components[y].length];
@@ -39,21 +40,21 @@ public class Block {
             if(connection instanceof InputOutConnection) connection.disconnect();
     }
 
-    public Rect2f boundingBox() {
+    public Rect2d boundingBox() {
         if (this.components.length==0 || this.components[0].length==0)
-            return new Rect2f(0,0,0,0);
+            return new Rect2d(0,0,0,0);
 
-        float width=0;
-        float height=0;
+        double width=0;
+        double height=0;
         for(var row : this.components){
             width=Math.max(width, Component.rowWidth(row));
             height+=Component.rowHeight(row);
         }
 
         var pos = this.getPos();
-        return new Rect2f(pos.x,pos.y,width, height);
+        return new Rect2d(pos.x,pos.y,width, height);
     }
-    public Vec2f getPos(){
+    public Vec2d getPos(){
         var conn = this.connections.get("prev");
         if(conn==null||!conn.isConnected()) {
             conn=null;
@@ -69,15 +70,15 @@ public class Block {
             var bBox = conn.getConnection().parent.boundingBox();
             var offs = Connection.getOffset(conn.getConnection());
 
-            return new Vec2f(
+            return new Vec2d(
                     bBox.x()+conn.getConnection().x()-conn.x()+this.offs.x+offs.x,
                     bBox.y()+conn.getConnection().y()-conn.y()+this.offs.y+offs.y
             );
         }
 
-        return new Vec2f(this.offs.x,this.offs.y);
+        return new Vec2d(this.offs.x,this.offs.y);
     }
-    public boolean mouse(float x, float y){
+    public boolean mouse(double x, double y){
         var offs = this.getPos();
         x-=offs.x;
         y-=offs.y;
@@ -94,19 +95,36 @@ public class Block {
 
         return false;
     }
+    public boolean click(double x, double y){
+        var offs = this.getPos();
+        x-=offs.x;
+        y-=offs.y;
 
-    public void offset(Vec2f offs){
+        for(var row : this.components){
+            for(var c : row){
+                var cX=c.x();
+                var cY=c.y();
+
+                if(x>=cX&&y>=cY&&x<cX+c.width()&&y<cY+c.height()&&
+                        c.click(cX-x,cY-y)) return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void offset(Vec2d offs){
         if(this.connections.containsKey("prev")&&this.connections.get("prev").isConnected()) return;
         for(var connection : this.connections.values())
             if(connection instanceof InputOutConnection&&connection.isConnected()) return;
 
         this.offs = offs;
     }
-    public void offset(float x, float y){
-        this.offset(new Vec2f(x,y));
+    public void offset(double x, double y){
+        this.offset(new Vec2d(x,y));
     }
-    public Vec2f offset(){ return this.offs; }
-    public void removeOffset(){ this.offs = new Vec2f(0,0); }
+    public Vec2d offset(){ return this.offs; }
+    public void removeOffset(){ this.offs = new Vec2d(0,0); }
 
     public void draw(MatrixStack matrices, TextRenderer textRenderer, int mouseX, int mouseY){
         matrices.push();
@@ -124,5 +142,14 @@ public class Block {
             }
         }
         matrices.pop();
+    }
+
+    public String export(){
+        var toReturn = this.exportFunc.apply(this);
+        if(this.connections.containsKey("next")) return toReturn+"\n"+this.connections.get("next").parent.export();
+        return toReturn;
+    }
+    public static String getExport(Block block, String connection){
+        return block.connections.get(connection).parent.export();
     }
 }

@@ -1,8 +1,7 @@
 package com.kyfexuwu.m3we.editor;
 
-import com.kyfexuwu.m3we.editor.component.blueprint.Blueprint;
-import com.kyfexuwu.m3we.editor.component.blueprint.TextBlueprint;
 import com.kyfexuwu.m3we.editor.component.connection.*;
+import com.kyfexuwu.m3we.editor.customblocks.Blocks;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -12,22 +11,13 @@ import java.util.ArrayList;
 
 public class LuaEditorScreen extends Screen {
     private final ArrayList<Block> blocks  = new ArrayList<>();
+    private Block focused;
     protected LuaEditorScreen(Text title) {
         super(title);
 
-        this.blocks.add(new BlockOptions(BlockOptions.Type.SEQ).color(new Color(66, 152, 245))
-                .appendRow(BlockOptions.fromArr(new Blueprint[]{
-                        Blueprint.SOLID, Blueprint.input("first"), new TextBlueprint("testing"),
-                        Blueprint.input("second"), Blueprint.input("third"),
-                })).create());
-        this.blocks.add(new BlockOptions(BlockOptions.Type.NONE).color(new Color(50,0,50))
-                .appendRow(BlockOptions.fromArr(new Blueprint[]{
-                        Blueprint.input("only"), new TextBlueprint(":3")
-                })).create());
-        this.blocks.add(new BlockOptions(BlockOptions.Type.SEQ).color(new Color(255,0,0))
-                .appendRow(BlockOptions.fromArr(new Blueprint[]{
-                        new TextBlueprint("print"), Blueprint.input("toPrint")
-                })).create());
+        this.blocks.add(Blocks.PRINT.create());
+        this.blocks.add(Blocks.PLUS.create());
+        this.blocks.add(Blocks.STRING.create());
     }
     public static LuaEditorScreen create(){
         return new LuaEditorScreen(Text.literal("Editor"));
@@ -48,18 +38,52 @@ public class LuaEditorScreen extends Screen {
         matrices.scale(this.scale, this.scale,1);
 
         if(this.clickData.block!=null){
-            this.clickData.block.offset(
-                    (mouseX-this.clickData.xOffs)/this.scale,(mouseY-this.clickData.yOffs)/this.scale);
+            if(!this.clickData.disconnected) {
+                //todo: look at these numbers
+                var pos = this.clickData.block.getPos();
+                var x = pos.x - (mouseX - this.clickData.xOffs) / this.scale;
+                var y = pos.y - (mouseX - this.clickData.yOffs) / this.scale;
+                var dist = Math.sqrt(x * x + y * y);
+                if (dist > 5) {
+                    this.clickData.block.disconnectFromParents();
+                    this.clickData.disconnected = true;
+                }
+            }else {
+                this.clickData.block.offset(
+                        (mouseX - this.clickData.xOffs) / this.scale, (mouseY - this.clickData.yOffs) / this.scale);
+            }
         }
         for(var block : this.blocks ) block.draw(matrices, this.textRenderer, (int) (mouseX/scale), (int) (mouseY/scale));
 
         matrices.pop();
     }
 
-    private class ClickData{
-        public float xOffs;
-        public float yOffs;
+    private static class ClickData{
+        public double xOffs;
+        public double yOffs;
+        public Vec2d origPos;
         public Block block;
+        public double mouseX;
+        public double mouseY;
+        public boolean disconnected;
+        public void copy(ClickData data){
+            this.xOffs=data.xOffs;
+            this.yOffs=data.yOffs;
+            this.origPos=data.origPos;
+            this.block=data.block;
+            this.mouseX=data.mouseX;
+            this.mouseY=data.mouseY;
+        }
+        public ClickData(double xOffs, double yOffs, Vec2d origPos, Block block, double mouseX, double mouseY){
+            this.xOffs=xOffs;
+            this.yOffs=yOffs;
+            this.origPos=origPos;
+            this.block=block;
+            this.mouseX=mouseX;
+            this.mouseY=mouseY;
+            this.disconnected=false;
+        }
+        public ClickData(){}
     }
     private final ClickData clickData = new ClickData();
 
@@ -71,12 +95,11 @@ public class LuaEditorScreen extends Screen {
         mouseY/=this.scale;
 
         for(var block : this.blocks){
-            if(block.mouse((float) mouseX, (float) mouseY)){
-                this.clickData.block = block;
+            if(block.mouse(mouseX, mouseY)){
                 var pos = block.getPos();
-                this.clickData.xOffs = (float) (mouseX-pos.x)*this.scale;
-                this.clickData.yOffs = (float) (mouseY-pos.y)*this.scale;
-                block.disconnectFromParents();
+                this.clickData.copy(new ClickData(
+                        ((mouseX-pos.x)*this.scale), ((mouseY-pos.y)*this.scale),
+                        block.offset(), block, oldMouseX, oldMouseY));
                 return true;
             }
         }
@@ -84,13 +107,31 @@ public class LuaEditorScreen extends Screen {
         return super.mouseClicked(oldMouseX,oldMouseY,button);
     }
 
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        return super.keyPressed(keyCode,scanCode,modifiers);
+    }
+    @Override
+    public boolean charTyped(char chr, int modifiers) {
+        return super.charTyped(chr,modifiers);
+    }
+
     private static final float radius=20;
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if(this.clickData.block==null) return super.mouseReleased(mouseX,mouseY,button);
+        this.focused=this.clickData.block;
 
-        var possibleConnections = new ArrayList<Pair<Float, Pair<Connection, Connection>>>();
-        //todo: sort and snap to one with shortest dist
+        if(this.clickData.block==null) return super.mouseReleased(mouseX,mouseY,button);
+        if(!this.clickData.disconnected) return true;
+
+        if(this.clickData.mouseX==mouseX&&this.clickData.mouseY==mouseY&&
+                this.clickData.block.click(mouseX/this.scale, mouseY/this.scale)){
+            this.clickData.block = null;
+            return true;
+        }
+// yeet in my fert -Annon Fullam, July 18 2024
+
+        var possibleConnections = new ArrayList<Pair<Double, Pair<Connection, Connection>>>();
 
         for(var connection : this.clickData.block.connections.values()){
             if(connection instanceof SeqInConnection){
@@ -103,7 +144,7 @@ public class LuaEditorScreen extends Screen {
                         if(!(c2 instanceof SeqOutConnection)) continue;
                         var c2Pos = c2.connPos();
 
-                        var dist=(float)Math.sqrt((thisPos.x-c2Pos.x)*(thisPos.x-c2Pos.x)+
+                        var dist=Math.sqrt((thisPos.x-c2Pos.x)*(thisPos.x-c2Pos.x)+
                                 (thisPos.y-c2Pos.y)*(thisPos.y-c2Pos.y));
                         if(dist<radius)
                             possibleConnections.add(new Pair<>(dist, new Pair<>(connection,c2)));
@@ -120,7 +161,7 @@ public class LuaEditorScreen extends Screen {
                         if(!(c2 instanceof InputInConnection ||c2 instanceof InlineInputInConnection)) continue;
                         var c2Pos = c2.connPos();
 
-                        var dist=(float)Math.sqrt((thisPos.x-c2Pos.x)*(thisPos.x-c2Pos.x)+
+                        var dist=Math.sqrt((thisPos.x-c2Pos.x)*(thisPos.x-c2Pos.x)+
                                 (thisPos.y-c2Pos.y)*(thisPos.y-c2Pos.y));
                         if(dist<radius)
                             possibleConnections.add(new Pair<>(dist, new Pair<>(connection,c2)));
