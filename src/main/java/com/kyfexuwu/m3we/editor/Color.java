@@ -8,4 +8,6 @@ public record Color(int r, int g, int b) {
     public VertexConsumer setColor(VertexConsumer consumer){
         return consumer.color(this.r,this.g,this.b,255);
     }
+
+    public int toInt() { return 0xff000000+this.r*0x10000+this.g*0x100+this.b; }
 }

@@ -37,6 +37,6 @@ public class SeqInConnection extends Connection{
     }
 
     @Override
-    public Vec2d connPos() { return super.getConnPos(4, 0); }
+    public Vec2d connPos() { return new Vec2d(4, 0); }
 
 }

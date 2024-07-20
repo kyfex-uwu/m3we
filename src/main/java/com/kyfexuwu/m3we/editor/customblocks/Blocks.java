@@ -8,6 +8,13 @@ import com.kyfexuwu.m3we.editor.component.blueprint.Blueprint;
 import com.kyfexuwu.m3we.editor.component.blueprint.TextBlueprint;
 
 public class Blocks {
+    public static class Colors{
+        public static final Color FLOW_CONTROL = new Color(242, 185, 41);
+    }
+
+    public static final BlockFactory FUNCTION;
+    public static final BlockFactory IF;
+
     public static final BlockFactory PRINT;
 
     public static final BlockFactory PLUS;
@@ -17,6 +24,9 @@ public class Blocks {
     //--
 
     static{
+        FUNCTION = FunctionBlock::new;
+        IF = IfBlock::new;
+
         PRINT = new BlockOptions(BlockOptions.Type.SEQ)
                 .appendRow(new TextBlueprint("print"), Blueprint.input("toPrint"))
                 .color(new Color(181, 11, 178)).export(b->{
@@ -30,7 +40,7 @@ public class Blocks {
                 });
 
         var strInputBlockOptions=new BlockOptions(BlockOptions.Type.NONE)
-                .appendRow(Blueprint.input("left"), StrInputComponent.get("value"))
+                .appendRow(Blueprint.input("left"), StrInputComponent.get())
                 .color(new Color(242, 188, 61)).export(b->{
                     return Block.getExport(b,"value");
                 }).preCreate();

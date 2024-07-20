@@ -39,7 +39,7 @@ public class InlineInputInConnection extends InputInConnection {
 
     @Override
     public Vec2d connPos() {
-        return super.getConnPos(5,10);
+        return new Vec2d(5,10);
     }
 
     @Override

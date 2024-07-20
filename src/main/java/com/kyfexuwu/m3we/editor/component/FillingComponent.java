@@ -21,7 +21,7 @@ public abstract class FillingComponent extends Component{
         var width = this.minWidth;
         double restOfRow=0;
         for(var row : this.parent.components)
-            if(Component.arrContains(this, row)) restOfRow = Component.rowWidth(row)-this.width();
+            if(Component.arrContains(this, row)) restOfRow = Component.rowWidth(row)-this.width(true);
         for(var row : this.parent.components){
             if(Component.arrContains(this, row)) continue;
             width=Math.max(width, Component.rowWidth(row)-restOfRow);

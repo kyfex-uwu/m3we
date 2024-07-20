@@ -7,4 +7,8 @@ public class Vec2d {
         this.x=x;
         this.y=y;
     }
+
+    public Vec2d add(Vec2d pos) {
+        return new Vec2d(this.x+pos.x,this.y+pos.y);
+    }
 }

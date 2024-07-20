@@ -3,15 +3,16 @@ package com.kyfexuwu.m3we.editor.customblocks;
 import com.kyfexuwu.m3we.editor.Block;
 import com.kyfexuwu.m3we.editor.BlockDrawHelper;
 import com.kyfexuwu.m3we.editor.Color;
+import com.kyfexuwu.m3we.editor.KeyEvent;
 import com.kyfexuwu.m3we.editor.component.Component;
+import com.kyfexuwu.m3we.editor.component.ComponentFactory;
 import com.kyfexuwu.m3we.editor.component.HFillingComponent;
-import com.kyfexuwu.m3we.editor.component.blueprint.Blueprint;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 
 public class StrInputComponent extends HFillingComponent {
-    public static Blueprint get(String name){
-        return new ThisBlueprint(name);
+    public static ComponentFactory get(){//todo
+        return new ThisBlueprint();
     }
 
     private String text="";
@@ -26,6 +27,14 @@ public class StrInputComponent extends HFillingComponent {
 
     @Override
     public double height(boolean isolated) { return textHeight+2; }
+
+    @Override
+    public boolean keyTyped(KeyEvent event) {
+        if(event.type==KeyEvent.Type.CHAR) this.text+=event.chr;
+        else if(event.type==KeyEvent.Type.BACKSPACE) this.text=this.text.substring(0,Math.max(0,this.text.length()-1));
+
+        return true;
+    }
 
     private static final Color bg = new Color(255,255,255);
     @Override
@@ -45,13 +54,9 @@ public class StrInputComponent extends HFillingComponent {
 
     //--
 
-    private static class ThisBlueprint extends Blueprint{
-        protected ThisBlueprint(String name) {
-            super(Type.CUSTOM, name);
-        }
-
+    private static class ThisBlueprint implements ComponentFactory {
         @Override
-        public Component create(Block block, int x, int y, Blueprint[][] allBlueprints) {
+        public Component create(Block block, int x, int y, ComponentFactory[][] allBlueprints) {
             return new StrInputComponent(block);
         }
     }

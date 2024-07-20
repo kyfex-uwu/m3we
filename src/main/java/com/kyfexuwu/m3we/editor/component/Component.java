@@ -2,6 +2,7 @@ package com.kyfexuwu.m3we.editor.component;
 
 import com.kyfexuwu.m3we.editor.Block;
 import com.kyfexuwu.m3we.editor.Color;
+import com.kyfexuwu.m3we.editor.KeyEvent;
 import com.kyfexuwu.m3we.editor.Vec2d;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -46,6 +47,7 @@ public abstract class Component{
     public double height(){ return this.height(false); }
     public boolean mouseable(double localX, double localY){ return true; }
     public boolean click(double x, double y){ return false; }
+    public boolean keyTyped(KeyEvent event){ return false; }
 
     public abstract void draw(MatrixStack matrices, TextRenderer text, Color color);
 

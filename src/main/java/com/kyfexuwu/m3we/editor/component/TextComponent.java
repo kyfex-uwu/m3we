@@ -26,7 +26,7 @@ public class TextComponent extends FillingComponent{
     }
 
     public static boolean isWhite(Color color){
-        return Math.sqrt(color.r()*0.299 + color.g()*0.587 + color.b()*0.114)<186;
+        return (color.r()*0.299 + color.g()*0.587 + color.b()*0.114)<186;
     }
     @Override
     public void draw(MatrixStack matrices, TextRenderer text, Color color) {

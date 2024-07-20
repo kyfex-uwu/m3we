@@ -1,7 +1,7 @@
 package com.kyfexuwu.m3we.editor;
 
 import com.kyfexuwu.m3we.editor.component.Component;
-import com.kyfexuwu.m3we.editor.component.blueprint.Blueprint;
+import com.kyfexuwu.m3we.editor.component.ComponentFactory;
 import com.kyfexuwu.m3we.editor.component.connection.Connection;
 import com.kyfexuwu.m3we.editor.component.connection.InputOutConnection;
 import net.minecraft.client.font.TextRenderer;
@@ -11,13 +11,17 @@ import java.util.HashMap;
 import java.util.function.Function;
 
 public class Block {
+    /**Some important connections to not override:
+     * prev / next (for sequencing)
+     * child (for containing blocks: if statement, function)
+     */
     private final Color color;
     public final Component[][] components;
     public final HashMap<String, Connection> connections = new HashMap<>();
     private final Function<Block, String> exportFunc;
     private Vec2d offs = new Vec2d(0,0);
 
-    public Block(Color color, Blueprint[][] components, Function<Block, String> export){
+    public Block(Color color, ComponentFactory[][] components, Function<Block, String> export){
         this.color=color;
         this.exportFunc=export;
         this.components=new Component[components.length][];
@@ -67,17 +71,51 @@ public class Block {
         }
 
         if(conn!=null){
-            var bBox = conn.getConnection().parent.boundingBox();
-            var offs = Connection.getOffset(conn.getConnection());
+            var parentPos = conn.getConnection().globalConnPos();
+            var thisOffs = conn.connPos();
+            var thisX=conn.x();
+            var thisY=conn.y();
 
             return new Vec2d(
-                    bBox.x()+conn.getConnection().x()-conn.x()+this.offs.x+offs.x,
-                    bBox.y()+conn.getConnection().y()-conn.y()+this.offs.y+offs.y
+                    parentPos.x-thisX-thisOffs.x,
+                    parentPos.y-thisY-thisOffs.y
             );
         }
 
         return new Vec2d(this.offs.x,this.offs.y);
     }
+
+    public void offset(Vec2d offs){
+        if(this.connections.containsKey("prev")&&this.connections.get("prev").isConnected()) return;
+        for(var connection : this.connections.values())
+            if(connection instanceof InputOutConnection&&connection.isConnected()) return;
+
+        this.offs = offs;
+    }
+    public void offset(double x, double y){
+        this.offset(new Vec2d(x,y));
+    }
+    public Vec2d offset(){ return this.offs; }
+    public void removeOffset(){ this.offs = new Vec2d(0,0); }
+
+    public void draw(MatrixStack matrices, TextRenderer textRenderer, int mouseX, int mouseY){
+        matrices.push();
+        var pos = this.getPos();
+        matrices.translate(pos.x, pos.y, 0);
+
+        var color = this.mouse(mouseX,mouseY)?this.color.highlighted():this.color;
+
+        for(var y=0;y<this.components.length;y++){
+            for(var x=0;x<this.components[y].length;x++){
+                matrices.push();
+                matrices.translate(this.components[y][x].x(), this.components[y][x].y(), 0);
+                this.components[y][x].draw(matrices, textRenderer, color);
+                matrices.pop();
+            }
+        }
+        matrices.pop();
+    }
+
     public boolean mouse(double x, double y){
         var offs = this.getPos();
         x-=offs.x;
@@ -112,36 +150,12 @@ public class Block {
 
         return false;
     }
-
-    public void offset(Vec2d offs){
-        if(this.connections.containsKey("prev")&&this.connections.get("prev").isConnected()) return;
-        for(var connection : this.connections.values())
-            if(connection instanceof InputOutConnection&&connection.isConnected()) return;
-
-        this.offs = offs;
-    }
-    public void offset(double x, double y){
-        this.offset(new Vec2d(x,y));
-    }
-    public Vec2d offset(){ return this.offs; }
-    public void removeOffset(){ this.offs = new Vec2d(0,0); }
-
-    public void draw(MatrixStack matrices, TextRenderer textRenderer, int mouseX, int mouseY){
-        matrices.push();
-        var pos = this.getPos();
-        matrices.translate(pos.x, pos.y, 0);
-
-        var color = this.mouse(mouseX,mouseY)?this.color.highlighted():this.color;
-
-        for(var y=0;y<this.components.length;y++){
-            for(var x=0;x<this.components[y].length;x++){
-                matrices.push();
-                matrices.translate(this.components[y][x].x(), this.components[y][x].y(), 0);
-                this.components[y][x].draw(matrices, textRenderer, color);
-                matrices.pop();
+    public void keyTyped(KeyEvent event){
+        for(var row : this.components){
+            for(var c : row){
+                if(c.keyTyped(event)) return;
             }
         }
-        matrices.pop();
     }
 
     public String export(){

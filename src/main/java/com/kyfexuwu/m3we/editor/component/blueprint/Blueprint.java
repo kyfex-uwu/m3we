@@ -10,7 +10,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import org.apache.commons.lang3.NotImplementedException;
 
-public class Blueprint {
+public class Blueprint implements ComponentFactory{
     public enum Type{
         SOLID,
         SEQ,
@@ -39,7 +39,7 @@ public class Blueprint {
         this.name=name;
     }
     protected Blueprint(Type type){ this(type, null); }
-    public Component create(Block block, int x, int y, Blueprint[][] allBlueprints){
+    public Component create(Block block, int x, int y, ComponentFactory[][] allBlueprints){
         switch(this.type){
             case SOLID ->{
                 if(y==0){
@@ -76,7 +76,7 @@ public class Blueprint {
     }
 
     //--
-    private enum Corner{
+    public enum Corner{
         TL(new Vec2d(0,5), new Vec2d(5,5), new Vec2d(5,0),
                 new Vec2d(3,0), new Vec2d(1,1), new Vec2d(0,3)),
         TR(new Vec2d(0,0), new Vec2d(0,5), new Vec2d(5,5),
@@ -91,9 +91,9 @@ public class Blueprint {
             this.points=points;
         }
     }
-    private enum VSide{ LEFT, RIGHT }
-    private enum HSide{ TOP, BOTTOM }
-    private static class CornerComponent extends NonResizableComponent {
+    public enum VSide{ LEFT, RIGHT }
+    public enum HSide{ TOP, BOTTOM }
+    public static class CornerComponent extends NonResizableComponent {
         private final Corner type;
         public CornerComponent(Block parent, Corner type) {
             super(parent, 5, 5);
@@ -107,7 +107,7 @@ public class Blueprint {
             });
         }
     }
-    private static class VWallComponent extends VFillingComponent {
+    public static class VWallComponent extends VFillingComponent {
         private final VSide side;
         public VWallComponent(Block parent, VSide side){
             super(parent, 5);
@@ -126,7 +126,7 @@ public class Blueprint {
             });
         }
     }
-    private static class HWallComponent extends HFillingComponent {
+    public static class HWallComponent extends HFillingComponent {
         private final HSide side;
         public HWallComponent(Block parent, HSide side){
             super(parent, 5);
@@ -145,7 +145,7 @@ public class Blueprint {
             });
         }
     }
-    private static class InsideComponent extends FillingComponent {
+    public static class InsideComponent extends FillingComponent {
         public InsideComponent(Block parent) {
             super(parent);
         }

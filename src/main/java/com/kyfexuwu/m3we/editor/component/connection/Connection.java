@@ -31,16 +31,8 @@ public abstract class Connection extends Component {
         var toReturn = this.globalPos();
         return new Vec2d(toReturn.x+x,toReturn.y+y);
     }
-    public abstract Vec2d connPos();
-
-    public static Vec2d getOffset(Connection connection){//todo: remove this
-        if(connection instanceof SeqOutConnection){
-            return new Vec2d(0, connection.height());
-        }else if(connection instanceof InlineInputInConnection){
-            return new Vec2d(5, connection.connected.y());
-        }else if(connection instanceof InputInConnection){
-            return new Vec2d(5,0);
-        }
-        return null;
+    public Vec2d globalConnPos(){
+        return this.connPos().add(this.parent.getPos()).add(new Vec2d(this.x(),this.y()));
     }
+    public abstract Vec2d connPos();
 }

@@ -38,6 +38,5 @@ public class InputOutConnection extends Connection{
     }
 
     @Override
-    public Vec2d connPos() { return super.getConnPos(0,5); }
-
+    public Vec2d connPos() { return new Vec2d(0,5); }
 }

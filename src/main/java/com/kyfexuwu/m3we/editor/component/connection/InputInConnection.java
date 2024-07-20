@@ -16,7 +16,12 @@ public class InputInConnection extends Connection{
 
     @Override
     public double height(boolean isolated) {
-        return Math.max(8, Component.fillRowHeight(this,isolated, 8));
+        var toReturn=Math.max(8, Component.fillRowHeight(this,isolated, 8));
+        if(this.isConnected()) {
+            toReturn = Math.max(toReturn, this.getConnection().parent.boundingBox().height()-10);
+                //not perfect, the 10 comes from top and bottom rows
+        }
+        return toReturn;
     }
 
     @Override
@@ -39,6 +44,6 @@ public class InputInConnection extends Connection{
     }
 
     @Override
-    public Vec2d connPos() { return super.getConnPos(5,5); }
+    public Vec2d connPos() { return new Vec2d(5,5); }
 
 }

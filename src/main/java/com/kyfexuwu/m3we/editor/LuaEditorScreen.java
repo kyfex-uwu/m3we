@@ -16,8 +16,13 @@ public class LuaEditorScreen extends Screen {
         super(title);
 
         this.blocks.add(Blocks.PRINT.create());
+        this.blocks.add(Blocks.PRINT.create());
+        this.blocks.add(Blocks.PRINT.create());
+        this.blocks.add(Blocks.PRINT.create());
         this.blocks.add(Blocks.PLUS.create());
         this.blocks.add(Blocks.STRING.create());
+        this.blocks.add(Blocks.FUNCTION.create());
+        this.blocks.add(Blocks.IF.create());
     }
     public static LuaEditorScreen create(){
         return new LuaEditorScreen(Text.literal("Editor"));
@@ -39,7 +44,6 @@ public class LuaEditorScreen extends Screen {
 
         if(this.clickData.block!=null){
             if(!this.clickData.disconnected) {
-                //todo: look at these numbers
                 var pos = this.clickData.block.getPos();
                 var x = pos.x - (mouseX - this.clickData.xOffs) / this.scale;
                 var y = pos.y - (mouseX - this.clickData.yOffs) / this.scale;
@@ -48,7 +52,8 @@ public class LuaEditorScreen extends Screen {
                     this.clickData.block.disconnectFromParents();
                     this.clickData.disconnected = true;
                 }
-            }else {
+            }
+            if(this.clickData.disconnected){
                 this.clickData.block.offset(
                         (mouseX - this.clickData.xOffs) / this.scale, (mouseY - this.clickData.yOffs) / this.scale);
             }
@@ -73,6 +78,7 @@ public class LuaEditorScreen extends Screen {
             this.block=data.block;
             this.mouseX=data.mouseX;
             this.mouseY=data.mouseY;
+            this.disconnected=data.disconnected;
         }
         public ClickData(double xOffs, double yOffs, Vec2d origPos, Block block, double mouseX, double mouseY){
             this.xOffs=xOffs;
@@ -107,15 +113,6 @@ public class LuaEditorScreen extends Screen {
         return super.mouseClicked(oldMouseX,oldMouseY,button);
     }
 
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return super.keyPressed(keyCode,scanCode,modifiers);
-    }
-    @Override
-    public boolean charTyped(char chr, int modifiers) {
-        return super.charTyped(chr,modifiers);
-    }
-
     private static final float radius=20;
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
@@ -135,14 +132,14 @@ public class LuaEditorScreen extends Screen {
 
         for(var connection : this.clickData.block.connections.values()){
             if(connection instanceof SeqInConnection){
-                var thisPos = connection.connPos();
+                var thisPos = connection.globalConnPos();
 
                 for(var block : this.blocks){
                     if(block==this.clickData.block) continue;
 
                     for(var c2 : block.connections.values()){
                         if(!(c2 instanceof SeqOutConnection)) continue;
-                        var c2Pos = c2.connPos();
+                        var c2Pos = c2.globalConnPos();
 
                         var dist=Math.sqrt((thisPos.x-c2Pos.x)*(thisPos.x-c2Pos.x)+
                                 (thisPos.y-c2Pos.y)*(thisPos.y-c2Pos.y));
@@ -152,14 +149,14 @@ public class LuaEditorScreen extends Screen {
                 }
             }
             if(connection instanceof InputOutConnection){
-                var thisPos = connection.connPos();
+                var thisPos = connection.globalConnPos();
 
                 for(var block : this.blocks){
                     if(block==this.clickData.block) continue;
 
                     for(var c2 : block.connections.values()){
                         if(!(c2 instanceof InputInConnection ||c2 instanceof InlineInputInConnection)) continue;
-                        var c2Pos = c2.connPos();
+                        var c2Pos = c2.globalConnPos();
 
                         var dist=Math.sqrt((thisPos.x-c2Pos.x)*(thisPos.x-c2Pos.x)+
                                 (thisPos.y-c2Pos.y)*(thisPos.y-c2Pos.y));
@@ -186,5 +183,22 @@ public class LuaEditorScreen extends Screen {
 
             return true;
         }
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if(this.focused!=null){
+            switch(keyCode){
+                case 259 -> this.focused.keyTyped(new KeyEvent(KeyEvent.Type.BACKSPACE));
+            }
+        }
+        return super.keyPressed(keyCode,scanCode,modifiers);
+    }
+    @Override
+    public boolean charTyped(char chr, int modifiers) {
+        if(this.focused!=null){
+            this.focused.keyTyped(new KeyEvent(chr));
+        }
+        return super.charTyped(chr,modifiers);
     }
 }
