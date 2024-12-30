@@ -22,7 +22,7 @@ public class Utils {
             if (key.isnil())
                 break;
 
-            if(function.apply(key, n.arg(2))==false) break;
+            if(!function.apply(key, n.arg(2))) break;
         }
     }
 

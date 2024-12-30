@@ -37,9 +37,6 @@ public class m3weData {
             }
         }
     }
-    public static String filePath(String... parts){
-        return String.join(File.separator, List.of(parts));
-    }
     public static final ResourcePack resourcePack = new ResourcePack() {
         private HashMap<String, String> getPack(ResourceType type){
             return type==ResourceType.CLIENT_RESOURCES?packResources:packData;

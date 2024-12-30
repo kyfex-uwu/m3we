@@ -25,6 +25,7 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -111,8 +112,8 @@ public class CustomScript {
             var arg = args.get(0);
             if (!arg.isstring() || arg.checkjstring().contains("..")) return NIL;
             try {
-                //return load.call(Files.readString(new File(m3we.scriptsFolder.getAbsolutePath() +
-                //        "\\" + arg.checkjstring() + ".lua").toPath())).call();
+//                return load.call(Files.readString(Paths.get(m3we.scriptsFolder.getAbsolutePath(),
+//                        arg.checkjstring() + ".lua"))).call();
             } catch (Exception ignored) {}
             return NIL;
         }));
@@ -267,12 +268,12 @@ public class CustomScript {
         try {
             var parts = fileName.split(":");
             this.runEnv.load(
-                Files.readString(new File(m3weData.filePath(m3we.m3weFolder.getAbsolutePath(), parts[0],
-                        "scripts", parts[1]+".lua")).toPath())
+                Files.readString(Paths.get(m3we.m3weFolder.getAbsolutePath(), parts[0],
+                        "scripts", parts[1]+".lua"))
             ).call();
             for(var listener : this.updateListeners) listener.accept(this);
         }catch(IOException | LuaError e){
-            m3we.LOGGER.error("script "+fileName+" not loaded... it was a "+e.getClass().getName()+" exception");
+            m3we.LOGGER.error("script {} not loaded... it was a {} exception", fileName, e.getClass().getName());
             //e.printStackTrace();
         }
     }

@@ -29,10 +29,13 @@ public class LuaBlockEntity extends BlockEntity {
         this.active=active;
         this.setScript(lua);
     }
-    public void setScript(String lua){
+    public void setScript(String lua){ this.setScript(lua, false);}
+    public void setScript(String lua, boolean firstLoad){
         this.lua=lua;
-        this.script.updateScript(lua);
-        this.markDirty();
+        if(!firstLoad){
+            this.script.updateScript(lua);
+            this.markDirty();
+        }
     }
 
     boolean loaded=false;

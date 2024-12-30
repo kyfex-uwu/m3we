@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 @Mixin(MinecraftClient.class)
@@ -25,7 +26,7 @@ public abstract class m3weResourcePackMixin {
             ),
             index = 1)
     private ResourcePackProvider[] addm3weResourcePack__m3we(ResourcePackProvider[] packs) {
-        File resourcesFolder = new File(m3we.m3weFolder.getAbsolutePath()+"\\resources");
+        File resourcesFolder = Paths.get(m3we.m3weFolder.getAbsolutePath(),"resources").toFile();
         resourcesFolder.mkdir();
 
         ResourcePackProvider[] toReturn = Arrays.copyOf(packs,packs.length+1);

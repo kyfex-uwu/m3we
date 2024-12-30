@@ -28,6 +28,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 
@@ -63,8 +64,8 @@ public class m3we implements ModInitializer {
     public static HashMap<String, Block> m3weBlocks = new HashMap<>();
     public static HashMap<String, Item> m3weItems = new HashMap<>();
 
-    public static File m3weFolder = new File(FabricLoader.getInstance().getConfigDir()//just inside the .minecraft folder
-            .toString()+"\\m3we");
+    public static File m3weFolder = Paths.get(FabricLoader.getInstance().getConfigDir().toString(),//just inside the .minecraft folder
+            "m3we").toFile();
 
     public static final ItemGroup m3weItemGroup = FabricItemGroupBuilder.build(
             new Identifier(MOD_ID,"item_group"),
@@ -153,15 +154,15 @@ public class m3we implements ModInitializer {
             var dirs = Arrays.asList(packDir.getRight().list());
 
             if(dirs.contains("assets")) {
-                for(File resourceDir : new File(m3weData.filePath(packDir.getRight().getAbsolutePath(),"assets")).listFiles()){
-                    m3weData.crawlResources(resourceDir,resourceDir.getName()+"/", packDir.getLeft(),
-                            m3weData.filePath("","assets", ""), true);
+                for(File resourceDir : Paths.get(packDir.getRight().getAbsolutePath(),"assets").toFile().listFiles()){
+                    m3weData.crawlResources(resourceDir,resourceDir.getName()+File.pathSeparator, packDir.getLeft(),
+                            File.pathSeparator+"assets"+File.pathSeparator, true);
                 }
             }
             if(dirs.contains("data")) {
-                for(File resourceDir : new File(m3weData.filePath(packDir.getRight().getAbsolutePath(),"data")).listFiles()){
-                    m3weData.crawlResources(resourceDir, resourceDir.getName()+"/", packDir.getLeft(),
-                            m3weData.filePath("","data", ""), false);
+                for(File resourceDir : Paths.get(packDir.getRight().getAbsolutePath(),"data").toFile().listFiles()){
+                    m3weData.crawlResources(resourceDir, resourceDir.getName()+File.pathSeparator, packDir.getLeft(),
+                            File.pathSeparator+"data"+File.pathSeparator, false);
                 }
             }
         }

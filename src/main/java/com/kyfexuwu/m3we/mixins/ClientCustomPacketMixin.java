@@ -54,7 +54,7 @@ public abstract class ClientCustomPacketMixin {
         if (!(luaBlockEntity instanceof LuaBlockEntity)) return;
 
         var code=buffer.readString();
-        ((LuaBlockEntity) luaBlockEntity).setScript(code);
+        ((LuaBlockEntity) luaBlockEntity).setScript(code, true);
         if(this.client.currentScreen instanceof LuaBlockScreen){
             ((LuaBlockScreen) this.client.currentScreen).code=code;
             ((LuaBlockScreen) this.client.currentScreen).updateCode();
