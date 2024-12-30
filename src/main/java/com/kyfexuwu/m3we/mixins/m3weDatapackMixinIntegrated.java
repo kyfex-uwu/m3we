@@ -26,9 +26,6 @@ public abstract class m3weDatapackMixinIntegrated {
             ),
             index = 1)
     private static ResourcePackProvider[] addm3weDataPackIntegrated__m3we(ResourcePackProvider[] packs) {
-        File resourcesFolder = Paths.get(m3we.m3weFolder.getAbsolutePath(),"resources").toFile();
-        resourcesFolder.mkdir();
-
         ResourcePackProvider[] toReturn = Arrays.copyOf(packs,packs.length+1);
         toReturn[packs.length]= (profileAdder, factory) -> {
             ResourcePackProfile resourcePackProfile = ResourcePackProfile.of(
