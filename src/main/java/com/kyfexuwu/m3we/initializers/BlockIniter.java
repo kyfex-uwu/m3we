@@ -1,9 +1,7 @@
 package com.kyfexuwu.m3we.initializers;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
+import com.kyfexuwu.m3we.Json;
 import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.m3we;
 import net.minecraft.block.AbstractBlock;
@@ -138,9 +136,10 @@ public class BlockIniter {
         //file to json
         JsonObject blockJsonData;
         try {
-            blockJsonData = new JsonParser().parse(
-                    Files.readString(file.toPath())
-            ).getAsJsonObject();
+            blockJsonData = Json.GSON.fromJson(
+                    Files.readString(file.toPath()),
+                    JsonObject.class
+            );
         }catch(IOException | JsonSyntaxException e) {
             return new SuccessAndIdentifier(SuccessRate.BAD_JSON);
         }

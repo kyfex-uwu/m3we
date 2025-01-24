@@ -3,6 +3,7 @@ package com.kyfexuwu.m3we.initializers;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.kyfexuwu.m3we.Json;
 import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.m3we;
 import net.minecraft.entity.effect.StatusEffect;
@@ -118,9 +119,10 @@ public class ItemIniter {
 
         JsonObject itemJsonData;
         try {
-            itemJsonData = new JsonParser().parse(
-                    Files.readString(file.toPath())
-            ).getAsJsonObject();
+            itemJsonData = Json.GSON.fromJson(
+                    Files.readString(file.toPath()),
+                    JsonObject.class
+            );
         }catch(IOException | JsonSyntaxException e) {
             return new SuccessAndIdentifier(SuccessRate.BAD_JSON);
         }
