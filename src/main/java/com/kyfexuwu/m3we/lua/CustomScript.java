@@ -3,7 +3,6 @@ package com.kyfexuwu.m3we.lua;
 import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.lua.api.*;
 import com.kyfexuwu.m3we.m3we;
-import com.kyfexuwu.m3we.m3weData;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.HoverEvent;
@@ -14,17 +13,19 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;
-import org.luaj.vm2.lib.*;
+import org.luaj.vm2.lib.PackageLib;
+import org.luaj.vm2.lib.StringLib;
+import org.luaj.vm2.lib.TableLib;
+import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.jse.JseBaseLib;
 import org.luaj.vm2.lib.jse.JseMathLib;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -107,7 +108,7 @@ public class CustomScript {
     protected static Globals safeGlobal(){
         var toReturn = unsafeGlobal();
 
-        var load = toReturn.get("load");
+        //var load = toReturn.get("load");
         toReturn.set("loadLib", LuaFunc.func(args -> {
             var arg = args.get(0);
             if (!arg.isstring() || arg.checkjstring().contains("..")) return NIL;
@@ -153,7 +154,7 @@ public class CustomScript {
 
             @Override
             public Varargs subargs(int start) {
-                return createVarArgs(Arrays.copyOfRange(luaArgs,start-1,luaArgs.length));
+                return createVarArgs((Object[]) Arrays.copyOfRange(luaArgs,start-1,luaArgs.length));
             }
         };
     }
@@ -267,13 +268,16 @@ public class CustomScript {
         LuaC.install(this.runEnv);
         try {
             var parts = fileName.split(":");
+            if(parts.length==1) throw new InvalidPathException("","Script paths mush be in the form pack_name:file_name");
+
             this.runEnv.load(
                 Files.readString(Paths.get(m3we.m3weFolder.getAbsolutePath(), parts[0],
                         "scripts", parts[1]+".lua"))
             ).call();
             for(var listener : this.updateListeners) listener.accept(this);
-        }catch(IOException | LuaError e){
-            m3we.LOGGER.error("script {} not loaded... it was a {} exception", fileName, e.getClass().getName());
+        }catch(IOException | LuaError | InvalidPathException e){
+            m3we.LOGGER.error("script {} not loaded... it was a {} exception. Message: {}",
+                    fileName, e.getClass().getName(), e.getMessage());
             //e.printStackTrace();
         }
     }

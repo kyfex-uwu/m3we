@@ -3,12 +3,7 @@ package com.kyfexuwu.m3we.lua.api;
 import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.lua.JavaExclusiveTable;
-import net.minecraft.network.encryption.NetworkEncryptionUtils;
-import net.minecraft.network.message.ArgumentSignatureDataMap;
-import net.minecraft.network.message.LastSeenMessageList;
-import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
 import net.minecraft.server.command.CommandOutput;
-import net.minecraft.server.command.ParticleCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -19,9 +14,6 @@ import net.minecraft.world.World;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.TwoArgFunction;
-
-import java.time.Instant;
-import java.util.Optional;
 
 public class MiscAPI extends TwoArgFunction {
     @Override

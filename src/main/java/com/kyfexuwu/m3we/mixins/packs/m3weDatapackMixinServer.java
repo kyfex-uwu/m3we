@@ -1,4 +1,4 @@
-package com.kyfexuwu.m3we.mixins;
+package com.kyfexuwu.m3we.mixins.packs;
 
 import com.kyfexuwu.m3we.m3we;
 import com.kyfexuwu.m3we.m3weData;
@@ -10,8 +10,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-import java.io.File;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
 @Mixin(Main.class)

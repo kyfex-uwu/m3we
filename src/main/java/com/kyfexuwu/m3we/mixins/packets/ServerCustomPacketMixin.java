@@ -1,4 +1,4 @@
-package com.kyfexuwu.m3we.mixins;
+package com.kyfexuwu.m3we.mixins.packets;
 
 import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.lua.CustomScript;

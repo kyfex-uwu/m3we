@@ -1,7 +1,7 @@
 package com.kyfexuwu.m3we.lua;
 
-import com.kyfexuwu.m3we.initializers.CustomBlockMaker;
 import com.kyfexuwu.m3we.Utils;
+import com.kyfexuwu.m3we.initializers.CustomBlockMaker;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.world.ClientWorld;

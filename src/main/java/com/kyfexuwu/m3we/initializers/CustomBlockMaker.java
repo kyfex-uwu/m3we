@@ -2,7 +2,6 @@ package com.kyfexuwu.m3we.initializers;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.lua.*;
@@ -33,7 +32,6 @@ import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.ActionResult;

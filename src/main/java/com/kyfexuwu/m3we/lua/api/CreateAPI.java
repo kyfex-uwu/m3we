@@ -5,7 +5,6 @@ import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.lua.JavaExclusiveTable;
 import com.kyfexuwu.m3we.lua.LuaSurfaceObj;
 import com.kyfexuwu.m3we.lua.UndecidedLuaFunction;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;

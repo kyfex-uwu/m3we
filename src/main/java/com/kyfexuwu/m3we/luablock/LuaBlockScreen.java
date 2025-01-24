@@ -1,7 +1,6 @@
 package com.kyfexuwu.m3we.luablock;
 
 import com.kyfexuwu.m3we.m3we;
-import com.kyfexuwu.m3we.m3weData;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;

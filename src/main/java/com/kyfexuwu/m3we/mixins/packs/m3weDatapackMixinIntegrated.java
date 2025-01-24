@@ -1,31 +1,29 @@
-package com.kyfexuwu.m3we.mixins;
+package com.kyfexuwu.m3we.mixins.packs;
 
 import com.kyfexuwu.m3we.m3we;
 import com.kyfexuwu.m3we.m3weData;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackProvider;
 import net.minecraft.resource.ResourcePackSource;
+import net.minecraft.server.integrated.IntegratedServerLoader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-import java.io.File;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
-@Mixin(MinecraftClient.class)
-public abstract class m3weResourcePackMixin {
+@Mixin(IntegratedServerLoader.class)
+public abstract class m3weDatapackMixinIntegrated {
     @ModifyArg(
-            method = "<init>",
+            method = "createDataPackManager",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/resource/ResourcePackManager;<init>("+
-                            "Lnet/minecraft/resource/ResourcePackProfile$Factory;"+
+                    target = "Lnet/minecraft/resource/ResourcePackManager;<init>(" +
+                            "Lnet/minecraft/resource/ResourceType;" +
                             "[Lnet/minecraft/resource/ResourcePackProvider;)V"
             ),
             index = 1)
-    private ResourcePackProvider[] addm3weResourcePack__m3we(ResourcePackProvider[] packs) {
+    private static ResourcePackProvider[] addm3weDataPackIntegrated__m3we(ResourcePackProvider[] packs) {
         ResourcePackProvider[] toReturn = Arrays.copyOf(packs,packs.length+1);
         toReturn[packs.length]= (profileAdder, factory) -> {
             ResourcePackProfile resourcePackProfile = ResourcePackProfile.of(

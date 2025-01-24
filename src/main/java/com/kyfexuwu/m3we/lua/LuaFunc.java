@@ -1,12 +1,8 @@
 package com.kyfexuwu.m3we.lua;
 
-import com.mojang.datafixers.types.Func;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
-import org.luaj.vm2.lib.OneArgFunction;
-import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
-import org.luaj.vm2.lib.ZeroArgFunction;
 
 import java.util.ArrayList;
 import java.util.List;

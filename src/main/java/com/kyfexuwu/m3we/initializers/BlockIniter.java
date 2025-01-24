@@ -1,9 +1,15 @@
 package com.kyfexuwu.m3we.initializers;
 
-import com.google.gson.*;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
 import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.m3we;
-import net.minecraft.block.*;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.Material;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -18,7 +24,7 @@ import java.nio.file.Files;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static com.kyfexuwu.m3we.Utils.*;
+import static com.kyfexuwu.m3we.Utils.tryAndExecute;
 import static com.kyfexuwu.m3we.initializers.InitUtils.*;
 
 
@@ -68,7 +74,7 @@ public class BlockIniter {
                 } else {
                     return value -> SAV.value.getAsInt();
                 }
-            }, block -> state -> state.getLuminance()),
+            }, block -> AbstractBlock.AbstractBlockState::getLuminance),
             new BlockPropertyTranslator<>("mapColor",AbstractBlock.Settings::mapColor,(ScriptAndValue SAV) -> {
                 try {
                     //todo! this does not work with translations

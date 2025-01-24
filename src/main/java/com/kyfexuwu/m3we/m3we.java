@@ -28,7 +28,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 
@@ -86,7 +85,7 @@ public class m3we implements ModInitializer {
         for(var file : m3weFolder.listFiles()){
             if(!file.isDirectory()) continue;
 
-            for(var subFile : file.listFiles(sf->sf.isDirectory())){
+            for(var subFile : file.listFiles(File::isDirectory)){
                 switch (subFile.getName()) {
                     case "blocks" -> initObjects(subFile, BlockIniter::blockFromFile);
                     case "items" -> initObjects(subFile, ItemIniter::itemFromFile);
@@ -185,7 +184,7 @@ public class m3we implements ModInitializer {
 
         var toProcess = getFiles(folder);
         int consecutiveComeBackLaters=0;
-        while(toProcess.size()>0){
+        while(!toProcess.isEmpty()){
             var modFile = toProcess.get(0);
 
             InitUtils.SuccessAndIdentifier modObject = func.apply(modFile);

@@ -2,7 +2,6 @@ package com.kyfexuwu.m3we.lua.dyngui;
 
 import com.kyfexuwu.m3we.lua.ScriptError;
 import com.kyfexuwu.m3we.lua.api.GuiAPI;
-import com.kyfexuwu.m3we.m3weData;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

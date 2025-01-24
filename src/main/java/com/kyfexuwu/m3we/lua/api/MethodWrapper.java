@@ -3,7 +3,7 @@ package com.kyfexuwu.m3we.lua.api;
 import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.lua.LuaFunc;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.*;
+import org.luaj.vm2.lib.LibFunction;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 public class MethodWrapper {
     @FunctionalInterface
-    interface TriFunction<A1,A2,A3,R>{
+    public interface TriFunction<A1,A2,A3,R>{
         R apply(A1 a1, A2 a2, A3 a3);
     }
 
