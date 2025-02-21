@@ -132,7 +132,7 @@ public class LuaSurfaceObj extends LuaTable {
     @Override
     public void set(LuaValue key, LuaValue value){
         ChatMessage.message(Text.of("You can't set properties on Java objects directly," +
-                "see if there's a helper function instead! (this should change soon)"));
+                "see if there's a helper function instead! (this should change soon(?))"));
     }
     @Override
     public void rawset(LuaValue key, LuaValue value){

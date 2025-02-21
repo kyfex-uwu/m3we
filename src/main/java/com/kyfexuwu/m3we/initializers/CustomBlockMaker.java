@@ -153,6 +153,7 @@ public class CustomBlockMaker {
             public final CustomScript clientScriptContainer;
             public final CustomScript serverScriptContainer;
             public final boolean shapeIsScript;
+            public final boolean outlineIsScript;
             public final String shapeScriptString;
             public final String outlineScriptString;
 
@@ -217,8 +218,10 @@ public class CustomBlockMaker {
                 }
                 if(outlineShapeJson == null){
                     this.outlineShape=this.blockShape;
+                    this.outlineIsScript=false;
                     this.outlineScriptString=this.shapeScriptString;
-                }else if(outlineShapeJson.isJsonArray()){
+                }else if(outlineShapeJson.isJsonArray()) {
+                    this.outlineIsScript=false;
                     var outlineShapeToGive = VoxelShapes.empty();
                     for (JsonElement element : (JsonArray) outlineShapeJson) {
                         if (!element.isJsonArray())
@@ -237,10 +240,11 @@ public class CustomBlockMaker {
                         ));
                     }
                     this.outlineShape = outlineShapeToGive;
-                    this.outlineScriptString=null;
+                    this.outlineScriptString = null;
                 }else{
                     this.outlineShape = VoxelShapes.empty();
-                    this.outlineScriptString=this.shapeScriptString;
+                    this.outlineIsScript=outlineShapeJson.getAsString().startsWith("script:");
+                    this.outlineScriptString = this.outlineIsScript ? outlineShapeJson.getAsString().substring(7) : null;
                 }
 
                 //--
@@ -370,7 +374,7 @@ public class CustomBlockMaker {
 
             @Override//yes dont worry i already checked this is the one you need to override
             public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-                if(this.shapeIsScript){
+                if(this.outlineIsScript){
                     if(this.outlineScriptString==null)
                         return this.outlineShape!=null ? this.outlineShape : this.getCollisionShape(state, world, pos, context);
 

@@ -195,6 +195,7 @@ public class CustomScript {
         print(env, createVarArgs(args));
     }
     public static LuaValue explore(LuaValue value){
+        ChatMessage.message(Text.literal("UNDERGOING A REWORK, THIS IS NOT FINAL"));
         var obj = Utils.toObject(value);
         if(obj==null){
             ChatMessage.message(Text.literal("null"));
