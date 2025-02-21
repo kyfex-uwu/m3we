@@ -5,6 +5,7 @@ import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.lua.JavaExclusiveTable;
 import com.kyfexuwu.m3we.lua.ScriptError;
 import com.kyfexuwu.m3we.lua.dyngui.DynamicGui;
+import com.kyfexuwu.m3we.lua.dyngui.DynamicGuiBuilder;
 import com.kyfexuwu.m3we.lua.dyngui.DynamicGuiHandler;
 import com.kyfexuwu.m3we.lua.dyngui.DynamicInventory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
@@ -27,6 +28,8 @@ import org.luaj.vm2.lib.ThreeArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
 
+import java.util.HashMap;
+
 public class GuiAPI extends TwoArgFunction {
     @Override
     public LuaValue call(LuaValue modname, LuaValue env) {
@@ -42,6 +45,8 @@ public class GuiAPI extends TwoArgFunction {
 
         thisApi.javaSet("getSlot",new getSlot(env));
         thisApi.javaSet("doInWorld",new doInWorld(env));
+
+        thisApi.javaSet("register",new registerGUI(env));
 
         return CustomScript.finalizeAPI("Gui",thisApi,env);
     }
@@ -80,7 +85,7 @@ public class GuiAPI extends TwoArgFunction {
                     @Nullable
                     @Override
                     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                        return RegistryAPI.getGui(guiName).build(syncId,inv, finalServerInv,world,pos,guiName);
+                        return GuiAPI.getGui(guiName).build(syncId,inv, finalServerInv,world,pos,guiName);
                     }
 
                     @Override
@@ -352,5 +357,27 @@ public class GuiAPI extends TwoArgFunction {
             });
             return NIL;
         }
+    }
+
+    static final HashMap<String, DynamicGuiBuilder> guis = new HashMap<>();
+    static final class registerGUI extends TwoArgFunction {
+        private final LuaValue globals;
+        public registerGUI(LuaValue globals){
+            this.globals=globals;
+        }
+        @Override
+        public LuaValue call(LuaValue guiName, LuaValue guiBehavior) {
+            try{
+                guis.put(guiName.checkjstring(),new DynamicGuiBuilder(this.globals, guiBehavior));
+                return TRUE;
+            }catch(Exception e){
+                e.printStackTrace();
+                return FALSE;
+            }
+        }
+    }
+    public static DynamicGuiBuilder getGui(String name){
+        if(!guis.containsKey(name)) return null;
+        return guis.get(name);
     }
 }

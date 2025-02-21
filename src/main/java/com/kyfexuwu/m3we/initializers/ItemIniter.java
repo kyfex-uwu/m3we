@@ -1,14 +1,11 @@
 package com.kyfexuwu.m3we.initializers;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.kyfexuwu.m3we.Json;
 import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.m3we;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
@@ -68,25 +65,23 @@ public class ItemIniter {
                         var thisObj = SAV.value.getAsJsonObject();
 
                         var toReturn = new FoodComponent.Builder()
-                                .hunger(thisObj.get("hunger").getAsInt())
-                                .saturationModifier(thisObj.get("saturation").getAsFloat());
-                        if(thisObj.get("isMeat").getAsBoolean())
+                                .hunger(thisObj.has("hunger")?thisObj.get("hunger").getAsInt():0)
+                                .saturationModifier(thisObj.has("get")?thisObj.get("saturation").getAsFloat():0);
+                        if(thisObj.has("isMeat")&&thisObj.get("isMeat").getAsBoolean())
                             toReturn = toReturn.meat();
-                        if(thisObj.get("isAlwaysEdible").getAsBoolean())
+                        if(thisObj.has("isAlwaysEdible")&&thisObj.get("isAlwaysEdible").getAsBoolean())
                             toReturn = toReturn.alwaysEdible();
-                        if(thisObj.get("canEatFast").getAsBoolean())
+                        if(thisObj.has("canEatFast")&&thisObj.get("canEatFast").getAsBoolean())
                             toReturn = toReturn.snack();
-                        if(thisObj.get("statusEffects").isJsonArray()){
+                        if(thisObj.has("statusEffects")&&thisObj.get("statusEffects").isJsonArray()){
                             var effects = thisObj.get("statusEffects").getAsJsonArray();
                             int length = effects.size();
                             for(int i=0;i<length;i++){
                                 var thisEffect = effects.get(i).getAsJsonObject();
                                 if(!thisEffect.has("effect"))
                                     continue;
-
-                                try {
-                                    var type = (StatusEffect) StatusEffects.class.getField(thisEffect.get("effect")
-                                            .getAsString()).get(null);
+                                var type = Registry.STATUS_EFFECT.get(new Identifier(thisEffect.get("effect").getAsString()));
+                                if(type!=null) {
                                     int duration = thisEffect.has("duration")?
                                             thisEffect.get("duration").getAsInt():0;
                                     int amplifier = thisEffect.has("amplifier")?
@@ -103,7 +98,7 @@ public class ItemIniter {
 
                                     float chance = thisEffect.has("chance")?thisEffect.get("chance").getAsFloat():1;
                                     toReturn = toReturn.statusEffect(effectToAdd,chance);
-                                }catch(NoSuchFieldException | IllegalAccessException ignored){}
+                                }
                             }
                         }
 

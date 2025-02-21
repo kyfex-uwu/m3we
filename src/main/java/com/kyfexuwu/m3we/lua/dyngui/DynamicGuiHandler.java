@@ -1,6 +1,6 @@
 package com.kyfexuwu.m3we.lua.dyngui;
 
-import com.kyfexuwu.m3we.lua.api.RegistryAPI;
+import com.kyfexuwu.m3we.lua.api.GuiAPI;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -35,7 +35,7 @@ public class DynamicGuiHandler extends ScreenHandler {
     }
     public DynamicGuiHandler(int syncId, PlayerInventory playerInventory, Inventory inv, ScreenHandlerContext context, String guiName) {
         super(dynamicGuiHandler, syncId);
-        this.builder = RegistryAPI.getGui(guiName);
+        this.builder = GuiAPI.getGui(guiName);
         this.context = context;
 
         this.inv = inv;
