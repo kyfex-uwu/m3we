@@ -4,9 +4,9 @@ import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.lua.api.*;
 import com.kyfexuwu.m3we.m3we;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -194,37 +194,37 @@ public class CustomScript {
     public static void print(String env, Object... args){
         print(env, createVarArgs(args));
     }
+    private static boolean isPrimitive(Object o){//todo: make number cast to all of these types
+        final var clazz = o.getClass();
+        return clazz == Integer.class ||
+                clazz == Float.class ||
+                clazz == Double.class ||
+                clazz == Long.class ||
+                clazz == Character.class ||
+                clazz == Byte.class ||
+                clazz == Short.class ||
+                clazz == Boolean.class ||
+                clazz == String.class;
+    }
     public static LuaValue explore(LuaValue value){
-        ChatMessage.message(Text.literal("UNDERGOING A REWORK, THIS IS NOT FINAL"));
         var obj = Utils.toObject(value);
-        if(obj==null){
-            ChatMessage.message(Text.literal("null"));
+
+        if(obj == null){
+            ChatMessage.message(Text.literal("explore nil").setStyle(Style.EMPTY.withHoverEvent(
+                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Primitive value")))));
+            return NIL;
+        }
+        if(isPrimitive(obj)){
+            ChatMessage.message(Text.literal("explore "+obj).setStyle(Style.EMPTY.withHoverEvent(
+                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Primitive value")))));
             return NIL;
         }
 
-        MutableText message = Text.literal(Utils.deobfuscate(obj.getClass().getSimpleName())+": ");
-
-        try {
-            if (value.typename().equals("surfaceObj") || value.typename().equals("table")) {
-                LuaValue nextKey = (LuaValue) value.next(NIL);
-                //int maxProps=100;
-                do {
-                    LuaValue finalNextKey = nextKey;
-                    message.append(Text.literal(nextKey.toString() + ", ")
-                            .setStyle(Style.EMPTY.withClickEvent(new CustomClickEvent(() -> {
-                                explore(value.get(finalNextKey));
-                            })).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                    Text.literal(valueToString(value.get(finalNextKey), 0))))));
-
-                    nextKey = (LuaValue) value.next(nextKey);
-                    //maxProps--;
-                } while (nextKey != NIL /* &&maxProps>0 */);
-            } else {
-                message.append(Text.literal(value.toString()));
-            }
-        }catch(Exception e){ e.printStackTrace(); }
-
-        ChatMessage.message(message);
+        ChatMessage.message(Text.literal("exploring "+Utils.deobfuscate(obj.getClass().getSimpleName()))
+                .setStyle(Style.EMPTY.withClickEvent(new CustomClickEvent(()->
+                        MinecraftClient.getInstance().setScreen(new ExploreScreen(value)))).withHoverEvent(
+                                new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                        Text.literal("Click to explore")))));
         return NIL;
     }
     public static LuaValue loadclass(String string){

@@ -22,18 +22,18 @@ public class MethodWrapper {
     }
     public static <A1> LibFunction create(Function<A1,Object> func){
         return LuaFunc.func(args->Utils.toLuaValue(func.apply(
-                (A1) Utils.toObject(args.get(0)))));
+                Utils.toObjectTyped(args.get(0)))));
     }
     public static <A1,A2> LibFunction create(BiFunction<A1,A2,Object> func){
         return LuaFunc.func(args->Utils.toLuaValue(func.apply(
-                (A1) Utils.toObject(args.get(0)),
-                (A2) Utils.toObject(args.get(1)))));
+                Utils.toObjectTyped(args.get(0)),
+                Utils.toObjectTyped(args.get(1)))));
     }
     public static <A1,A2,A3> LibFunction create(TriFunction<A1,A2,A3,Object> func){
         return LuaFunc.func(args->Utils.toLuaValue(func.apply(
-                (A1) Utils.toObject(args.get(0)),
-                (A2) Utils.toObject(args.get(1)),
-                (A3) Utils.toObject(args.get(2)))));
+                Utils.toObjectTyped(args.get(0)),
+                Utils.toObjectTyped(args.get(1)),
+                Utils.toObjectTyped(args.get(2)))));
     }
     public static LibFunction varCreate(Function<List<LuaValue>,Object> func){
         return LuaFunc.func(args->Utils.toLuaValue(func.apply(args)));

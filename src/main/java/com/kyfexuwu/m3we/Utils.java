@@ -14,8 +14,8 @@ import static org.luaj.vm2.LuaValue.NIL;
 
 public class Utils {
 
-    public static void forEach(LuaTable table, BiFunction<LuaValue, LuaValue, Boolean> function){
-        var key = LuaValue.NIL;
+    public static void forEach(LuaValue table, BiFunction<LuaValue, LuaValue, Boolean> function){
+        var key = NIL;
         while(true){
             Varargs n = table.next(key);
             key = n.arg1();
@@ -88,7 +88,14 @@ public class Utils {
             }
         }
     }
-    public static <T> T toObject(LuaValue value, Class<T> clazz){
+    public static <T> T toObjectTyped(LuaValue value){
+        if(value.typename().equals("number")){
+            try{ return (T) (Object) value.toint(); } catch(Exception e){}
+            try{ return (T) (Object) value.tofloat(); } catch(Exception e){}
+            try{ return (T) (Object) value.todouble(); } catch(Exception e){}
+            try{ return (T) (Object) value.tolong(); } catch(Exception e){}
+        }
+
         var toReturn = toObject(value);
         try{
             return (T)toReturn;

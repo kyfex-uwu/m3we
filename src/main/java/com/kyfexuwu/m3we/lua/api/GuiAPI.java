@@ -69,11 +69,11 @@ public class GuiAPI extends TwoArgFunction {
 
         @Override
         public Varargs invoke(Varargs args) {
-            var player = Utils.toObject(args.arg(1), PlayerEntity.class);
-            var guiName = Utils.toObject(args.arg(2), String.class);
-            var world = Utils.toObject(args.arg(3), World.class);
-            var pos = Utils.toObject(args.arg(4), BlockPos.class);
-            Inventory serverInv = Utils.toObject(args.arg(5), Inventory.class);
+            PlayerEntity player = Utils.toObjectTyped(args.arg(1));
+            String guiName = Utils.toObjectTyped(args.arg(2));
+            World world = Utils.toObjectTyped(args.arg(3));
+            BlockPos pos = Utils.toObjectTyped(args.arg(4));
+            Inventory serverInv = Utils.toObjectTyped(args.arg(5));
             if(serverInv==null) serverInv = new DynamicInventory();
 
             var ctxTable=(JavaExclusiveTable) this.globals.get(CustomScript.contextIdentifier);

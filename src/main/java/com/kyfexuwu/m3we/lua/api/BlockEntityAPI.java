@@ -47,8 +47,8 @@ public class BlockEntityAPI extends TwoArgFunction {
 
         @Override
         public LuaValue call(LuaValue worldArg, LuaValue positionArg) {
-            var world = Utils.toObject(worldArg, World.class);
-            var position = Utils.toObject(positionArg, BlockPos.class);
+            World world = Utils.toObjectTyped(worldArg);
+            BlockPos position = Utils.toObjectTyped(positionArg);
             BlockEntity toReturn = null;
             try{
                 toReturn=world.getBlockEntity(position);

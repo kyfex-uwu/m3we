@@ -32,7 +32,7 @@ public class m3weData {
     public static void crawlResources(File folder, String prefix, String namespace, String origFilePath, boolean isResource){
         for (File modFile : folder.listFiles()) {
             if(modFile.isDirectory()) {
-                crawlResources(modFile, prefix+modFile.getName()+"/", namespace, origFilePath, isResource);
+                crawlResources(modFile, prefix+modFile.getName()+File.separator, namespace, origFilePath, isResource);
             }else{
                 var toPut = isResource?packResources:packData;
                 toPut.put(namespace+":"+prefix+modFile.getName(),

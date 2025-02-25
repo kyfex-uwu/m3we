@@ -30,7 +30,7 @@ public class LuaBlockScreen extends Screen {
     public LuaBlockScreen(BlockPos pos, boolean active) {
         super(title);
         this.pos=pos;
-        this.code="loading...";
+        this.code="";
         this.active=active;
         this.updateCode();
 
@@ -298,6 +298,7 @@ public class LuaBlockScreen extends Screen {
                 this.moveCursor(Integer.MAX_VALUE, Screen.hasShiftDown());
                 return true;
             }
+            //add tab functionaliry
         }
 
         return true;
@@ -305,7 +306,8 @@ public class LuaBlockScreen extends Screen {
 
     private int mouseEventPos(double adjMouseX, double adjMouseY){
         int newPos=0;
-        int y = (int) (adjMouseY/this.textRenderer.fontHeight)+this.scroll;
+        int y = Math.min(this.code.split("\n").length,
+                (int) (adjMouseY/this.textRenderer.fontHeight)+this.scroll);
         int end = Math.min(this.formattedCode.length,y);
         for(int i=0;i<end;i++) {
             newPos += this.formattedCode[i].length()+1;

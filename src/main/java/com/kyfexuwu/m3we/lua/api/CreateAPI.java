@@ -39,17 +39,17 @@ public class CreateAPI extends TwoArgFunction {
         thisApi.javaSet("entity", entityTable);
         entityTable.javaSet("item", MethodWrapper.varCreate(args->{
             //world xyz stack v(xyz)
-            var world = Utils.toObject(args.get(0), World.class);
-            double x = Utils.toObject(args.get(1), Double.class);
-            double y = Utils.toObject(args.get(2), Double.class);
-            double z = Utils.toObject(args.get(3), Double.class);
-            var stack = Utils.toObject(args.get(4), ItemStack.class);
+            World world = Utils.toObjectTyped(args.get(0));
+            Double x = Utils.toObjectTyped(args.get(1));
+            Double y = Utils.toObjectTyped(args.get(2));
+            Double z = Utils.toObjectTyped(args.get(3));
+            ItemStack stack = Utils.toObjectTyped(args.get(4));
 
             var itemEntity = new ItemEntity(world, x, y, z, stack);
             try{
-                double vx = Utils.toObject(args.get(5), Double.class);
-                double vy = Utils.toObject(args.get(6), Double.class);
-                double vz = Utils.toObject(args.get(7), Double.class);
+                Double vx = Utils.toObjectTyped(args.get(5));
+                Double vy = Utils.toObjectTyped(args.get(6));
+                Double vz = Utils.toObjectTyped(args.get(7));
                 itemEntity = new ItemEntity(world, x, y, z, stack, vx, vy, vz);
             }catch(Exception ignored){}
 

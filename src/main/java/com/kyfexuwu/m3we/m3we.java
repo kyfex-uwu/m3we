@@ -154,14 +154,14 @@ public class m3we implements ModInitializer {
 
             if(dirs.contains("assets")) {
                 for(File resourceDir : Paths.get(packDir.getRight().getAbsolutePath(),"assets").toFile().listFiles()){
-                    m3weData.crawlResources(resourceDir,resourceDir.getName()+File.pathSeparator, packDir.getLeft(),
-                            File.pathSeparator+"assets"+File.pathSeparator, true);
+                    m3weData.crawlResources(resourceDir,"", packDir.getLeft(),
+                            File.separator+"assets"+File.separator+resourceDir.getName()+File.separator, true);
                 }
             }
             if(dirs.contains("data")) {
                 for(File resourceDir : Paths.get(packDir.getRight().getAbsolutePath(),"data").toFile().listFiles()){
-                    m3weData.crawlResources(resourceDir, resourceDir.getName()+File.pathSeparator, packDir.getLeft(),
-                            File.pathSeparator+"data"+File.pathSeparator, false);
+                    m3weData.crawlResources(resourceDir, "", packDir.getLeft(),
+                            File.separator+"data"+File.separator+resourceDir.getName()+File.separator, false);
                 }
             }
         }

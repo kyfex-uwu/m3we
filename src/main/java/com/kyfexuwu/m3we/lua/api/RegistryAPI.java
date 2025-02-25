@@ -1,8 +1,8 @@
 package com.kyfexuwu.m3we.lua.api;
 
+import com.kyfexuwu.m3we.Utils;
 import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.lua.JavaExclusiveTable;
-import com.kyfexuwu.m3we.lua.LuaSurfaceObj;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.luaj.vm2.LuaString;
@@ -28,8 +28,7 @@ public class RegistryAPI extends TwoArgFunction {
         }
         @Override
         public LuaValue get(LuaValue key) {
-            var toReturn = this.registry.get(new Identifier(key.checkjstring()));
-            return toReturn==null?NIL:new LuaSurfaceObj(toReturn);
+            return Utils.toLuaValue(this.registry.get(new Identifier(key.checkjstring())));
         }
 
         @Override
@@ -57,8 +56,7 @@ public class RegistryAPI extends TwoArgFunction {
                 var toPut = this.registry.get(new Identifier(key));
                 this.registries.put(key, toPut==null?null:new RegistryAccessor((Registry<?>) toPut));
             }
-            var toReturn = this.registries.get(key);
-            return toReturn==null?NIL:toReturn;
+            return Utils.toLuaValue(this.registries.get(key));
         }
     }
 }
