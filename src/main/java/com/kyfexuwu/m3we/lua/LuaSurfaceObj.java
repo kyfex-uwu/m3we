@@ -66,8 +66,9 @@ public class LuaSurfaceObj extends LuaTable {
         this.methods = tempMethodNames.toArray(new Token[]{});
     }
 
+    public static final String TYPENAME = "surfaceObj";
     public String typename(){
-        return "surfaceObj";
+        return TYPENAME;
     }
 
     @Override
@@ -102,26 +103,29 @@ public class LuaSurfaceObj extends LuaTable {
     @Override
     public LuaValue rawget(LuaValue key){ return get(key); }
 
+    private Varargs nextPair(String field){
+        return LuaValue.varargsOf(LuaValue.valueOf(field), this.get(field));
+    }
     @Override //now works with pairs :sugnlasses:
     public Varargs next( LuaValue keyAsValue ) {
         if(keyAsValue.isnil()) {
             if(this.fields.length>0)
-                return LuaValue.valueOf(this.fields[0].deobf);
+                return nextPair(this.fields[0].deobf);
             else if(this.methods.length>0)
-                return LuaValue.valueOf(this.methods[0].deobf);
+                return nextPair(this.methods[0].deobf);
         }
         String key = keyAsValue.toString();
         for(int i=0;i<this.fields.length-1;i++){
             if(key.equals(this.fields[i].deobf)){
-                return LuaValue.valueOf(this.fields[i+1].deobf);
+                return nextPair(this.fields[i+1].deobf);
             }
         }
         if(this.fields.length>0&&key.equals(this.fields[this.fields.length-1].deobf)){
-            return LuaValue.valueOf(this.methods[0].deobf);
+            return nextPair(this.methods[0].deobf);
         }
         for(int i=0;i<this.methods.length-1;i++){
             if(key.equals(this.methods[i].deobf)){
-                return LuaValue.valueOf(this.methods[i+1].deobf);
+                return nextPair(this.methods[i+1].deobf);
             }
         }
 

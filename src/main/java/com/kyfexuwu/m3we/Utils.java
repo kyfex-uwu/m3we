@@ -14,15 +14,20 @@ import static org.luaj.vm2.LuaValue.NIL;
 
 public class Utils {
 
+    public static class Ref<T>{
+        public T value;
+        public Ref(T value){ this.value=value; }
+    }
+
     public static void forEach(LuaValue table, BiFunction<LuaValue, LuaValue, Boolean> function){
         var key = NIL;
-        while(true){
+        while (true) {
             Varargs n = table.next(key);
             key = n.arg1();
             if (key.isnil())
                 break;
 
-            if(!function.apply(key, n.arg(2))) break;
+            if (!function.apply(key, n.arg(2))) break;
         }
     }
 
@@ -80,7 +85,7 @@ public class Utils {
             //case "thread": //no: pt. 2
             /*case "undecidedFunc":
                 return ((UndecidedLuaFunction)value).methods[0];*/
-            case "surfaceObj" -> {
+            case LuaSurfaceObj.TYPENAME -> {
                 return ((LuaSurfaceObj) value).object;
             }
             default -> {

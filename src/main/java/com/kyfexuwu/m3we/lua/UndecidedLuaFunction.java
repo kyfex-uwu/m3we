@@ -6,11 +6,14 @@ import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
+import oshi.util.tuples.Pair;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 public class UndecidedLuaFunction extends VarArgFunction {
@@ -148,10 +151,46 @@ public class UndecidedLuaFunction extends VarArgFunction {
             }
         }
 
-        throw new LuaError("Function \""+Utils.deobfuscate(this.methods[0].getName())+"\" called with incorrect arguments");
+        throw new LuaError("Function \""+this.funcName()+"\" called with incorrect arguments");
     }
 
+    public String funcName(){
+        return Utils.deobfuscate(this.methods[0].getName());
+    }
+
+    public enum MethodType{ METHOD, CONSTRUCTOR }
+    public record MethodDescriptor(List<Pair<String,String>> params, String returnClass, MethodType type){}
     public String toString(){
         return "java function "+this.methods[0].getName();
+    }
+    public static final String CONSTRUCTOR_ID = "constructor";
+
+    /**
+     * MethodDescriptor.params is a list of pairs, where those pairs are name then class.<br>
+     * Classes are turned into strings through .getSimpleName()
+     * @return
+     */
+    public List<MethodDescriptor> methodDescribers(){
+        var toReturn = new ArrayList<MethodDescriptor>();
+        var refMethods = this.methods;
+
+        for(Executable m : refMethods) {
+            var token = m instanceof Method?
+                    Translations.getToken((Method)m):
+                    new Translations.MethodToken("<init>","<init>","type",
+                            new String[]{"p1","p2","p3"});
+
+            var params = new ArrayList<Pair<String,String>>();
+            for (int i=0;i<token.paramNames.length;i++) {
+                params.add(new Pair<>(token.paramNames[i], token.paramClasses[i]));
+            }
+
+            var returnClass = Utils.deobfuscate(this.thisObj.getClass().getSimpleName());
+            if(m instanceof Method method) returnClass = Utils.deobfuscate(method.getReturnType().getSimpleName());
+            toReturn.add(new MethodDescriptor(params, returnClass,
+                    m instanceof Method ? MethodType.METHOD : MethodType.CONSTRUCTOR));
+        }
+
+        return toReturn;
     }
 }

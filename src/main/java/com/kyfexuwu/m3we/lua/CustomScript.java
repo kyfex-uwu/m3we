@@ -210,12 +210,12 @@ public class CustomScript {
         var obj = Utils.toObject(value);
 
         if(obj == null){
-            ChatMessage.message(Text.literal("explore nil").setStyle(Style.EMPTY.withHoverEvent(
+            ChatMessage.message(Text.literal("explored: nil").setStyle(Style.EMPTY.withHoverEvent(
                     new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Primitive value")))));
             return NIL;
         }
         if(isPrimitive(obj)){
-            ChatMessage.message(Text.literal("explore "+obj).setStyle(Style.EMPTY.withHoverEvent(
+            ChatMessage.message(Text.literal("explored: "+obj).setStyle(Style.EMPTY.withHoverEvent(
                     new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Primitive value")))));
             return NIL;
         }
@@ -319,10 +319,13 @@ public class CustomScript {
     }
 
     private static final int maxLevels=5;
-    private static String valueToString(LuaValue value, int indents){
+    private static String valueToString(LuaValue value, int indents, Utils.Ref<Integer> maxVals){
+        if(maxVals.value<=0) return "";
+
         StringBuilder toReturn= new StringBuilder();
         toReturn.append("  ".repeat(indents));
 
+        maxVals.value--;
         switch (value.typename()) {
             case "nil", "boolean", "number", "function", "userdata", "thread" -> toReturn.append(value);
             case "string" -> toReturn.append("\"").append(value).append("\"");
@@ -331,33 +334,29 @@ public class CustomScript {
                     toReturn.append("{\n");
                     var keys = ((LuaTable)value).keys();
                     for(LuaValue key : keys){
-                        toReturn.append(key).append("=").append(valueToString(value.get(key), indents + 1)).append(",\n");
+                        toReturn.append(key).append("=").append(valueToString(value.get(key), indents + 1, maxVals)).append(",\n");
                     }
                     toReturn.append("  ".repeat(indents)).append("}");
                 }else{
                     toReturn.append("{...}");
                 }
             }
-            case "surfaceObj" -> toReturn.append("java object: ").append(Utils.deobfuscate(
+            case LuaSurfaceObj.TYPENAME -> toReturn.append("java object: ").append(Utils.deobfuscate(
                     ((LuaSurfaceObj) value).object.getClass().getSimpleName()));
             case "undecidedFunc" -> {
-                var refMethods = ((UndecidedLuaFunction) value).methods;
+                var func = ((UndecidedLuaFunction) value);
+                var description = func.methodDescribers();
                 toReturn.append("java function: ")
-                        .append(Utils.deobfuscate(refMethods[0].getName()));
+                        .append(func.funcName());
 
-                for(Executable m : refMethods) {
-                    var token = m instanceof Method?
-                        Translations.getToken((Method)m):
-                        new Translations.MethodToken("<init>","<init>","type",
-                                new String[]{"p1","p2","p3"});
-
-                    if (token.paramNames.length > 0) {
+                for(var descriptor : description) {
+                    if (!descriptor.params().isEmpty()) {
                         toReturn.append("\n • [takes parameters: ");
-                        for (int i=0;i<token.paramNames.length;i++) {
+                        for (int i=0;i<descriptor.params().size();i++) {
                             if(i>0) toReturn.append(", ");
-                            toReturn.append(token.paramNames[i])
+                            toReturn.append(descriptor.params().get(i).getB())
                                     .append(" (")
-                                    .append(token.paramClasses[i])
+                                    .append(descriptor.params().get(i).getA())
                                     .append(")");
                         }
                     } else {
@@ -365,24 +364,28 @@ public class CustomScript {
                     }
                     toReturn.append(" and ");
 
-                    if(m instanceof Method method) {
-                        var returnClass = method.getReturnType();
-                        if (!returnClass.equals(Void.class)) {
+                    if(descriptor.type()== UndecidedLuaFunction.MethodType.METHOD) {
+                        var returnClass = descriptor.returnClass();
+                        if (!returnClass.equals(Void.class.getSimpleName())) {
                             toReturn.append("returns with type ")
-                                    .append(Utils.deobfuscate(returnClass.getSimpleName()))
+                                    .append(returnClass)
                                     .append("]");
                         } else {
                             toReturn.append("does not return a value]");
                         }
                     }else{
                         toReturn.append("and creates a new ")
-                                .append(((Constructor<?>)m).getDeclaringClass().getSimpleName())
+                                .append(descriptor.returnClass())
                                 .append("]");
                     }
                 }
             }
         }
         return toReturn.toString();
+    }
+    private static String valueToString(LuaValue value, int indents){
+
+        return valueToString(value, indents, new Utils.Ref<>(100));
     }
 
     public static LuaValue finalizeAPI(String name, LuaValue api, LuaValue env){
