@@ -2,5 +2,7 @@
   "itemGroup.m3we.item_group": "M3WE Items",
   "m3we.lua_script": "Lua Script",
   "block.m3we.lua_block": "Lua Block",
-  "gui.m3we.open_lua_editor": "Open Lua Editor"
+  "gui.m3we.open_lua_editor": "Open Lua Editor",
+  "gui.m3we.active": "Runs every tick",
+  "gui.m3we.inactive": "Runs once, on GUI close"
 }

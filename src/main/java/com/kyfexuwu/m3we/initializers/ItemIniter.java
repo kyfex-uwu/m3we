@@ -5,11 +5,9 @@ import com.google.gson.JsonSyntaxException;
 import com.kyfexuwu.m3we.Json;
 import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.m3we;
+import com.kyfexuwu.m3we.m3weData;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.FoodComponent;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.item.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
@@ -122,6 +120,14 @@ public class ItemIniter {
             return new SuccessAndIdentifier(SuccessRate.BAD_JSON);
         }
 
+        //if block has not been inited yet
+        if(itemJsonData.has("blockToPlace")) {
+            var blockToPlaceName = itemJsonData.get("blockToPlace").getAsString();
+            if (!blockToPlaceName.contains(":")) blockToPlaceName = "minecraft:" + blockToPlaceName;
+            if(Registry.BLOCK.getOrEmpty(new Identifier(blockToPlaceName)).isEmpty())
+                return new SuccessAndIdentifier(SuccessRate.COME_BACK_LATER);
+        }
+
         String itemName = "Invalid Name";
         try {
             itemName = itemJsonData.get("itemName").getAsString();
@@ -158,6 +164,7 @@ public class ItemIniter {
                 thisItem
         );
         m3we.m3weItems.put(namespace+":"+itemName,thisItem);
+        m3weData.packNamespaces.add(namespace);
 
         return new SuccessAndIdentifier(SuccessRate.YOU_DID_IT,thisId);
     }

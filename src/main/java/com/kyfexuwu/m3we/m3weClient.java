@@ -16,7 +16,8 @@ public class m3weClient implements ClientModInitializer {
     public void onInitializeClient() {
         m3we.m3weBlocks.forEach((name, block)->{
             if(!block.getDefaultState().isOpaque())
-                BlockRenderLayerMap.INSTANCE.putBlock(block, RenderLayer.getCutout());
+                BlockRenderLayerMap.INSTANCE.putBlock(block, RenderLayer.getCutoutMipped());
+                //RenderLayer.getTranslucent()
         });
 
         HandledScreens.register(dynamicGuiHandler, DynamicGui::new);

@@ -117,7 +117,7 @@ public class LuaBlockScreen extends Screen {
         int y = (this.height - this.backgroundHeight) / 2;
         drawTexture(matrices, x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
         var inButton=(mouseX-x>=240&&mouseX-x<=252&&mouseY-y>=2&&mouseY-y<=14);
-        drawTexture(matrices, x+241, y+3, this.active?0:12, inButton?212:200, 12, 12);
+        drawTexture(matrices, x+241, y+3, this.active?0:12, 200, 12, 12);
 
         this.textRenderer.draw(matrices, this.getTitle(), x + 8, y + 6, 0x404040);
 
@@ -160,6 +160,10 @@ public class LuaBlockScreen extends Screen {
                         y + 20 + this.textRenderer.fontHeight * (cursorXY.getRight() - this.scroll),
                         0x00ff00);
             }
+        }
+
+        if(inButton){
+            this.renderTooltip(matrices, Text.translatable(this.active?"gui.m3we.active":"gui.m3we.inactive"), mouseX, mouseY);
         }
     }
 

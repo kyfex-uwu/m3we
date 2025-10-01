@@ -4,6 +4,7 @@ import com.google.gson.*;
 import com.kyfexuwu.m3we.Json;
 import com.kyfexuwu.m3we.lua.CustomScript;
 import com.kyfexuwu.m3we.m3we;
+import com.kyfexuwu.m3we.m3weData;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
@@ -199,6 +200,7 @@ public class BlockIniter {
                 thisBlock
         );
         m3we.m3weBlocks.put(namespace+":"+blockName,thisBlock);
+        m3weData.packNamespaces.add(namespace);
 
         return new SuccessAndIdentifier(SuccessRate.YOU_DID_IT,thisId);
     }

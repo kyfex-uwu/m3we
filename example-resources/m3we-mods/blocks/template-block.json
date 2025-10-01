@@ -5,7 +5,11 @@
 	"_comment": "the fields marked with OR mean you can give it either data type",
 
 	"namespace": "m3we",
-	"blockName": "block_name", REQUIRED
+	"blockName": "block_name", REQUIRED,
+
+	"copyFrom": "other_block_name",
+	"_comment": "If you want this block to copy some other block's properties, you can use this. Note that any other",
+	"_comment": "properties you specify will override these.",
 
 	"hardness": 0.0,
 	"resistance": 0.0,
@@ -56,6 +60,6 @@
 		...
 	] OR "scriptFunction (blockState, world, blockPos, context): table", (if outlineShape is not specified, it defaults to blockShape)
 
-	"script": "template-script", (defaults to no script)
-	"blockEntityScript": "template-blockentity-script", (defaults to no script)
+	"script": "namespace:template-script", (defaults to no script)
+	"blockEntityScript": "namespace:template-blockentity-script", (defaults to no script)
 }

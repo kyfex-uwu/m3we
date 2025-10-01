@@ -34,10 +34,7 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -71,9 +68,15 @@ public class m3we implements ModInitializer {
             ()->new ItemStack(Blocks.BEACON)
     );
 
-    public static final Identifier updateLuaBlockPacket = new Identifier("m3we","update_lua_block");
-    public static final Identifier askForLuaCodePacket = new Identifier("m3we","get_lua_code");
-    public static final Identifier giveLuaCodePacket = new Identifier("m3we","give_lua_code");
+    public static final Identifier updateLuaBlockPacket = new Identifier(MOD_ID,"update_lua_block");
+    public static final Identifier askForLuaCodePacket = new Identifier(MOD_ID,"get_lua_code");
+    public static final Identifier giveLuaCodePacket = new Identifier(MOD_ID,"give_lua_code");
+
+    private record FileIniter(File file, Function<File, InitUtils.SuccessAndIdentifier> toRun, boolean aroundAgain){
+        FileIniter(File file, Function<File, InitUtils.SuccessAndIdentifier> toRun){
+            this(file, toRun, false);
+        }
+    }
     public static List<Pair<String, File>> resourceFolders = new ArrayList<>();
     @Override
     public void onInitialize() {
@@ -82,16 +85,79 @@ public class m3we implements ModInitializer {
         m3weFolder.mkdir();
 
         List<File> scriptFolders = new ArrayList<>();
-        for(var file : m3weFolder.listFiles()){
-            if(!file.isDirectory()) continue;
+        List<FileIniter> processQueue = new ArrayList<>();
 
+        //finds all the files we need to load
+        //if theyre resources that could depend omn each other, add them to the queue
+        for(var file : m3weFolder.listFiles(File::isDirectory)){
             for(var subFile : file.listFiles(File::isDirectory)){
-                switch (subFile.getName()) {
-                    case "blocks" -> initObjects(subFile, BlockIniter::blockFromFile);
-                    case "items" -> initObjects(subFile, ItemIniter::itemFromFile);
-                    case "scripts" -> scriptFolders.add(subFile);
-                    case "resources" -> resourceFolders.add(new Pair<>(file.getName(), subFile));
+
+                Function<File, InitUtils.SuccessAndIdentifier> func = switch (subFile.getName()) {
+                    case "blocks" -> BlockIniter::blockFromFile;
+                    case "items" -> ItemIniter::itemFromFile;
+
+                    case "scripts" -> {
+                        scriptFolders.add(subFile);
+                        yield null;
+                    }
+                    case "resources" -> {
+                        resourceFolders.add(new Pair<>(file.getName(), subFile));
+                        yield null;
+                    }
+                    default -> null;
+                };
+                if(func==null) continue;
+
+                for(var subFile2 : subFile.listFiles(File::isFile)){
+                    processQueue.add(new FileIniter(subFile2, func));
                 }
+            }
+        }
+
+        //try and load all the files, "deferring" if a dependency is not met
+        int loopTracker=-1;
+        boolean allAround=false;
+        while(!processQueue.isEmpty()){
+            if(!allAround) {
+                boolean allAroundChecker = true;
+                for (var process : processQueue) {
+                    if (!process.aroundAgain) {
+                        allAroundChecker = false;
+                        break;
+                    }
+                }
+                allAround=allAroundChecker;
+                if(allAround) loopTracker=processQueue.size();
+            }
+
+            var toProcess = processQueue.get(0);
+            var success = toProcess.toRun.apply(toProcess.file);
+            switch(success.successRate){
+                case CANT_READ -> m3we.LOGGER.error("Can't read file {}", toProcess.file.getAbsolutePath());
+                case BAD_JSON -> m3we.LOGGER.error("Bad JSON in file {}", toProcess.file.getAbsolutePath());
+                case IDK -> m3we.LOGGER.error("Message me on discord @kyfexuwu and tell me to fix my mod " +
+                        "(an unknown error happened with file {})", toProcess.file.getAbsolutePath());
+                case COME_BACK_LATER -> {
+                    //put it at the end of the line
+                    processQueue.remove(toProcess);
+                    processQueue.add(new FileIniter(toProcess.file,toProcess.toRun,true));
+                    if(allAround) loopTracker++;
+                }
+                case YOU_DID_IT -> {
+                    processQueue.remove(toProcess);
+                    loopTracker=processQueue.size();
+                }
+            }
+
+            // loopTracker is set to the new list size every time an element is processed successfully and removed
+            // every time a file needs to loop around, loopTracker goes up by one
+            // this means we can be sure a full loop has happened without anything leaving IF
+            // loopTracker = (the size of the list the last time something was removed) + (every element that looped through)
+            // or, toProcess.size()*2
+            if(!processQueue.isEmpty() && loopTracker/2>=processQueue.size()){
+                m3we.LOGGER.error("Some files were not loaded; circular depencency detected! Offending files:");
+                for(var val : processQueue) m3we.LOGGER.error(val.file.getAbsolutePath());
+                break;
             }
         }
 
@@ -104,6 +170,7 @@ public class m3we implements ModInitializer {
 
         //--
 
+        //not even sure if this works lol
         try {
             WatchService watcher = FileSystems.getDefault().newWatchService();
             for(var scriptFolder : scriptFolders){
@@ -179,32 +246,33 @@ public class m3we implements ModInitializer {
         }
         return toReturn;
     }
-    private static void initObjects(File folder, Function<File, InitUtils.SuccessAndIdentifier> func){
-        var prefixLength = folder.getAbsolutePath().length();
-
-        var toProcess = getFiles(folder);
-        int consecutiveComeBackLaters=0;
-        while(!toProcess.isEmpty()){
-            var modFile = toProcess.get(0);
-
-            InitUtils.SuccessAndIdentifier modObject = func.apply(modFile);
-            switch (modObject.successRate) {
-                case CANT_READ -> m3we.LOGGER.error("Can't read file "+modFile.getAbsolutePath().substring(prefixLength));
-                case BAD_JSON -> m3we.LOGGER.error("Bad JSON in file "+modFile.getAbsolutePath().substring(prefixLength));
-                case IDK -> m3we.LOGGER.error("Message me on discord @kyfexuwu and tell me to fix my mod");
-                case YOU_DID_IT -> m3weData.packNamespaces.add(modObject.identifier.getNamespace());
-                case COME_BACK_LATER -> toProcess.add(modFile);
-            }
-            toProcess.remove(0);
-
-            if(modObject.successRate==InitUtils.SuccessRate.COME_BACK_LATER) consecutiveComeBackLaters++;
-            else consecutiveComeBackLaters=0;
-            if(consecutiveComeBackLaters>0&&consecutiveComeBackLaters==toProcess.size()){
-                m3we.LOGGER.error("Circular loop detected in initializing objects that use \"copyFrom\", " +
-                        "those objects not be initialized:\n"+toProcess.stream()
-                        .map(file->file.getAbsolutePath().substring(prefixLength)).collect(Collectors.toSet()));
-                break;
-            }
-        }
-    }
+    //deprecated i think
+//    private static void initObjects(File folder, Function<File, InitUtils.SuccessAndIdentifier> func){
+//        var prefixLength = folder.getAbsolutePath().length();
+//
+//        var toProcess = getFiles(folder);
+//        int consecutiveComeBackLaters=0;
+//        while(!toProcess.isEmpty()){
+//            var modFile = toProcess.get(0);
+//
+//            InitUtils.SuccessAndIdentifier modObject = func.apply(modFile);
+//            switch (modObject.successRate) {
+//                case CANT_READ -> m3we.LOGGER.error("Can't read file "+modFile.getAbsolutePath().substring(prefixLength));
+//                case BAD_JSON -> m3we.LOGGER.error("Bad JSON in file "+modFile.getAbsolutePath().substring(prefixLength));
+//                case IDK -> m3we.LOGGER.error("Message me on discord @kyfexuwu and tell me to fix my mod");
+//                case YOU_DID_IT -> m3weData.packNamespaces.add(modObject.identifier.getNamespace());
+//                case COME_BACK_LATER -> toProcess.add(modFile);
+//            }
+//            toProcess.remove(0);
+//
+//            if(modObject.successRate==InitUtils.SuccessRate.COME_BACK_LATER) consecutiveComeBackLaters++;
+//            else consecutiveComeBackLaters=0;
+//            if(consecutiveComeBackLaters>0&&consecutiveComeBackLaters==toProcess.size()){
+//                m3we.LOGGER.error("Circular loop detected in initializing objects that use \"copyFrom\", " +
+//                        "those objects not be initialized:\n"+toProcess.stream()
+//                        .map(file->file.getAbsolutePath().substring(prefixLength)).collect(Collectors.toSet()));
+//                break;
+//            }
+//        }
+//    }
 }

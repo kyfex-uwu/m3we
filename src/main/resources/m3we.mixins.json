@@ -4,16 +4,17 @@
   "package": "com.kyfexuwu.m3we.mixins",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "packets.ClientCustomPacketMixin",
     "CustomClickEventMixin",
     "DatastoreLoadMixin",
     "HasBlockEntityMixin",
+    "ServerStartMixin",
+    "SlotRepositioningMixin",
+    "WorldRunnerMixin",
+    "packets.ClientCustomPacketMixin",
+    "packets.ServerCustomPacketMixin",
     "packs.m3weDatapackMixinIntegrated",
     "packs.m3weDatapackMixinServer",
-    "packs.m3weResourcePackMixin",
-    "packets.ServerCustomPacketMixin",
-    "ServerStartMixin",
-    "SlotRepositioningMixin"
+    "packs.m3weResourcePackMixin"
   ],
   "injectors": {
     "defaultRequire": 1
