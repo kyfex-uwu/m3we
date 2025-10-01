@@ -52,8 +52,8 @@ public class MiscAPI extends TwoArgFunction {
                     Vec2f.ZERO,
                     (ServerWorld) world,
                     2,
-                    "[Lua Script]",
-                    Text.of("[Lua Script]"),
+                    "Lua Script",
+                    Text.of("Lua Script"),
                     world.getServer(),
                     null
             ), command);

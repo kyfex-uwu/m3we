@@ -1,8 +1,6 @@
 package com.kyfexuwu.m3we.mixins.packets;
 
-import com.kyfexuwu.m3we.Utils;
-import com.kyfexuwu.m3we.lua.CustomScript;
-import com.kyfexuwu.m3we.lua.api.DatastoreAPI;
+import com.kyfexuwu.m3we.ProcessSignalsPacket;
 import com.kyfexuwu.m3we.lua.api.SignalsAPI;
 import com.kyfexuwu.m3we.luablock.LuaBlockEntity;
 import com.kyfexuwu.m3we.luablock.LuaBlockScreen;
@@ -13,7 +11,6 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
-import org.luaj.vm2.LuaTable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -63,25 +60,6 @@ public abstract class ClientCustomPacketMixin {
 
     @Unique
     private void onSignalsS2CPacket__m3we(PacketByteBuf buffer){
-        var data = buffer.readNbt();
-        try {
-            var eventName = data.getKeys().stream().findFirst().get();
-            var eventData = DatastoreAPI.DatastoreTable.fromNBTVal(data.get(eventName), new LuaTable());
-            for (var script : CustomScript.scripts) {
-                try {
-                    var env = script.contextObj.get("env");
-                    if(env.isnil()) continue;
-                    if (env.checkjstring().equals("client")) {
-                        var eventHandler = script.runEnv.get("Signals").get("__eventBus").get("client").get(eventName);
-                        if (!eventHandler.isnil()){
-                            if(eventData instanceof LuaTable eventTable)
-                                eventHandler.invoke(Utils.cloneTable(eventTable, null));
-                            else
-                                eventHandler.invoke(eventData);
-                        }
-                    }
-                } catch (Exception ignored) { }
-            }
-        }catch(Exception ignored){ }
+        ProcessSignalsPacket.process(buffer, "client");
     }
 }

@@ -29,7 +29,9 @@ public class DynamicGuiBuilder {
                 var ctxTable=(JavaExclusiveTable)globals.get(CustomScript.contextIdentifier);
                 ctxTable.javaSet("guiData",Utils.toLuaValue(gui));
 
-                value.get("onClient").call(Utils.toLuaValue(gui), Utils.toLuaValue(mX), Utils.toLuaValue(mY));
+                var toCall = value.get("onClient");
+                if(toCall.isfunction())
+                    toCall.call(Utils.toLuaValue(gui), Utils.toLuaValue(mX), Utils.toLuaValue(mY));
 
                 ctxTable.javaSet("guiData", LuaValue.NIL);
             });
@@ -39,7 +41,9 @@ public class DynamicGuiBuilder {
                 var ctxTable=(JavaExclusiveTable)globals.get(CustomScript.contextIdentifier);
                 ctxTable.javaSet("guiHandler",Utils.toLuaValue(guiHandler));
 
-                value.get("onServer").call(Utils.toLuaValue(guiHandler));
+                var toCall = value.get("onServer");
+                if(toCall.isfunction())
+                    toCall.call(Utils.toLuaValue(guiHandler));
 
                 ctxTable.javaSet("guiHandler", LuaValue.NIL);
             });
@@ -49,7 +53,9 @@ public class DynamicGuiBuilder {
                 var ctxTable=(JavaExclusiveTable)globals.get(CustomScript.contextIdentifier);
                 ctxTable.javaSet("guiHandler",Utils.toLuaValue(guiHandler));
 
-                value.get("onClose").call(Utils.toLuaValue(guiHandler),Utils.toLuaValue(player));
+                var toCall = value.get("onServer");
+                if(toCall.isfunction())
+                    toCall.call(Utils.toLuaValue(guiHandler),Utils.toLuaValue(player));
 
                 ctxTable.javaSet("guiHandler", LuaValue.NIL);
             });
