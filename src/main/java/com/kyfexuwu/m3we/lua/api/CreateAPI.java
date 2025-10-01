@@ -40,9 +40,9 @@ public class CreateAPI extends TwoArgFunction {
         entityTable.javaSet("item", MethodWrapper.varCreate(args->{
             //world xyz stack v(xyz)
             World world = Utils.toObjectTyped(args.get(0));
-            Double x = Utils.toObjectTyped(args.get(1));
-            Double y = Utils.toObjectTyped(args.get(2));
-            Double z = Utils.toObjectTyped(args.get(3));
+            double x = args.get(1).todouble();
+            double y = args.get(2).todouble();
+            double z = args.get(3).todouble();
             ItemStack stack = Utils.toObjectTyped(args.get(4));
 
             var itemEntity = new ItemEntity(world, x, y, z, stack);

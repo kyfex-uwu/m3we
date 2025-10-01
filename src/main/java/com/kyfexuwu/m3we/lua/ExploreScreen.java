@@ -4,6 +4,7 @@ import com.kyfexuwu.m3we.Utils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -14,6 +15,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec2f;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaString;
@@ -21,6 +23,7 @@ import org.luaj.vm2.LuaValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
@@ -119,7 +122,7 @@ public class ExploreScreen extends Screen {
         public Vec2f pos = new Vec2f(0,0);
         public final Type type;
         public final Node parent;
-        public final HashMap<LuaValue, Node> children = new HashMap<>();
+        public final List<Pair<LuaValue, Node>> children = new ArrayList<>();
         private DisplayData data;
 
         public Node(LuaValue key, LuaValue value, Node parent, Type type){
@@ -162,31 +165,46 @@ public class ExploreScreen extends Screen {
         private boolean createNodeInternal(LuaValue key, LuaValue value){
             var node = new Node(key, value, this,
                     value instanceof LuaFunction ? Type.METHOD : Type.FIELD);
-            this.children.put(key, node);
+            this.children.add(new Pair<>(key, node));
             ExploreScreen.this.addDrawableChild(node);
             return true;
         }
         public void populate(){
+            List<LuaValue> values = new ArrayList<>();
             try{
-                Utils.forEach(this.value, this::createNodeInternal);
+                Utils.forEach(this.value, (key, val) -> values.add(key));
             }catch(Exception ignored){
-                for(var child : this.children.values()){
-                    ExploreScreen.this.remove(child);
+                for(var child : this.children){
+                    ExploreScreen.this.remove(child.getRight());
                 }
                 this.children.clear();
                 return;
             }
+            values.sort((value1, value2) -> {
+                if(value1.isstring()){
+                    if(value2.isstring()){
+                        return value1.tojstring().compareTo(value2.tojstring())>0 ? 1 : -1;
+                    }
+                    if(value2.isnumber()) return 1;
+                }else if(value1.isnumber()){
+
+                    if(value2.isstring()) return -1;
+                    if(value2.isnumber()) return value1.todouble() - value2.todouble() > 0 ? 1 : -1;
+                }
+                return 0;
+            });
+            for(var key : values) this.createNodeInternal(key, this.value.get(key));
 
             var xDist = this.insideSize().x+30;
 
             var currY=0;
-            for(var child : this.children.values()){
-                child.pos = new Vec2f(xDist,currY);
-                currY+= (int) (child.insideSize().y+10);
+            for(var child : this.children){
+                child.getRight().pos = new Vec2f(xDist,currY);
+                currY+= (int) (child.getRight().insideSize().y+10);
             }
             currY/=-2;
-            for(var child : this.children.values()){
-                child.pos = child.pos.add(new Vec2f(0,currY));
+            for(var child : this.children){
+                child.getRight().pos = child.getRight().pos.add(new Vec2f(0,currY));
             }
         }
 
@@ -224,10 +242,10 @@ public class ExploreScreen extends Screen {
             }
         }
         public void clearChildren(){
-            for(var child : this.children.values()){
-                child.value=null;
-                child.clearChildren();
-                ExploreScreen.this.remove(child);
+            for(var child : this.children){
+                child.getRight().value=null;
+                child.getRight().clearChildren();
+                ExploreScreen.this.remove(child.getRight());
             }
             this.children.clear();
         }
@@ -271,6 +289,12 @@ public class ExploreScreen extends Screen {
     }
 
     @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+//        MinecraftClient.getInstance().mouse.lockCursor();
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         this.offs = this.offs.add(new Vec2f((float) -deltaX, (float) -deltaY));
 
@@ -279,6 +303,7 @@ public class ExploreScreen extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
+//        MinecraftClient.getInstance().mouse.unlockCursor();
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
@@ -322,5 +347,11 @@ public class ExploreScreen extends Screen {
 
         if(this.tooltip!=null) ExploreScreen.this.renderTooltip(matrices, this.tooltip,mouseX, mouseY);
         this.tooltip=null;
+    }
+
+    @Override
+    public void close() {
+        MinecraftClient.getInstance().mouse.unlockCursor();
+        super.close();
     }
 }

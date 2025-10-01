@@ -93,6 +93,13 @@ public class Utils {
             }
         }
     }
+
+    /**
+     * Converts a lua value into the generic type. Try not to use this with numbers if you can help it
+     * @param value
+     * @return
+     * @param <T>
+     */
     public static <T> T toObjectTyped(LuaValue value){
         if(value.typename().equals("number")){
             try{ return (T) (Object) value.toint(); } catch(Exception e){}
