@@ -70,8 +70,7 @@ public class LuaBlockEntity extends BlockEntity {
             if (blockEntity.errored) return;
             blockEntity.errored=true;
 
-            CustomScript.print(blockEntity.script.contextObj
-                    .get(CustomScript.contextIdentifier).get("env").optjstring("none"),
+            CustomScript.print(blockEntity.script.contextObj.get("env").optjstring("none"),
                     "tick error: "+e.getMessage());
         });
     }
