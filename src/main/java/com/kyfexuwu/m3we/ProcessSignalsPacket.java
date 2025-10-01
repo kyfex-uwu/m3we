@@ -21,14 +21,7 @@ public class ProcessSignalsPacket {
                             if(eventData instanceof LuaTable eventTable)
                                 eventHandler.invoke(Utils.cloneTable(eventTable, null));
                             else {
-                                m3we.LOGGER.info("broseph? "+desiredEnv);
-                                m3we.LOGGER.info(eventHandler.typename());
-                                try {
-                                    eventHandler.invoke(eventData);
-                                }catch(Exception e){
-                                    e.printStackTrace();
-                                }
-                                m3we.LOGGER.info("broseph "+desiredEnv);
+                                eventHandler.invoke(eventData);
                             }
                         }
                     }
