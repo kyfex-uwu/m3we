@@ -1,0 +1,17 @@
+{
+  "namespace": "kyfexs_vertical_slabs",
+  "blockName": "v_oak_slab",
+
+  "copyFrom": "minecraft:oak_planks",
+
+  "blockStates": {
+    "direction": {
+      "type": "enum",
+      "values": ["north","south","east","west","double_x","double_y"]
+    }
+  },
+
+  "blockShape": "script:getBlockShape",
+
+  "script": "kyfexs_vertical_slabs:v_slab"
+}

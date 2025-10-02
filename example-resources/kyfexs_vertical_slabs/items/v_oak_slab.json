@@ -1,0 +1,6 @@
+{
+  "namespace": "kyfexs_vertical_slabs",
+  "itemName": "v_oak_slab",
+
+  "blockToPlace":"kyfexs_vertical_slabs:v_oak_slab"
+}

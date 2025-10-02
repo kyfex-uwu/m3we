@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "direction=north": {
+      "model": "kyfexs_vertical_slabs:block/v_oak_slab_north"
+    },
+    "direction=south": {
+      "model": "kyfexs_vertical_slabs:block/v_oak_slab_south"
+    },
+    "direction=east": {
+      "model": "kyfexs_vertical_slabs:block/v_oak_slab_east"
+    },
+    "direction=west": {
+      "model": "kyfexs_vertical_slabs:block/v_oak_slab_west"
+    },
+    "direction=double_x": {
+      "model": "minecraft:block/oak_planks"
+    },
+    "direction=double_y": {
+      "model": "minecraft:block/oak_planks"
+    }
+  }
+}

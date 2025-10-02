@@ -1,0 +1,10 @@
+{
+  "namespace": "kyfexs_mining",
+  "blockName": "cherine_block",
+
+  "copyFrom": "minecraft:iron_block",
+
+  "mapColor": "CLEAR",
+
+  "blockShape": [[0,0,0,1,1,1]]
+}

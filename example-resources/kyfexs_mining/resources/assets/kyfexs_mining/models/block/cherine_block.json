@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "kyfexs_mining:block/cherine_block"
+  }
+}

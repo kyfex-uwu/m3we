@@ -1,0 +1,6 @@
+{
+  "namespace": "kyfexs_mining",
+  "itemName": "arpinite_block",
+
+  "blockToPlace":"kyfexs_mining:arpinite_block"
+}

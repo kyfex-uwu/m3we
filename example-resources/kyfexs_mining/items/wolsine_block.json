@@ -1,0 +1,6 @@
+{
+  "namespace": "kyfexs_mining",
+  "itemName": "wolsine_block",
+
+  "blockToPlace":"kyfexs_mining:wolsine_block"
+}
