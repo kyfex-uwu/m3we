@@ -300,7 +300,7 @@ public class CustomScript {
         this.contextObj.javaSet("blockPos",Utils.toLuaValue(pos));
     }
     public void clearStateWorldPos() {
-        this.setStateWorldPos(null, null, null);
+        //this.setStateWorldPos(null, null, null); //hm.
     }
 
     public static final ArrayList<CustomScript> scripts = new ArrayList<>();

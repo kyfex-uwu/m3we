@@ -55,6 +55,7 @@ import org.luaj.vm2.LuaValue;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static com.kyfexuwu.m3we.Utils.tryAndExecute;
 import static com.kyfexuwu.m3we.initializers.InitUtils.getOr;
@@ -126,6 +127,8 @@ public class CustomBlockMaker {
             Map.entry("explosionRadius",LootContextParameters.EXPLOSION_RADIUS));
 
     public static final HashMap<Identifier, String> blockEntityScripts = new HashMap<>();
+
+    public static HashMap<String, VoxelShape> shapeCache = new HashMap<>();
 
     public static Block from(AbstractBlock.Settings settings, Block copyFrom,
                              JsonObject blockJson, String scriptName, String blockEntityScriptName) {
@@ -218,7 +221,7 @@ public class CustomBlockMaker {
                 }
                 if(outlineShapeJson == null){
                     this.outlineShape=this.blockShape;
-                    this.outlineIsScript=false;
+                    this.outlineIsScript=this.shapeIsScript;
                     this.outlineScriptString=this.shapeScriptString;
                 }else if(outlineShapeJson.isJsonArray()) {
                     this.outlineIsScript=false;
@@ -420,6 +423,11 @@ public class CustomBlockMaker {
             }
             @Override
             public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+                var cachedShape = shapeCache.get(Registry.BLOCK.getId(state.getBlock()) + "/" +
+                        state.getProperties().stream().map(property -> property.getName()+"="+state.get(property).toString())
+                                .collect(Collectors.joining(";"))+";"+pos.toShortString());
+                if(cachedShape != null) return cachedShape;
+
                 if(this.shapeIsScript){
                     if(this.shapeScriptString==null) return VoxelShapes.fullCube();
                     this.serverScriptContainer.setStateWorldPos(state, null, pos);
@@ -434,8 +442,6 @@ public class CustomBlockMaker {
                                 if(!value.istable()) return toReturn;
 
                                 if(!value.get(1).istable()) value = new LuaTable(value);
-                                //if there is only one table, use that
-                                //{0,0,0,1,1,1} => {{0,0,0,1,1,1}}
 
                                 var size = value.length();
                                 for (int i = 0; i < size; i++) {
@@ -443,7 +449,7 @@ public class CustomBlockMaker {
                                     if (!currValue.istable() || currValue.length() != 6)
                                         continue;
 
-                                    for (int count = 1; count <= 6; count++) {//lua Poopy
+                                    for (int count = 1; count <= 6; count++) {
                                         toReturn = VoxelShapes.union(toReturn,
                                                 VoxelShapes.cuboid(
                                                         currValue.get(1).checkdouble(),
@@ -459,6 +465,12 @@ public class CustomBlockMaker {
                             }
                     );
                     this.serverScriptContainer.clearStateWorldPos();
+
+                    shapeCache.put(Registry.BLOCK.getId(state.getBlock()) + "/" +
+                                    state.getProperties().stream().map(property -> property.getName()+"="+state.get(property).toString())
+                                            .collect(Collectors.joining(";"))+";"+pos.toShortString(),
+                            finalToReturn);
+
                     return finalToReturn;
                 }else{
                     return this.blockShape;
