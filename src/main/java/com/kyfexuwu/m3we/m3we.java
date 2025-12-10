@@ -32,11 +32,13 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.zip.ZipFile;
 
 public class m3we implements ModInitializer {
     public static String MOD_ID = "m3we";
@@ -88,7 +90,7 @@ public class m3we implements ModInitializer {
         List<FileIniter> processQueue = new ArrayList<>();
 
         //finds all the files we need to load
-        //if theyre resources that could depend omn each other, add them to the queue
+        //if theyre resources that could depend on each other, add them to the queue
         for(var file : m3weFolder.listFiles(File::isDirectory)){
             for(var subFile : file.listFiles(File::isDirectory)){
 
@@ -113,6 +115,56 @@ public class m3we implements ModInitializer {
                 }
             }
         }
+
+        /**
+         * ZipFile zip = new ZipFile("C:\\Users\\mofh\\Desktop\\test.zip");
+         *
+         *
+         *     for (Enumeration e = zip.entries(); e.hasMoreElements(); ) {
+         *         ZipEntry entry = (ZipEntry) e.nextElement();
+         *         if (!entry.isDirectory()) {
+         *             if (FilenameUtils.getExtension(entry.getName()).equals("png")) {
+         *                 byte[] image = getImage(zip.getInputStream(entry));
+         *                 //do your thing
+         *             } else if (FilenameUtils.getExtension(entry.getName()).equals("txt")) {
+         *                 StringBuilder out = getTxtFiles(zip.getInputStream(entry));
+         *                 //do your thing
+         *             }
+         *         }
+         *     }
+         */
+//        for(var file : m3weFolder.listFiles((containingDir, name) -> name.endsWith(".zip"))){
+//            try {
+//                try(var archive = new ZipFile(file.getAbsolutePath())){
+//                    var entries = archive.entries();
+//                    while(entries.hasMoreElements()){
+//                        var entry = entries.nextElement();
+//                        if(!entry.isDirectory()) continue;
+//
+//                        Function<File, InitUtils.SuccessAndIdentifier> func = switch (entry.getName()) {
+//                            case "blocks" -> BlockIniter::blockFromFile;
+//                            case "items" -> ItemIniter::itemFromFile;
+//
+////                            case "scripts" -> {
+////                                scriptFolders.add(entry);
+////                                yield null;
+////                            }
+//                            case "resources" -> {
+//                                resourceFolders.add(new Pair<>(file.getName(), entry));
+//                                yield null;
+//                            }
+//                            default -> null;
+//                        };
+//                        if(func==null) continue;
+//
+//                        entry.
+//                        for(var subFile2 : entry.listFiles(File::isFile)){
+//                            processQueue.add(new FileIniter(subFile2, func));
+//                        }
+//                    }
+//                }catch(Exception ignored){}
+//            } catch (Exception ignored) {}
+//        }
 
         //try and load all the files, "deferring" if a dependency is not met
         int loopTracker=-1;

@@ -54,7 +54,7 @@ public class CreateAPI extends TwoArgFunction {
             }catch(Exception ignored){}
 
             world.spawnEntity(itemEntity);
-            return null;
+            return Utils.toLuaValue(itemEntity);
         }));
 
         thisApi.javaSet("fromClass",new fromClass());

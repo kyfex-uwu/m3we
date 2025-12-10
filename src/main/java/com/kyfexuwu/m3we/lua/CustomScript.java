@@ -102,6 +102,7 @@ public class CustomScript {
         toReturn.load(new RedstoneAPI());
         toReturn.load(new RegistryAPI());
         toReturn.load(new SignalsAPI());
+        toReturn.load(new MultiblockAPI());
 
         return toReturn;
     }
