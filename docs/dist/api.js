@@ -1,7 +1,13 @@
-import { Router } from "arrowjs-aluminum";
+import { ArrowElementGenerator, Router } from "arrowjs-aluminum";
 import { html } from "@arrow-js/core";
+let link;
+export function setLinkGen(linkGen) {
+    link = linkGen;
+}
 const apiPages = {};
 export const apiRouter = new Router()
+    .addRoute("", () => html `
+    ${Object.entries(apiPages).map(([name, page]) => html `${link.create(page.title) `${page.title}`}<br>`)}`)
     .addRoute(":api", (vars) => html `${(() => {
     const api = apiPages[vars.api];
     if (api === undefined)

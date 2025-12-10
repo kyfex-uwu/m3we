@@ -1,5 +1,10 @@
-import {Router} from "arrowjs-aluminum";
+import {ArrowElementGenerator, Router} from "arrowjs-aluminum";
 import {html, type ArrowTemplate} from "@arrow-js/core";
+
+let link:ArrowElementGenerator<string>;
+export function setLinkGen(linkGen:ArrowElementGenerator<string>){
+    link=linkGen;
+}
 
 type apiMethod<T extends {[propName:string]:string}> = {
     name:string,
@@ -19,6 +24,8 @@ type apiPage={
 const apiPages:{[apiName:string]:apiPage} = {};
 
 export const apiRouter = new Router()
+    .addRoute("", ()=>html`
+    ${Object.entries(apiPages).map(([name, page]) => html`${link.create(page.title)`${page.title}`}<br>`)}`)
     .addRoute(":api", (vars)=>html`${(()=>{
         const api = apiPages[vars.api!];
         if(api === undefined) return html`API ${vars.api} not found`;
