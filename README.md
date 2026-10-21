@@ -4,3 +4,5 @@ plug in json, get out blocks! (and items)
 A Minecraft mod for 1.19.2 Fabric, but coming soon to other versions of fabric (and maybe forge in the far future!)
 
 check out the docs :3
+
+download from GitHub releases or at https://modrinth.com/mod/m3we
